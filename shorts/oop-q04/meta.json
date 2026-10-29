@@ -1,0 +1,18 @@
+{
+  "id": "oop-q04",
+  "subject": "oop",
+  "qno": 4,
+  "question": "What is the use of the finally block in exception handling?",
+  "title": "Finally Always Runs",
+  "hook": "Good read or bad read, you still return the book.",
+  "answer": [
+    "The finally block contains code that executes whether or not an exception occurs.",
+    "It runs after try and catch, even if the try block has a return.",
+    "Used to release resources: close files, database connections, streams.",
+    "Only exception: the JVM terminates first (e.g. System.exit())."
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 70.3,
+  "format": "teaching-v3"
+}

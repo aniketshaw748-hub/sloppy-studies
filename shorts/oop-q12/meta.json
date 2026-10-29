@@ -1,0 +1,17 @@
+{
+  "id": "oop-q12",
+  "subject": "oop",
+  "qno": 12,
+  "question": "Write a Java program demonstrating a class implementing two interfaces.",
+  "title": "One Class, Two Certificates",
+  "hook": "A swimming certificate and a flying certificate: one Duck holds both.",
+  "answer": [
+    "interface Flyer { void fly(); }  interface Swimmer { void swim(); }  (declarations only, no body)",
+    "class Duck implements Flyer, Swimmer  (names separated by a comma)",
+    "Duck must define BOTH methods and make them public: public void fly() {...}  public void swim() {...}",
+    "main: Duck d = new Duck(); d.fly(); d.swim();",
+    "Output: Duck flies / Duck swims. One object answers to both interfaces."
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

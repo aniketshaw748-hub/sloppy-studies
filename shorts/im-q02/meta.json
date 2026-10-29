@@ -1,0 +1,17 @@
+{
+ "id": "im-q02",
+ "subject": "im",
+ "qno": 2,
+ "question": "Why do we crash critical activities?",
+ "title": "Crash The Critical",
+ "hook": "Speed up the wrong activity and the project does not finish one minute earlier.",
+ "answer": [
+  "Crashing = shortening an activity's time by adding resources (workers, machines, overtime) at extra cost.",
+  "Only critical activities lie on the longest path and decide the project duration, so only crashing them shortens the project.",
+  "Crashing a non-critical activity (which has float) saves no project time and wastes money.",
+  "Aim: meet a deadline, avoid delay penalty, earn an early bonus, cut overhead costs.",
+  "Crash the activity with the lowest cost slope first; stop when extra cost exceeds the saving."
+ ],
+ "voice": "[warm, clear teacher, friendly and patient] Today's question. Why do we crash critical activities? [pause] Let's start from zero. Every activity in a project takes some time, and the whole project takes as long as the longest chain of activities. That longest chain is called the critical path. Think of friends travelling to the same wedding, each by a different road. The wedding starts only when the LAST friend arrives. The slowest road decides everything. [pause] Activities on that slowest road are called critical activities. They have no spare time, no float. [pause] Now, crashing. Crashing means making an activity shorter by paying extra, for more workers, more machines, or overtime. [pause] So the question wants two things. What crashing is, and why we do it on critical activities only. [pause] Here is the reason. Suppose a non-critical activity has spare time. Speed it up, and the project does not finish one minute earlier. You only wasted money. But speed up a critical activity, and the whole project finishes sooner. Every day saved there is a day saved overall. [pause] So we crash critical activities to reduce the project duration. And why would we want that? To meet a deadline. To avoid a penalty for delay. To earn an early bonus. And to cut overhead costs, which run every single day. [pause] One more point. We crash the activity with the lowest extra cost per day first, and we stop when the extra cost becomes bigger than the saving. [pause] So in your exam, write this. Crashing shortens an activity's time by adding resources at extra cost. Only critical activities decide the project duration, so only crashing them shortens the project. The aim is to meet deadlines, avoid penalties and save overheads. And to remember: crash the critical, never the spare. Five marks. Secured.",
+ "marks": 5
+}

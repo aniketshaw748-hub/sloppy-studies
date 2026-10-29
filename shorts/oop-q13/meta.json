@@ -1,0 +1,17 @@
+{
+  "id": "oop-q13",
+  "subject": "oop",
+  "qno": 13,
+  "question": "Explain try, catch and multiple catch blocks with an example.",
+  "title": "The Rope and the Net",
+  "hook": "An acrobat falls. The safety net catches him. That is try and catch.",
+  "answer": [
+    "Exception: a problem at run time (e.g. division by zero); unhandled, it crashes the program.",
+    "try: the block that holds the risky code.",
+    "catch: the block that handles one type of exception; it runs only if that exception occurs inside try.",
+    "Multiple catch: one try followed by several catch blocks, one per exception type; Java checks them top to bottom and runs only the FIRST match. Put specific exceptions first and the general Exception last.",
+    "Example: try { int n = Integer.parseInt(\"abc\"); int r = 10/0; } catch (ArithmeticException e) { System.out.println(\"divide by zero\"); } catch (NumberFormatException e) { System.out.println(\"not a number\"); }  Output: not a number."
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

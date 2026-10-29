@@ -1,0 +1,17 @@
+{
+  "id": "oop-q18",
+  "subject": "oop",
+  "qno": 18,
+  "question": "Checked vs unchecked exceptions in Java with examples.",
+  "title": "Gate Scan or Mid-Flight",
+  "hook": "Some bags are scanned at the gate. Other problems only show up mid-flight.",
+  "answer": [
+    "Exception hierarchy: Throwable > Exception > RuntimeException.",
+    "Checked exceptions: checked by the compiler at compile time; the code will not compile unless you handle them (try-catch) or declare them (throws). Usually external problems. Examples: IOException, FileNotFoundException, SQLException.",
+    "Unchecked exceptions: subclasses of RuntimeException; NOT checked at compile time, so handling is optional; the problem appears at run time; usually programming bugs.",
+    "Examples: ArithmeticException (int x = 5/0;), NullPointerException, ArrayIndexOutOfBoundsException.",
+    "Key difference: checked = compiler forces you to handle or declare; unchecked = compiler stays silent and it crashes at run time."
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

@@ -1,0 +1,17 @@
+{
+  "id": "im-q12",
+  "subject": "im",
+  "qno": 12,
+  "question": "Why is updating of the project network required?",
+  "title": "Your Network Needs GPS",
+  "hook": "A plan is only a guess until it recalculates.",
+  "answer": [
+    "The network is drawn before work starts, using estimated durations.",
+    "Actual durations differ from estimates (delays, early finishes), so the plan goes out of date.",
+    "Delays and changes shift the critical path and the floats (e.g. C takes 8 days instead of 4: the bottom path becomes 11 days, longer than the top path of 9, so the project needs 11 days).",
+    "Updating = enter actual progress, delays and changes, then recalculate times, floats and the critical path; this gives the revised completion time.",
+    "It allows corrective action (add workers, crash the new critical activities) and control, and a true date for the client."
+  ],
+  "voice": "Desmond",
+  "marks": 5
+}

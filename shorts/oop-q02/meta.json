@@ -1,0 +1,18 @@
+{
+  "id": "oop-q02",
+  "subject": "oop",
+  "qno": 2,
+  "question": "Which access specifier allows a class member to be accessed only within its own class?",
+  "title": "The Diary Lock",
+  "hook": "Your diary is locked in your own room. Which keyword is that?",
+  "answer": [
+    "The answer is the private access specifier.",
+    "A private member is accessible only within its own class.",
+    "No other class can use it, not even a subclass; outsiders must go through public methods.",
+    "Order of openness: public > protected > default > private."
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 69.1,
+  "format": "teaching-v3"
+}

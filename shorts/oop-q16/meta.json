@@ -1,0 +1,17 @@
+{
+  "id": "oop-q16",
+  "subject": "oop",
+  "qno": 16,
+  "question": "Discuss the access privileges of class members within the same and different packages.",
+  "title": "Four Doors of Access",
+  "hook": "Your locked bedroom, your house, your kids, the street: who gets in?",
+  "answer": [
+    "private: accessible only inside the same class.",
+    "default (no keyword): accessible within the same package only.",
+    "protected: same package, plus subclasses in other packages.",
+    "public: accessible from everywhere (any class, any package).",
+    "Same class: all four allowed. Same package: all except private. Different package subclass: protected and public. Different package, unrelated class: public only."
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

@@ -1,0 +1,17 @@
+{
+  "id": "se-q06",
+  "subject": "se",
+  "qno": 6,
+  "question": "Differentiate between a UML Class Diagram and a UML Sequence Diagram (purpose, elements, representation) with an example.",
+  "title": "The Map and the Movie",
+  "hook": "A floor plan shows which rooms exist. CCTV footage shows who walked where, in what order. Same building, two diagrams.",
+  "answer": [
+    "Purpose: class diagram = static structure (which classes exist and how they are related); sequence diagram = dynamic behaviour (messages between objects in time order).",
+    "Elements: class diagram = classes with attributes and methods, associations, multiplicities; sequence diagram = objects with lifelines, and messages.",
+    "Representation: class diagram = boxes joined by lines, no time; sequence diagram = lifelines and arrows, time flows top to bottom.",
+    "Example (library): class diagram Student 1 to 0..* IssueRecord; sequence diagram Student sends issueBook() to Librarian, Librarian hands the book back.",
+    "Memory trick: class is the map, sequence is the movie."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 106.37 s",
+  "marks": 5
+}

@@ -1,0 +1,17 @@
+{
+  "id": "se-q03",
+  "subject": "se",
+  "qno": 3,
+  "question": "Name any three UML diagrams used to represent the behavioural view of a system. Briefly explain the purpose of each.",
+  "title": "Floor Plan vs Life",
+  "hook": "A floor plan shows what exists. It cannot show who walks in, who talks, what happens next. That is behaviour.",
+  "answer": [
+    "Behavioural diagrams show what the system DOES (structural diagrams show what it is made of).",
+    "Use case diagram: actors and the functions (use cases) they use. Purpose: capture what users want from the system.",
+    "Sequence diagram: messages between objects in time order. Purpose: show how objects collaborate in one scenario.",
+    "Activity diagram: a flowchart of steps, decisions, start and end. Purpose: model the workflow step by step.",
+    "Memory trick: use case = WHO, sequence = WHEN, activity = HOW."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 100.05 s",
+  "marks": 5
+}

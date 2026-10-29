@@ -1,0 +1,18 @@
+{
+ "id": "ai-q01",
+ "subject": "ai",
+ "qno": 1,
+ "question": "What is a membership function in fuzzy logic?",
+ "title": "Fuzzy: Degrees, Not Yes/No",
+ "hook": "What if your weather app said it is 60% HOT?",
+ "answer": [
+  "Membership function mu_A(x): maps each element x of the universe of discourse X to a degree of membership in [0,1]",
+  "mu=0: not in the set; mu=1: fully in; values between = partial membership",
+  "Fuzzy set A = {(x, mu_A(x))}",
+  "Common shapes: triangular, trapezoidal, Gaussian (also sigmoid)",
+  "Example: mu_HOT(30 C) = 0.5 on a ramp from 20 C (0) to 40 C (1)"
+ ],
+ "voice": "Zoe",
+ "job_id": "baa9dac2-8210-4245-b52d-62e2060b13fe",
+ "audio_url": "https://d8j0ntlcm91z4.cloudfront.net/user_398hAfDEa02bqzm8BOdr5tEIQGi/hf_20261028_180643_baa9dac2-8210-4245-b52d-62e2060b13fe.mp3"
+}

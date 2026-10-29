@@ -1,0 +1,17 @@
+{
+  "id": "im-q15",
+  "subject": "im",
+  "qno": 15,
+  "question": "EOQ numericals: formula EOQ = sqrt(2DS/H), a worked example and how to solve the class sums.",
+  "title": "EOQ Sums, Fully Solved",
+  "hook": "Nine thousand units, one formula, one answer.",
+  "answer": [
+    "EOQ = square root of (2DS / H); D = yearly demand, S = cost of placing one order, H = holding cost per unit per year.",
+    "Example: D = 9,000, S = Rs 200, H = Rs 10. EOQ = sqrt(2 x 9,000 x 200 / 10) = sqrt(360,000) = 600 units.",
+    "Orders per year = D / EOQ = 9,000 / 600 = 15.",
+    "Ordering cost = 15 x 200 = Rs 3,000; holding cost = (600 / 2) x 10 = Rs 3,000; total cost = Rs 6,000 (ordering = holding at the EOQ).",
+    "Method: write D, S, H in yearly units (if H is a percentage, H = % x unit price); apply the formula; orders = D / EOQ; total cost = ordering + holding."
+  ],
+  "voice": "Desmond",
+  "marks": 5
+}

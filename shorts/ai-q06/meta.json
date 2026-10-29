@@ -1,0 +1,17 @@
+{
+ "id": "ai-q06",
+ "subject": "ai",
+ "qno": 6,
+ "question": "Differentiate between A* and AO* algorithms.",
+ "title": "A-star Path, AO-star Plan",
+ "hook": "One walks a path. One builds a plan.",
+ "answer": [
+  "Graph: A* works on an OR graph; AO* works on an AND-OR graph",
+  "Solution: A* gives a single path from start to goal; AO* gives a solution graph (sub-problem tree containing every branch of each AND)",
+  "Cost: A* ranks nodes by f(n) = g(n) + h(n); in AO* the cost of an AND arc is the sum of its children's costs",
+  "Update: A* has no back-propagation of costs; AO* revises costs backwards up to the parents after expanding a node",
+  "Use: A* for pathfinding; AO* for problem decomposition. Both are optimal if h never over-estimates"
+ ],
+ "voice": "Zoe",
+ "marks": 5
+}

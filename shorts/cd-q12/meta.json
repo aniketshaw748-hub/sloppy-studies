@@ -1,0 +1,18 @@
+{
+  "id": "cd-q12",
+  "subject": "cd",
+  "qno": 12,
+  "question": "Discuss the applications of syntax-directed translation.",
+  "title": "One Rule Many Results",
+  "hook": "What if every grammar rule did a small job?",
+  "answer": [
+    "Syntax-directed translation attaches semantic rules (actions) to grammar productions; they run when the parser uses the production.",
+    "Evaluation of expressions (desk calculator): E.val = E1.val + T.val, so 3 + 4 gives 7.",
+    "Construction of syntax trees: create an operator node with the operands as children.",
+    "Intermediate code generation: emit three-address code, e.g. t1 = 3 + 4.",
+    "Type checking: int + int gives int; int + string is a type error.",
+    "Translation between notations, e.g. infix to postfix: 3 + 4 becomes 3 4 +."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

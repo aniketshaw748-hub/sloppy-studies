@@ -1,0 +1,17 @@
+{
+  "id": "cd-q05",
+  "subject": "cd",
+  "qno": 5,
+  "question": "Remove left recursion: S→S+(E)|(E), E→E*(F)|(F), F→F(S)|id.",
+  "title": "Rewrite The Loop Away",
+  "hook": "Three rules, one endless loop. Fix it.",
+  "answer": [
+    "Left recursion A→Aα|β becomes A→βA', A'→αA'|ε.",
+    "S→S+(E)|(E) (α = +(E), β = (E)) becomes S→(E)S' and S'→+(E)S'|ε.",
+    "E→E*(F)|(F) (α = *(F), β = (F)) becomes E→(F)E' and E'→*(F)E'|ε.",
+    "F→F(S)|id (α = (S), β = id) becomes F→idF' and F'→(S)F'|ε.",
+    "Same language, no left recursion: the top-down parser no longer loops."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

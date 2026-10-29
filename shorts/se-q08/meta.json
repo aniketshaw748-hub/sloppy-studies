@@ -1,0 +1,18 @@
+{
+  "id": "se-q08",
+  "subject": "se",
+  "qno": 8,
+  "question": "What does multiplicity represent in a UML Class Diagram? Explain 1, 0..1, 1..* and 0..* with examples.",
+  "title": "How Many Rules",
+  "hook": "Every person has exactly one mother, but a mother can have zero, one or many children. UML writes those how-many rules as multiplicity.",
+  "answer": [
+    "Multiplicity shows how many objects of one class can be linked to ONE object of the class at the other end of an association; it is written at the end of the association line.",
+    "1 = exactly one (a Book has exactly 1 Publisher).",
+    "0..1 = optional, at most one (a Student has 0..1 LibraryCard).",
+    "1..* = one or more, at least one (a Book has 1..* Authors).",
+    "0..* = zero or more, any number (a Student has 0..* IssueRecords).",
+    "Memory trick: the first number is the minimum, the second is the maximum."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 107.65 s",
+  "marks": 5
+}

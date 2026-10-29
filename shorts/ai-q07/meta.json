@@ -1,0 +1,18 @@
+{
+ "id": "ai-q07",
+ "subject": "ai",
+ "qno": 7,
+ "question": "What is a crisp set? Differentiate between fuzzy sets and crisp sets.",
+ "title": "Crisp Step, Fuzzy Ramp",
+ "hook": "Is 29.9 degrees hot? Crisp says no.",
+ "answer": [
+  "Crisp set: a classical set in which each element either belongs or does not; membership is only 0 or 1 (sharp boundary)",
+  "Fuzzy set: allows partial membership, any value from 0 to 1 (gradual boundary)",
+  "Membership: crisp {0,1} vs fuzzy [0,1]",
+  "Boundary: crisp sharp vs fuzzy gradual",
+  "Logic: crisp = classical true/false, an element and its complement never overlap; fuzzy = element can belong partly to a set and partly to its opposite",
+  "Use: crisp for exact data; fuzzy for vague terms such as hot, tall, young"
+ ],
+ "voice": "Zoe",
+ "marks": 5
+}

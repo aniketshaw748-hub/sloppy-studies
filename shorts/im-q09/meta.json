@@ -1,0 +1,17 @@
+{
+  "id": "im-q09",
+  "subject": "im",
+  "qno": 9,
+  "question": "What is a BOM (Bill of Materials)?",
+  "title": "BOM: The Recipe Card",
+  "hook": "A factory needs a recipe too.",
+  "answer": [
+    "BOM (Bill of Materials): the complete list of raw materials, components and sub-assemblies, with the quantity of each, needed to make ONE unit of a product.",
+    "It is drawn as a product structure tree.",
+    "Level 0 = end item (finished product); Level 1 = sub-assemblies; Level 2 = raw parts.",
+    "Each branch carries a quantity (chair: 1 seat, 1 back; back: 3 slats, 4 screws).",
+    "It is the key input to MRP, which multiplies it by the quantity ordered to plan what to buy."
+  ],
+  "voice": "Desmond",
+  "marks": 5
+}

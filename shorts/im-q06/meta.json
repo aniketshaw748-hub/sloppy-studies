@@ -1,0 +1,16 @@
+{
+ "id": "im-q06",
+ "subject": "im",
+ "qno": 6,
+ "question": "How can we determine the optimum duration of a project?",
+ "title": "Find The Cheapest Finish",
+ "hook": "Rush a wedding and pay for overtime. Drag it out and pay the hall rent. Somewhere between is cheapest.",
+ "answer": [
+  "Total project cost = direct cost + indirect cost.",
+  "Shortening (crashing) raises direct cost and lowers indirect cost (overheads charged per day).",
+  "Steps: draw the network and find the critical path; compute the cost slope of each activity; crash the critical activity with the lowest slope one day at a time (shorten both if two paths are critical); note direct, indirect and total cost after each step; stop when crashing costs more than it saves.",
+  "The duration at which total cost is minimum is the optimum duration (the lowest point of the total-cost curve)."
+ ],
+ "voice": "[warm, clear teacher, friendly and patient] Today's question. How can we determine the optimum duration of a project? [pause] Let's start from zero. Duration means how long the whole project takes. Optimum means best, and here best means cheapest overall. Think of a wedding. Rush it, and you pay extra for rush orders and overtime. Drag it out, and you pay the hall rent for every extra day. Somewhere in the middle is the cheapest. [pause] So the question wants the method that finds that cheapest duration. [pause] A project's cost has two parts. Direct cost is labour, material and machines. Shorten the project by crashing, and direct cost goes UP. Indirect cost is overheads, supervision and rent. It is charged per day, so a shorter project pays less. Indirect cost goes down. [pause] Add the two together and you get total cost. It falls at first, touches a lowest point, then rises again. That lowest point is the optimum duration. [pause] Now the steps. One. Draw the network with normal times and find the critical path. Two. Work out the cost slope of every activity. Three. Crash the critical activity with the lowest slope, one day at a time. If two paths are critical, shorten both. Four. After each step, note the direct cost, the indirect cost, and the total. Five. Stop when crashing costs more than it saves. [pause] The duration with the lowest total cost is the optimum. [pause] So in your exam, write this. Total cost equals direct cost plus indirect cost. Crashing raises direct cost and lowers indirect cost. Crash critical activities in order of lowest cost slope, and record the total each time. The duration where total cost is least is the optimum duration. And to remember: crash while the saving beats the cost. Five marks. Secured.",
+ "marks": 5
+}

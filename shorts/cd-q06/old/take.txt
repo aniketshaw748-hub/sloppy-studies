@@ -1,0 +1,1 @@
+[dramatic] What if you could predict the future of a grammar? FIRST: C is e or epsilon. D is b or a. A is c or epsilon. B is e, d, a. S is c or b. FOLLOW: S is dollar and f. A is b, dollar, f, e, a. B is e, b, a. C is c, dollar, f, b, a, d. D is b, dollar, f, e, a. [deadpan] FIRST looks inside the rule. FOLLOW looks beside the symbol. Write that. Five marks. Secured.

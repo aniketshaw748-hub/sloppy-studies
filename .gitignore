@@ -1,0 +1,15 @@
+# large media: renders live in out/ and the published reels in site/v (deployed to Cloudflare, ~1 GB)
+# signed upload links / media ids from render runs (contain temporary tokens)
+*.pyc
+.wrangler/
+__pycache__/
+analytics/STATS_KEY.txt
+media_ids.json
+music_test/
+out/
+put_urls.json
+render_urls.json
+sfx_cache/
+site/v/
+urls_bundle.json
+work/

@@ -1,0 +1,18 @@
+{
+ "id": "ai-q04",
+ "subject": "ai",
+ "qno": 4,
+ "question": "Explain the hill climbing algorithm and discuss its limitations.",
+ "title": "Hill Climbing In Fog",
+ "hook": "Climb a hill you cannot see",
+ "answer": [
+  "Hill climbing: a greedy local search; start from an initial state, look at the neighbours and move to a better neighbour; repeat",
+  "Stop when no neighbour is better; only the current state is kept, so memory use is tiny",
+  "Algorithm: 1 start state, 2 evaluate neighbours, 3 move to the best neighbour if it is better and repeat, 4 stop if none is better",
+  "Limitation 1, local maximum: a peak higher than its neighbours but lower than the global maximum, search stops there",
+  "Limitation 2, plateau: a flat area where all neighbours have equal value, no uphill direction",
+  "Limitation 3, ridge: a narrow slanted path up; every single step looks downhill. Fixes: random restart, simulated annealing"
+ ],
+ "voice": "Zoe",
+ "marks": 5
+}

@@ -1,0 +1,17 @@
+{
+  "id": "im-q13",
+  "subject": "im",
+  "qno": 13,
+  "question": "What are the types of purchase orders?",
+  "title": "Four Kinds of Purchase Order",
+  "hook": "Pizza, tiffin, tea stall, catering.",
+  "answer": [
+    "A purchase order is the buyer's written order to a supplier (items, quantity, price, delivery); once accepted it is a binding contract.",
+    "Standard PO: one-time purchase, everything fixed (items, quantity, price, delivery date).",
+    "Planned PO: long-term agreement; items, quantities and schedule known in advance, exact deliveries released later.",
+    "Blanket PO: repeat buying from one supplier at a pre-agreed price, no fixed dates; release an order whenever needed.",
+    "Contract PO: only terms agreed (price, validity, payment, delivery conditions); items and quantities follow through separate orders."
+  ],
+  "voice": "Desmond",
+  "marks": 5
+}

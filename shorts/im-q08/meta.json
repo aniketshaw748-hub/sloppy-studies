@@ -1,0 +1,16 @@
+{
+ "id": "im-q08",
+ "subject": "im",
+ "qno": 8,
+ "question": "Define PPC (Production Planning and Control).",
+ "title": "Plan The Work, Work The Plan",
+ "hook": "A wedding kitchen for 500 guests: someone plans, someone controls.",
+ "answer": [
+  "PPC is the function of management that plans, directs and controls the flow of materials, machines and men so that the right product is made in the right quantity, at the right time, at minimum cost.",
+  "Planning: routing (path and machine order) and scheduling (start and end times).",
+  "Control: dispatching (release orders to the shop floor) and follow-up (actual vs plan, corrective action).",
+  "Memory: route it, schedule it, dispatch it, follow it up."
+ ],
+ "voice": "[warm, clear teacher, friendly and patient] Today's question. Define P P C. That is, Production Planning and Control. [pause] Let's start from zero. Production simply means making things. Think of a wedding kitchen cooking for five hundred guests. The head cook must decide which dishes to make, how much of each, on which stove, by which cook, and at what time. That is planning. And while the cooking runs, someone checks that everything is on time, and fixes any problem. That is control. [pause] So the question wants a definition, and the parts that make it up. [pause] Production Planning and Control is the function of management that plans, directs and controls the flow of materials, machines and men, so that the right product is made, in the right quantity, at the right time, at the lowest cost. [pause] So: plan the work, then work the plan. [pause] Planning comes first. Routing means deciding the path the work will take, which machines, in which order. Scheduling means fixing the time, when each job starts and when it ends. [pause] Then comes control. Dispatching means giving the go-ahead, releasing the orders to the shop floor. Follow-up means checking actual progress against the plan, and taking corrective action if the work is running late. [pause] So in your exam, write this. P P C is the function of management that plans and controls production, so that the right product is made in the right quantity, at the right time, at minimum cost. Planning has routing and scheduling. Control has dispatching and follow-up. And to remember: route it, schedule it, dispatch it, follow it up. Five marks. Secured.",
+ "marks": 5
+}

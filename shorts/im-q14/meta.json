@@ -1,0 +1,17 @@
+{
+  "id": "im-q14",
+  "subject": "im",
+  "qno": 14,
+  "question": "Difference between EOQ and EPQ.",
+  "title": "Bought vs Baked Stock",
+  "hook": "Same shop, two ways to get bread.",
+  "answer": [
+    "EOQ is for purchased items; EPQ is for manufactured (made in-house) items.",
+    "EOQ: the whole order arrives at once, stock jumps to Q then falls. EPQ: stock builds up gradually while production and use run together; peak stays below Q.",
+    "EOQ uses ordering cost + holding cost; EPQ uses setup cost + holding cost.",
+    "EOQ = square root of (2DS / H).",
+    "EPQ = square root of (2DS / (H x (1 - d/p))), where d = demand rate and p = production rate."
+  ],
+  "voice": "Desmond",
+  "marks": 5
+}

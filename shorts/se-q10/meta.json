@@ -1,0 +1,17 @@
+{
+  "id": "se-q10",
+  "subject": "se",
+  "qno": 10,
+  "question": "Differentiate between association and aggregation in a UML Class Diagram with examples and notations.",
+  "title": "Playlist Versus Songs",
+  "hook": "Delete a playlist and the songs still exist on your phone. That is aggregation.",
+  "answer": [
+    "Association: the basic link between two classes (one knows or uses the other); equals, neither owns the other. Notation: plain solid line with the relationship name and multiplicities.",
+    "Example: a Student borrows a Book (Student 0..1 --- 0..* Book).",
+    "Aggregation: a special association, a whole and its parts (has-a); the parts can exist without the whole. Notation: solid line with an empty (hollow) diamond at the whole's end.",
+    "Example: a Library has Books; if the library closes, the books still exist.",
+    "Memory trick: the diamond sits on the whole, and empty means the parts can leave."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 105.48 s",
+  "marks": 5
+}

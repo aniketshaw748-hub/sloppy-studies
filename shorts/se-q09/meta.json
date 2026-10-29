@@ -1,0 +1,17 @@
+{
+  "id": "se-q09",
+  "subject": "se",
+  "qno": 9,
+  "question": "Differentiate between <<include>> and <<extend>> relationships in a Use Case Diagram, with example and notation.",
+  "title": "Always Or Sometimes",
+  "hook": "Making tea ALWAYS includes boiling water. Adding sugar is optional. That is include versus extend.",
+  "answer": [
+    "<<include>>: the base use case ALWAYS uses the included use case; it is mandatory and usually a shared step reused by many use cases.",
+    "Notation: dashed arrow labelled <<include>> drawn from the base use case to the included use case. Example: Issue Book <<include>> Check Availability.",
+    "<<extend>>: the extending use case adds extra behaviour to the base only under a condition; the base is complete without it (optional).",
+    "Notation: dashed arrow labelled <<extend>> drawn from the extending use case to the base use case. Example: Pay Fine <<extend>> Return Book (only if overdue).",
+    "Memory trick: include is always, extend is sometimes."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 105.17 s",
+  "marks": 5
+}

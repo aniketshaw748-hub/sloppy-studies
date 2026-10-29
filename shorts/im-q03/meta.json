@@ -1,0 +1,18 @@
+{
+ "id": "im-q03",
+ "subject": "im",
+ "qno": 3,
+ "question": "What is the full form of GOLF? (inventory classification: Government, Ordinary, Local, Foreign)",
+ "title": "GOLF: Distance Decides Stock",
+ "hook": "Cooking gas, rice, vegetables, an imported spice: four items, four sources.",
+ "answer": [
+  "GOLF = Government, Ordinary, Local, Foreign.",
+  "It classifies inventory by its source of supply.",
+  "G: items supplied or controlled by the government (government rules, slow).",
+  "O: ordinary items easily bought from the open market from many suppliers.",
+  "L: local items from nearby suppliers (quick delivery, small frequent orders).",
+  "F: foreign items, imported (long lead time, so order early and keep extra safety stock)."
+ ],
+ "voice": "[warm, clear teacher, friendly and patient] Today's question. What is the full form of golf? It is an inventory classification. Government, Ordinary, Local, Foreign. [pause] Let's start from zero. Inventory is simply the stock a company keeps. And a company buys many different items, which do not all come from the same place. Think of a kitchen. Cooking gas comes through a government-controlled supply. Rice and salt come from the open market. Vegetables come from the corner shop. And one special spice is imported from another country. [pause] Classification means sorting items into groups, so each group is handled the right way. Golf sorts items by where they come from, their source of supply. [pause] So the question wants two things. The full form, and what each letter means. [pause] G is for Government. These items are supplied or controlled by the government, so orders follow government rules, and that is slow. [pause] O is for Ordinary. Standard items, easily bought from the open market, from many suppliers. [pause] L is for Local. Items bought from nearby suppliers. Delivery is quick, so we can order small amounts, often. [pause] F is for Foreign. Imported items. Long lead time, customs, foreign currency, so we order early and keep extra safety stock. [pause] So: the farther the source, the more stock we keep. [pause] In your exam, write this. Golf stands for Government, Ordinary, Local and Foreign. It classifies inventory by its source of supply. Government items are government-controlled. Ordinary items come from the open market. Local items come from nearby suppliers. Foreign items are imported. And to remember: golf is a game of distance, the farther the source, the more stock. Five marks. Secured.",
+ "marks": 5
+}

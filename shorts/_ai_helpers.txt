@@ -1,0 +1,19 @@
+import { C } from "./kit.jsx";
+const popA = (at = 0) => [{ property: "opacity", from: 0, to: 1, at, duration: 0.18 }, { property: "scale", from: 0.6, to: 1, at, duration: 0.32, easing: "bounce" }];
+// PlotR: Plot with working left->right reveal (frame.reveal); optional dashed-free axes, marks
+function PlotR({ x = 120, y = 460, w = 860, h = 760, pts, xmax, ymax, at = 0, drawDur = 1.2, dur, color, xlabel, ylabel, width = 9, marks = [], axes = true }) {
+  const P = ([a, b]) => [x + w * a / xmax, y + h - h * b / ymax];
+  const dd = pts.map((p, i) => (i ? "L " : "M ") + P(p).join(" ")).join(" ");
+  const a0 = Math.min(at, dur - 0.5);
+  return <Layer at={0} dur={dur}>
+    {axes ? <path d={`M ${x} ${y} L ${x} ${y + h} L ${x + w} ${y + h}`} x={0} y={0} width={1080} height={1920} stroke={{ width: 6, color: C.navy, cap: "round" }} /> : null}
+    {xlabel ? <text x={x + w - 500} y={y + h + 16} width={500} align="right" fontFamily={C.fMono} fontWeight={700} fontSize={34} color={C.navy}>{xlabel}</text> : null}
+    {ylabel ? <text x={x + 16} y={y - 50} width={700} fontFamily={C.fMono} fontWeight={700} fontSize={34} color={C.navy}>{ylabel}</text> : null}
+    <frame at={a0} duration={Math.max(0.3, dur - a0)} width={1080} height={1920} layout="none" reveal={{ from: "left", at: 0, duration: drawDur, easing: "ease-in-out" }}>
+      <path d={dd} x={0} y={0} width={1080} height={1920} stroke={{ width, color: color || C.coral, cap: "round" }} />
+    </frame>
+    {marks.map((m, i) => { const [mx, my] = P([m.x, m.y]); return <Layer key={i} at={m.at || at + drawDur} dur={dur} anim={popA(0)}>
+      <rect x={mx - 16} y={my - 16} width={32} height={32} radius={16} fill={C.cobalt} strokeColor={C.navy} strokeWidth={4} />
+      {m.label ? <text x={mx - 220} y={my - 84} width={440} align="center" fontFamily={C.fBody} fontSize={38} color={C.navy}>{m.label}</text> : null}</Layer>; })}
+  </Layer>;
+}

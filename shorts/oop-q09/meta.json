@@ -1,0 +1,18 @@
+{
+  "id": "oop-q09",
+  "subject": "oop",
+  "qno": 9,
+  "question": "Difference between throw and throws.",
+  "title": "Throw vs Throws",
+  "hook": "Pulling a fire alarm vs a sign that says alarm may ring here.",
+  "answer": [
+    "throw is a statement used inside a method body to explicitly raise one exception object (throw new Exception()).",
+    "throws is a clause in the method signature that declares the exceptions the method may pass to its caller.",
+    "throw actually raises the exception; throws only warns, raising nothing itself.",
+    "throw takes one exception object; throws can list several, separated by commas."
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 64.7,
+  "format": "teaching-v3"
+}

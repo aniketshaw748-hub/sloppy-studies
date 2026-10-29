@@ -1,0 +1,17 @@
+{
+  "id": "cd-q08",
+  "subject": "cd",
+  "qno": 8,
+  "question": "Define annotated parse tree with example.",
+  "title": "Parse Tree Name Tags",
+  "hook": "What if every node of the parse tree wore a name tag?",
+  "answer": [
+    "Annotated (decorated) parse tree: a parse tree that shows the attribute values at every node.",
+    "Grammar: E→E+T | T, T→T*F | F, F→digit; every symbol carries an attribute val.",
+    "Semantic rules: E.val = E1.val + T.val; E.val = T.val; T.val = T1.val × F.val; T.val = F.val; F.val = digit.lexval.",
+    "Example 3*5+4: digits 3, 5, 4 → F.val = 3, 5, 4 → T.val = 3×5 = 15 → T.val = 4 → E.val = 15 + 4 = 19.",
+    "Values flow from children to parent: these are synthesized attributes."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

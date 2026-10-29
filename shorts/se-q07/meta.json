@@ -1,0 +1,18 @@
+{
+  "id": "se-q07",
+  "subject": "se",
+  "qno": 7,
+  "question": "What is the purpose of code review? Explain any four benefits of code reviews.",
+  "title": "A Second Pair Of Eyes",
+  "hook": "You never spot your own typos, your brain reads what you meant. Code review is a friend who does.",
+  "answer": [
+    "Purpose: to find defects and improve code quality early, before the code is tested or released (teammates read the author's code before it joins the main project).",
+    "Benefit 1: early bug detection. A bug found in review costs little; found by users it costs a lot.",
+    "Benefit 2: better code quality. Code stays clean, readable and follows the team's standards.",
+    "Benefit 3: knowledge sharing. Author learns from the reviewer, reviewer learns the code, so nobody is the only one who understands it.",
+    "Benefit 4: team ownership. The code belongs to the team, so anyone can maintain it or take it over.",
+    "Memory trick: bugs, quality, knowledge, ownership."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 99.55 s",
+  "marks": 5
+}

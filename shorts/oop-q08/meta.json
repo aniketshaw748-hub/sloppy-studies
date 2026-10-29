@@ -1,0 +1,18 @@
+{
+  "id": "oop-q08",
+  "subject": "oop",
+  "qno": 8,
+  "question": "Should a class be declared abstract if it does not define every method inherited from an interface?",
+  "title": "Unfinished Means Abstract",
+  "hook": "Builder finished three rooms out of five. Is the house done?",
+  "answer": [
+    "Yes. A class that does not implement all the methods of an interface must be declared abstract.",
+    "Otherwise the compiler reports an error.",
+    "An abstract class cannot be instantiated.",
+    "A concrete subclass must implement the missing methods."
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 62.3,
+  "format": "teaching-v3"
+}

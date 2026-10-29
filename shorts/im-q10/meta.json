@@ -1,0 +1,16 @@
+{
+  "id": "im-q10",
+  "subject": "im",
+  "qno": 10,
+  "question": "What are the two most important costs in EPQ?",
+  "title": "Setup Falls, Holding Climbs",
+  "hook": "Bigger batches cut one cost and grow another.",
+  "answer": [
+    "EPQ (Economic Production Quantity) = the batch size to make in one production run at minimum total cost.",
+    "Cost 1, setup cost: paid once per run (tool changes, settings, labour, trial pieces); setup cost per year falls as batch size rises.",
+    "Cost 2, holding cost: paid on stored stock (space, insurance, capital tied up, damage); rises as batch size rises.",
+    "Total cost = setup + holding (U-shaped curve); it is lowest where setup cost = holding cost, and that batch size is the EPQ."
+  ],
+  "voice": "Desmond",
+  "marks": 5
+}

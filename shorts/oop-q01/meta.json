@@ -1,0 +1,18 @@
+{
+  "id": "oop-q01",
+  "subject": "oop",
+  "qno": 1,
+  "question": "What is the purpose of the package keyword in Java?",
+  "title": "Package = Folder",
+  "hook": "Two classes called Student in one drawer. Which one is it?",
+  "answer": [
+    "A package groups related classes and interfaces into one named namespace.",
+    "It prevents name conflicts: shop.Student and school.Student can coexist.",
+    "It controls access (default / package-private visibility) and makes classes easy to find and reuse.",
+    "It must be the first statement in the source file: package shop;"
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 72.1,
+  "format": "teaching-v3"
+}

@@ -1,0 +1,18 @@
+{
+ "id": "ai-q02",
+ "subject": "ai",
+ "qno": 2,
+ "question": "Explain the Minimax algorithm with an example.",
+ "title": "Minimax: Max Versus Min",
+ "hook": "Your opponent plays perfectly. Now what?",
+ "answer": [
+  "Minimax: decision algorithm for two-player, zero-sum games; MAX tries to maximise the score, MIN tries to minimise it, assuming a perfect opponent",
+  "Build the game tree, give utility values to the leaves, then back the values up from the leaves to the root (depth-first)",
+  "MIN node takes the minimum of its children; MAX node takes the maximum of its children",
+  "Example: MIN nodes: min(3,12,8)=3, min(2,4,6)=2, min(14,5,2)=2; MAX root = max(3,2,2)=3",
+  "Best move = the first branch, guaranteed value 3",
+  "Time O(b^m), space O(bm)"
+ ],
+ "voice": "Zoe",
+ "marks": 5
+}

@@ -1,0 +1,17 @@
+{
+  "id": "oop-q14",
+  "subject": "oop",
+  "qno": 14,
+  "question": "Write a Java program with a user-defined exception thrown when age is less than 18.",
+  "title": "Throw It, Catch It",
+  "hook": "Java has no rule for under-18s. A club bouncer does. Build him.",
+  "answer": [
+    "User-defined exception class: class AgeException extends Exception { AgeException(String msg) { super(msg); } }",
+    "Method that checks: static void check(int age) throws AgeException { if (age < 18) throw new AgeException(\"Too young\"); }",
+    "throw (no s) actually throws the exception object; throws (with s) in the method heading warns the caller.",
+    "main: try { check(15); } catch (AgeException e) { System.out.println(e.getMessage()); }",
+    "Output: Too young (15 is below 18, so check throws and main catches)."
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

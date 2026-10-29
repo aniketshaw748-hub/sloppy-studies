@@ -1,0 +1,17 @@
+{
+  "id": "oop-q19",
+  "subject": "oop",
+  "qno": 19,
+  "question": "Purpose of currentThread() in multithreading, with a small program.",
+  "title": "Who Am I, Thread?",
+  "hook": "Many nurses, same instructions, one name badge each. currentThread() reads yours.",
+  "answer": [
+    "Thread.currentThread() is a static method of the Thread class.",
+    "It returns a reference to the thread that is currently executing that line of code.",
+    "Use it to get or set that thread's name and priority; it is most useful when many threads share the same code, to know which one is running.",
+    "Program: main prints Thread.currentThread().getName() -> main; class Worker extends Thread { public void run() { System.out.println(Thread.currentThread().getName()); } } started with new Worker().start() prints Thread-0.",
+    "Output: main, Thread-0 (same code, different thread, different name)."
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

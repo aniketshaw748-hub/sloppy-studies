@@ -1,0 +1,17 @@
+{
+ "id": "im-q07",
+ "subject": "im",
+ "qno": 7,
+ "question": "What is the value of Total Float for critical activities?",
+ "title": "Critical Means Zero Spare",
+ "hook": "Leave at 8:30 for a 9:00 train with a 30-minute journey: no spare time at all.",
+ "answer": [
+  "The total float of critical activities is ZERO.",
+  "Total float = latest start - earliest start (= latest finish - earliest finish).",
+  "Critical activities lie on the longest path, so earliest and latest times are equal: no spare time.",
+  "Any delay in a critical activity delays the whole project by the same amount.",
+  "Together the critical activities form the critical path."
+ ],
+ "voice": "[warm, clear teacher, friendly and patient] Today's question. What is the value of total float for critical activities? [pause] Let's start from zero. Float means spare time. Think of catching a train. The train leaves at nine. The journey to the station takes thirty minutes. Leave at eight, and you have thirty minutes spare. That spare time is your float. Leave at eight thirty, and you have no spare time at all. Zero float. [pause] In a project, every activity has an earliest start time, and a latest start time, which is the last moment it can start without delaying the whole project. Total float is the gap between them. Total float equals latest start minus earliest start. Or latest finish minus earliest finish. [pause] So the question wants one number, and the reason behind it. [pause] Now think about critical activities. They sit on the longest path. The project cannot finish until they finish. So their earliest start and latest start are the same. The gap is nothing. Total float is ZERO. [pause] So: critical means zero float, no spare time. Any delay in a critical activity delays the whole project by the same amount. [pause] A quick check with numbers. Activity A has earliest start zero and latest start zero. Float, zero. Critical. Activity B has earliest start two and latest start five. Float, three days. Not critical. [pause] So in your exam, write this. The total float of critical activities is zero. Total float equals latest start minus earliest start. Critical activities have no spare time, so any delay in them delays the project. Together they form the critical path. And to remember: critical means zero spare. Five marks. Secured.",
+ "marks": 5
+}

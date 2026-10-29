@@ -1,0 +1,16 @@
+{
+ "id": "im-q04",
+ "subject": "im",
+ "qno": 4,
+ "question": "What is JIT?",
+ "title": "No Stock, Just On Time",
+ "hook": "A restaurant that cooks only when you order. Now the opposite: 500 plates kept from the morning.",
+ "answer": [
+  "JIT (Just In Time): a system that produces and delivers goods only when needed and only in the quantity needed (right item, right amount, right time).",
+  "It works as a pull system: the customer's order pulls work backwards through the stages, signalled by kanban cards; nothing is made until the next stage asks.",
+  "Aim: near-zero inventory, less storage space, lower holding cost, removal of waste.",
+  "Needs suppliers who deliver on time, every time, because there is no stock to fall back on."
+ ],
+ "voice": "[warm, clear teacher, friendly and patient] Today's question. What is J I T? [pause] Let's start from zero. Picture a restaurant that cooks only when you order. No food waiting under the lights. Each plate is made as you ask, and it reaches your table fresh. Now picture the opposite, a restaurant that cooks five hundred plates in the morning and keeps them. Wasted food, wasted space, wasted money. [pause] A factory faces the same choice. Stock sitting in a warehouse costs money, takes space, and can get spoilt or outdated. [pause] So the question wants two things. What J I T stands for, and what the idea is. [pause] J I T stands for Just In Time. It is a system where materials arrive and products are made exactly when they are needed, and only in the quantity needed. Not earlier, not more. [pause] So: right item, right amount, right time. [pause] How does it work? It is a PULL system. The customer's order pulls the work backwards. The last stage asks the stage before it for parts, using a signal card called kanban, and that stage asks the one before it. Nothing is made until someone downstream asks. [pause] What do we gain? Inventory falls close to zero. Less storage space, lower holding cost, less waste. The price is trust. Suppliers must deliver on time, every time, because there is no stock to fall back on. [pause] In your exam, write this. J I T, Just In Time, is a system that produces and delivers goods only when needed, and only in the quantity needed. It works as a pull system, using kanban. Its aim is zero inventory and the removal of waste. And to remember: J I T means no stock, just on time. Five marks. Secured.",
+ "marks": 5
+}

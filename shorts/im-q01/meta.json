@@ -1,0 +1,16 @@
+{
+ "id": "im-q01",
+ "subject": "im",
+ "qno": 1,
+ "question": "What are concurrent activities?",
+ "title": "Same Time, No Waiting",
+ "hook": "Dig the foundation and order the bricks at the very same time.",
+ "answer": [
+  "Concurrent activities are activities that can be performed simultaneously (at the same time).",
+  "They do not depend on each other, so neither waits for the other.",
+  "In a network diagram they start from the same event and run along parallel paths, meeting again at a later event.",
+  "Doing them together shortens the project; the longest path decides the project duration."
+ ],
+ "voice": "[warm, clear teacher, friendly and patient] Today's question. What are concurrent activities? [pause] Let's start from zero. A project is one big job made of many small jobs, and each small job is called an activity. Think of building a house. Dig the foundation. Order the bricks. Paint the walls. Each one is an activity. [pause] Now, some activities depend on each other. You cannot build the walls before the foundation is dug. But look at these two: digging the foundation, and ordering the bricks. Does the order need the digging to finish first? No. So the crew can dig while the office orders bricks, at the SAME time. [pause] So the question wants three things. What concurrent means. How it looks in a network. And why it matters. [pause] First, the meaning. Concurrent activities are activities that can be carried out at the same time, because neither one depends on the other. They run side by side, in parallel. [pause] So: concurrent means same time, no dependency. [pause] Second, the network diagram. They start from the same event, and run along parallel paths, then meet again at a later event. Think of a river that splits into two streams, then joins again. [pause] Third, why it matters. Because they overlap, they save time. The project does not take the sum of both. It takes only as long as the longest path. If digging takes ten days and ordering takes four, you wait just ten. [pause] So in your exam, write this. Concurrent activities are activities that can be performed simultaneously, because they do not depend on each other. In a network they run along parallel paths. Doing them together shortens the project, and the longest path decides the duration. And to remember: concurrent means same time, no waiting. Five marks. Secured.",
+ "marks": 5
+}

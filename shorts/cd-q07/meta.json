@@ -1,0 +1,17 @@
+{
+  "id": "cd-q07",
+  "subject": "cd",
+  "qno": 7,
+  "question": "Construct the sets of LR(0) items and LR(1) items for E→BB, B→bB, B→c.",
+  "title": "Seven Grows To Ten",
+  "hook": "What if a grammar rule had a bookmark in it?",
+  "answer": [
+    "Augment the grammar: E' → E (new start rule).",
+    "LR(0) item sets: I0 = {E'→•E, E→•BB, B→•bB, B→•c}; I1 = {E'→E•}; I2 = {E→B•B, B→•bB, B→•c}; I3 = {B→b•B, B→•bB, B→•c}; I4 = {B→c•}; I5 = {E→BB•}; I6 = {B→bB•}.",
+    "Transitions: I0 -E→ I1, -B→ I2, -b→ I3, -c→ I4; I2 -B→ I5, -b→ I3, -c→ I4; I3 -B→ I6, -b→ I3, -c→ I4. That is 7 LR(0) sets.",
+    "LR(1) item sets: I0 = {E'→•E,$; E→•BB,$; B→•bB,b/c; B→•c,b/c}; I1 = {E'→E•,$}; I2 = {E→B•B,$; B→•bB,$; B→•c,$}; I3 = {B→b•B,b/c; B→•bB,b/c; B→•c,b/c}; I4 = {B→c•,b/c}.",
+    "I5 = {E→BB•,$}; I6 = {B→b•B,$; B→•bB,$; B→•c,$}; I7 = {B→c•,$}; I8 = {B→bB•,b/c}; I9 = {B→bB•,$}. That is 10 LR(1) sets: the cores of I3, I4, I6 each split by lookahead (b/c vs $)."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

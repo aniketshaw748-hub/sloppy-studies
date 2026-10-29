@@ -1,0 +1,17 @@
+{
+  "id": "cd-q11",
+  "subject": "cd",
+  "qno": 11,
+  "question": "Discuss how YACC can be used to generate a parser.",
+  "title": "The Parser Printer",
+  "hook": "What if a machine wrote your parser for you?",
+  "answer": [
+    "YACC (Yet Another Compiler-Compiler) turns a grammar specification into a parser written in C.",
+    "Specification file calc.y has 3 parts separated by %%: declarations (%token, C headers), translation rules (grammar + C actions in { }), supporting C routines (main, yyerror...).",
+    "In actions: $$ = value of the left side, $1, $2, $3 = values of the right-side symbols, e.g. expr : expr '+' term { $$ = $1 + $3; }.",
+    "yacc calc.y produces y.tab.c (LALR parser, function yyparse()); lex calc.l produces lex.yy.c (yylex() returns the tokens).",
+    "cc y.tab.c lex.yy.c gives the parser program; yyparse() calls yylex() for tokens, shifts/reduces using the tables and runs the actions at each reduce."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

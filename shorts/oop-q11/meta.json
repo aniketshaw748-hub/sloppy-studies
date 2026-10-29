@@ -1,0 +1,17 @@
+{
+  "id": "oop-q11",
+  "subject": "oop",
+  "qno": 11,
+  "question": "Explain how to create a user-defined package in Java and import it into another program.",
+  "title": "Pack It, Place It, Pull It",
+  "hook": "A cupboard of loose papers is chaos. A package is the labelled folder.",
+  "answer": [
+    "Create: first line of the file is package mypack; then write the (public) class.",
+    "Save the file inside a folder named mypack (folder name = package name).",
+    "Compile with javac -d . A.java so Java builds the mypack/A.class folder structure.",
+    "Import in the other program: import mypack.A; (or import mypack.*;)",
+    "Class and members must be public; then create an object and call its method: A obj = new A(); obj.show();"
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

@@ -1,0 +1,17 @@
+{
+ "id": "im-q05",
+ "subject": "im",
+ "qno": 5,
+ "question": "Define cost slope.",
+ "title": "Rupees Per Day Saved",
+ "hook": "Walk is free but slow. Taxi is quick but costly. The slope is the price of one saved day.",
+ "answer": [
+  "Cost slope = increase in direct cost per unit decrease in time when an activity is crashed.",
+  "Formula: (crash cost - normal cost) / (normal time - crash time).",
+  "Unit: rupees (cost) per day.",
+  "Example: normal 10 days Rs 1000, crash 6 days Rs 1800: slope = 800 / 4 = Rs 200 per day.",
+  "The activity with the lowest slope is crashed first."
+ ],
+ "voice": "[warm, clear teacher, friendly and patient] Today's question. Define cost slope. [pause] Let's start from zero. Every activity in a project can be done at a normal pace, which is cheap. Or it can be rushed, which costs more. Think of getting to college. Walk, and it is free but slow. Take the bus, a little money. Take a taxi, and it is quick, but expensive. The more minutes you save, the more you pay. [pause] In a project, every activity has two points. The normal point, with normal time and normal cost. And the crash point, with the shortest possible time, and a higher crash cost. [pause] So the question wants one definition, and the formula that goes with it. [pause] Join those two points with a straight line. The steepness of that line is the cost slope. It tells you how much extra you pay to save ONE day. [pause] The formula is: cost slope equals crash cost minus normal cost, divided by normal time minus crash time. [pause] Let's try numbers. Normal time, ten days, normal cost, one thousand rupees. Crash time, six days, crash cost, eighteen hundred rupees. Extra cost is eight hundred. Days saved are four. Eight hundred divided by four. Two hundred rupees per day. [pause] And here is why it matters. When we must shorten a project, we crash the activity with the smallest slope first, because that is the cheapest day to buy. [pause] So in your exam, write this. Cost slope is the increase in direct cost per unit decrease in time, when an activity is crashed. Formula: crash cost minus normal cost, divided by normal time minus crash time. Unit: rupees per day. The lowest slope is crashed first. And to remember: slope is the extra rupees for each day saved. Five marks. Secured.",
+ "marks": 5
+}

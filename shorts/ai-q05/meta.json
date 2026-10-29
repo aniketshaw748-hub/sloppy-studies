@@ -1,0 +1,16 @@
+{
+ "id": "ai-q05",
+ "subject": "ai",
+ "qno": 5,
+ "question": "What is a semantic network? Explain with an example.",
+ "title": "Canary Inherits Flying",
+ "hook": "A canary can fly. Nobody told the canary.",
+ "answer": [
+  "A semantic network is a graph that represents knowledge: nodes are concepts/objects, labelled arcs (links) are relations between them",
+  "Common links: IS-A (type) and HAS / CAN (properties)",
+  "Example: canary IS-A bird, bird IS-A animal; animal has skin; bird has wings, can fly; canary is yellow, can sing",
+  "Inheritance: can a canary fly? follow the IS-A link up to bird, bird can fly, so yes; facts are never stored twice"
+ ],
+ "voice": "Zoe",
+ "marks": 5
+}

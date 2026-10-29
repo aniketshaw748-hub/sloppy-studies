@@ -1,0 +1,17 @@
+{
+  "id": "se-q02",
+  "subject": "se",
+  "qno": 2,
+  "question": "Draw and explain a UML Sequence Diagram for a Library Management System showing the process of issuing a book (Student, Librarian, Library Management System).",
+  "title": "Chat Between Three",
+  "hook": "A sequence diagram is just a group chat: read it top to bottom and the order is the whole story.",
+  "answer": [
+    "A sequence diagram shows how objects interact, in time order.",
+    "Three lifelines (dashed vertical lines): Student, Librarian, LMS (Library Management System).",
+    "Six messages top to bottom: requestBook(), isAvailable(), available (reply), issueBook(), confirm(dueDate) (reply), hands over book (reply).",
+    "Solid arrow = call/request, dashed arrow = reply.",
+    "Memory trick: the lifeline is the clock, the arrows are the words."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 104.99 s",
+  "marks": 5
+}

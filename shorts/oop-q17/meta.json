@@ -1,0 +1,17 @@
+{
+  "id": "oop-q17",
+  "subject": "oop",
+  "qno": 17,
+  "question": "Write a program showing one interface extending another.",
+  "title": "Interface Extends Interface",
+  "hook": "A full licence is the learner licence plus more. Interfaces can do that too.",
+  "answer": [
+    "interface Animal { void eat(); }  (base interface)",
+    "interface Pet extends Animal { void play(); }  (an interface extends an interface using the keyword extends, not implements; Pet now has eat() and play())",
+    "class Dog implements Pet { public void eat() {...} public void play() {...} }  (the class must implement every method in the whole chain, and keep them public)",
+    "main: Dog d = new Dog(); d.eat(); d.play();",
+    "Output: Dog eats / Dog plays"
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

@@ -1,0 +1,17 @@
+{
+  "id": "cd-q02",
+  "subject": "cd",
+  "qno": 2,
+  "question": "Design the LL(1) parsing table for S→aBDh, B→cC, C→bC|ε, D→EF, E→g|ε, F→f|ε.",
+  "title": "Junction Table",
+  "hook": "How does a parser pick the right road?",
+  "answer": [
+    "FIRST: S{a} B{c} C{b,ε} D{g,f,ε} E{g,ε} F{f,ε}",
+    "FOLLOW: S{$} B{g,f,h} C{g,f,h} D{h} E{f,h} F{h}",
+    "Rule 1: A→α goes under every terminal in FIRST(α). Rule 2: if α can derive ε, it also goes under every terminal in FOLLOW(A).",
+    "Table: S/a: S→aBDh | B/c: B→cC | C/b: C→bC, C/g,f,h: C→ε | D/g,f,h: D→EF | E/g: E→g, E/f,h: E→ε | F/f: F→f, F/h: F→ε ($ column empty).",
+    "No cell has two entries, so the grammar is LL(1)."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

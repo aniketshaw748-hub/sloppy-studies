@@ -1,0 +1,18 @@
+{
+  "id": "oop-q06",
+  "subject": "oop",
+  "qno": 6,
+  "question": "What is the significance of a protected variable?",
+  "title": "Protected = Family",
+  "hook": "Strangers can't see the recipe. Family can.",
+  "answer": [
+    "A protected variable is accessible within its own class and within other classes of the same package.",
+    "It is also accessible in subclasses, even when they are in a different package.",
+    "Its significance is inheritance: a parent shares data with its children.",
+    "It is not public, so the rest of the world cannot touch it."
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 65.3,
+  "format": "teaching-v3"
+}

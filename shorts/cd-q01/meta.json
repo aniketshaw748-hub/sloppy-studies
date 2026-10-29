@@ -1,0 +1,17 @@
+{
+  "id": "cd-q01",
+  "subject": "cd",
+  "qno": 1,
+  "question": "For E→E+T|T, T→T*F|F, F→(E)|id design a Syntax-Directed Definition to evaluate arithmetic expressions; demonstrate for 3+4*5.",
+  "title": "Parse Tree Does Maths",
+  "hook": "What if the parse tree did your maths for you?",
+  "answer": [
+    "SDD = grammar + semantic rules; every symbol (E, T, F) carries one synthesized attribute val.",
+    "E → E1 + T : E.val = E1.val + T.val   |   E → T : E.val = T.val",
+    "T → T1 * F : T.val = T1.val × F.val   |   T → F : T.val = F.val",
+    "F → ( E ) : F.val = E.val   |   F → id : F.val = id.lexval",
+    "3+4*5: leaves F.val = 3, 4, 5 → T = 4*5 = 20 → E = 3+20 = 23. Values are computed bottom-up on the annotated parse tree (synthesized attributes, S-attributed)."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

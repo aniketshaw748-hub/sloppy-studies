@@ -1,0 +1,19 @@
+{
+  "id": "oop-q03",
+  "subject": "oop",
+  "qno": 3,
+  "question": "Can an interface contain a constructor? Justify.",
+  "title": "Interfaces Have No Constructor",
+  "hook": "A job advert is not a person. Can it be built?",
+  "answer": [
+    "No, an interface cannot contain a constructor.",
+    "A constructor initialises the instance variables of an object when it is created.",
+    "An interface cannot be instantiated, so there is no object to construct.",
+    "An interface has no instance variables, only public static final constants, so nothing to initialise.",
+    "The implementing class provides its own constructor."
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 69.3,
+  "format": "teaching-v3"
+}

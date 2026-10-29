@@ -1,0 +1,17 @@
+{
+  "id": "cd-q10",
+  "subject": "cd",
+  "qno": 10,
+  "question": "Explain viable prefixes.",
+  "title": "Never Past The Handle",
+  "hook": "What if the parser's stack could never hold a wrong prefix?",
+  "answer": [
+    "Viable prefix: a prefix of a right-sentential form that does not extend past the right end of its handle.",
+    "Handle: the right side of a production that the parser replaces (reduces) at that step.",
+    "Example: E→E+T | T, T→id. The right-sentential form T+id has handle T. Viable prefixes: ε, T. Not viable: T+, T+id.",
+    "Importance: the stack of a shift-reduce (LR) parser always holds a viable prefix; when it does not, an error is reported.",
+    "The DFA built from LR(0) items recognises exactly the viable prefixes."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

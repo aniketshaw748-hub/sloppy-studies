@@ -1,0 +1,17 @@
+{
+ "id": "ai-q01",
+ "subject": "ai",
+ "qno": 1,
+ "question": "What is a membership function in fuzzy logic?",
+ "title": "Dimmer, Not Switch",
+ "hook": "Is 170 cm tall? Sort of.",
+ "answer": [
+  "Fuzzy logic allows partial truth: any degree between 0 and 1, not just true (1) or false (0)",
+  "A membership function mu_A(x) gives every element x of the universe X its degree of membership in the fuzzy set A",
+  "Written mu_A : X -> [0, 1]: 0 = not a member, 1 = full member, in between = partial member",
+  "Example, fuzzy set 'tall': 150 cm -> 0, 170 cm -> 0.5, 190 cm -> 1",
+  "Common shapes: triangular, trapezoidal, Gaussian"
+ ],
+ "voice": "Zoe",
+ "marks": 5
+}

@@ -1,0 +1,17 @@
+{
+  "id": "cd-q04",
+  "subject": "cd",
+  "qno": 4,
+  "question": "Eliminate left recursion from: S→A, A→Ad|Ae|aB|aC, B→bBC|f, C→CF|Cd|g|h, E→g|ε, F→f|ε. Rule: A→Aα|β becomes A→βA', A'→αA'|ε.",
+  "title": "Break The Endless Loop",
+  "hook": "This grammar makes a parser loop forever.",
+  "answer": [
+    "Rule: A→Aα|β becomes A→βA', A'→αA'|ε.",
+    "S→A, B→bBC|f, E→g|ε, F→f|ε are not left-recursive: unchanged.",
+    "A→Ad|Ae|aB|aC (α = d, e; β = aB, aC) becomes A→aBA'|aCA' and A'→dA'|eA'|ε.",
+    "C→CF|Cd|g|h (α = F, d; β = g, h) becomes C→gC'|hC' and C'→FC'|dC'|ε.",
+    "Final grammar: S→A, A→aBA'|aCA', A'→dA'|eA'|ε, B→bBC|f, C→gC'|hC', C'→FC'|dC'|ε, E→g|ε, F→f|ε."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

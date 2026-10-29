@@ -1,0 +1,16 @@
+{
+  "id": "cd-q06",
+  "subject": "cd",
+  "qno": 6,
+  "question": "Compute FIRST and FOLLOW for S→Aba|bCA, A→cBCD|ε, B→CdA|ad, C→eC|ε, D→bSf|a.",
+  "title": "Who Stands Where",
+  "hook": "FIRST and FOLLOW: who is at the front, who is right behind?",
+  "answer": [
+    "FIRST(S) = {b, c}   FIRST(A) = {c, ε}   FIRST(B) = {a, d, e}   FIRST(C) = {e, ε}   FIRST(D) = {a, b}",
+    "FOLLOW rules: $ in FOLLOW(start); A→αBβ adds FIRST(β)−{ε}; if β is empty or nullable, add FOLLOW(A).",
+    "FOLLOW(S) = {f, $}   FOLLOW(B) = {a, b, e}   FOLLOW(A) = {a, b, e, f, $}   FOLLOW(D) = {a, b, e, f, $}",
+    "FOLLOW(C) = {a, b, c, d, f, $}   (C is before A, D and d)"
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

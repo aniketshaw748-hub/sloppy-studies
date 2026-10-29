@@ -1,0 +1,15 @@
+{
+  "id": "im-q11",
+  "subject": "im",
+  "qno": 11,
+  "question": "Centralised vs Decentralised vs Hybrid purchasing.",
+  "title": "Hub, Plants, or Both",
+  "hook": "Three plants all need screws. Who buys?",
+  "answer": [
+    "Centralised: one central department (head office) buys for all plants; pooled orders give bulk discounts, standardisation and tight control, but it is slow for urgent local needs.",
+    "Decentralised: each plant buys for itself; fast, fits local needs, plant manager is responsible; but small quantities mean no bulk discount, duplicated work and differing prices.",
+    "Hybrid: head office buys common, high-value items in bulk; plants buy small, urgent, local items themselves; it gives the discount AND the speed."
+  ],
+  "voice": "Desmond",
+  "marks": 5
+}

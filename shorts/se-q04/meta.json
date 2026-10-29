@@ -1,0 +1,18 @@
+{
+  "id": "se-q04",
+  "subject": "se",
+  "qno": 4,
+  "question": "Draw a UML Class Diagram for a Library Management System using the classes Student, Book, Librarian, Issue Record and Fine, with attributes, methods, relationships and multiplicities.",
+  "title": "The Issue Record Hub",
+  "hook": "A class is just a blank form: the details it holds, and the things it can do.",
+  "answer": [
+    "A class box has three parts: name / attributes (-) / methods (+).",
+    "Student: -studentId, -name | +borrowBook(), +returnBook(). Librarian: -staffId, -name | +issueBook(), +collectFine().",
+    "IssueRecord: -issueDate, -dueDate | +markReturned(), +isOverdue(). Book: -bookId, -title | +isAvailable(), +updateCopies(). Fine: -amount, -paid | +calculate(), +pay().",
+    "Associations (plain lines): Student borrows IssueRecord, Librarian creates IssueRecord, IssueRecord is for Book, IssueRecord gets Fine.",
+    "Multiplicities: Student 1 to 0..* IssueRecord; Librarian 1 to 0..* IssueRecord; Book 1 to 0..* IssueRecord; IssueRecord 1 to 0..1 Fine.",
+    "Memory trick: the IssueRecord is the hub of the wheel."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 101.72 s",
+  "marks": 5
+}

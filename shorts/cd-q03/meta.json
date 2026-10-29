@@ -1,0 +1,17 @@
+{
+  "id": "cd-q03",
+  "subject": "cd",
+  "qno": 3,
+  "question": "Explain bottom-up parsing with an example. Also discuss reduction in bottom-up parsing.",
+  "title": "Parse From The Leaves",
+  "hook": "What if you built the parse tree from the bottom?",
+  "answer": [
+    "Bottom-up parsing builds the parse tree from the leaves (input tokens) up to the start symbol.",
+    "Implemented with a stack and two main moves: SHIFT (push next input symbol) and REDUCE (replace a rule's right side on top of the stack by its left side); then ACCEPT.",
+    "Example, E→E+T|T, T→id, input id+id: shift id, reduce T→id, reduce E→T, shift +, shift id, reduce T→id, reduce E→E+T, accept (four reductions).",
+    "Reduction replaces the handle (right side of a rule on top of the stack) by its left side.",
+    "Each reduction is one step of a rightmost derivation run in reverse."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

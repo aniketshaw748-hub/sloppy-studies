@@ -1,0 +1,17 @@
+{
+  "id": "oop-q15",
+  "subject": "oop",
+  "qno": 15,
+  "question": "Create a thread by extending Thread; state one difference between extending Thread and implementing Runnable.",
+  "title": "Start Hires, Run Works",
+  "hook": "One cook, one dish. Hire a second cook and two dishes cook at once.",
+  "answer": [
+    "A thread is a separate path of execution that runs alongside other threads.",
+    "class MyThread extends Thread { public void run() { System.out.println(\"Thread running\"); } }  (run() holds the thread's work)",
+    "main: MyThread t = new MyThread(); t.start();  start() creates the new thread, which then calls run(); calling run() directly makes no new thread.",
+    "Difference: Java allows only one parent class, so extending Thread uses it up and the class cannot extend anything else.",
+    "Implementing Runnable leaves the single inheritance slot free (the class can still extend another class)."
+  ],
+  "voice": "Kiki",
+  "marks": 5
+}

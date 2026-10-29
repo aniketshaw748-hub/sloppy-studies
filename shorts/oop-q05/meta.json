@@ -1,0 +1,18 @@
+{
+  "id": "oop-q05",
+  "subject": "oop",
+  "qno": 5,
+  "question": "Name the method used to start the execution of a thread.",
+  "title": "Run Is Not Start",
+  "hook": "Creating the cook does not start the cooking.",
+  "answer": [
+    "The start() method of the Thread class begins execution of a thread.",
+    "start() makes the JVM create a new path of execution and then call run().",
+    "Calling run() directly is just a normal method call in the same thread (no new thread).",
+    "run() holds the work; start() launches it."
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 62.4,
+  "format": "teaching-v3"
+}

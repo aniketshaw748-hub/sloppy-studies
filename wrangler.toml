@@ -1,0 +1,10 @@
+# Cloudflare Pages project config (classic Pages, clean URL sloppy-studies.pages.dev)
+name = "sloppy-studies"
+pages_build_output_dir = "site"
+compatibility_date = "2026-10-23"
+
+# first-party analytics (events + private stats API in site/_worker.js)
+[[d1_databases]]
+binding = "DB"
+database_name = "sloppy-studies-analytics"
+database_id = "fc5080cd-96c2-41ae-9a73-05fd837013a5"

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Sloppy Studies · Insights</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF3D1;--ink:#141414;--muted:#5b4b2a;--card:#fff;--se:#D9654F;--cd:#2BD97A;--oop:#FFD23F;--im:#E63B2E;--ai:#A78BFA;--pink:#FF4D8D;--blue:#2F6BFF}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg) radial-gradient(#e7d6a8 1.2px,transparent 1.3px) 0 0/22px 22px;color:var(--ink);font:14px/1.4 "Bricolage Grotesque",system-ui,sans-serif;
+  padding:calc(env(safe-area-inset-top,0px) + 16px) 14px calc(env(safe-area-inset-bottom,0px) + 30px)}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-size:28px;letter-spacing:-.8px;margin:0}
+.sub{color:var(--muted);margin:2px 0 14px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+.bar button{font:inherit;font-weight:700;border:2px solid var(--ink);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer}
+.bar button[aria-pressed=true]{background:var(--ink);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--card);border:2.5px solid var(--ink);border-radius:14px;padding:10px 12px;box-shadow:4px 4px 0 var(--ink)}
+.kpi b{display:block;font-size:24px;letter-spacing:-.5px}
+.kpi span{color:var(--muted);font-size:12.5px;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+.card{background:var(--card);border:2.5px solid var(--ink);border-radius:16px;padding:12px 14px;box-shadow:4px 4px 0 var(--ink);min-width:0}
+.card h2{font-size:16px;margin:0 0 8px}
+.card p.note{color:var(--muted);font-size:12px;margin:-4px 0 8px}
+.hb{display:grid;grid-template-columns:minmax(70px,auto) 1fr auto;gap:6px 8px;align-items:center;font-size:13px}
+.hb .t{height:12px;border-radius:6px;background:var(--blue);min-width:2px}
+.hb .n{font-weight:700;text-align:right}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px;white-space:nowrap}
+th,td{padding:6px 8px;border-bottom:1px solid #eee;text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none;position:sticky;top:0;background:#fff}
+td .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;border:1.5px solid var(--ink)}
+.spark{display:flex;align-items:flex-end;gap:3px;height:90px}
+.spark i{flex:1;background:var(--pink);border-radius:3px 3px 0 0;min-height:2px;position:relative}
+.empty{color:var(--muted);padding:6px 0}
+.gate{max-width:380px;margin:60px auto;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:18px;box-shadow:5px 5px 0 var(--ink)}
+.gate input{width:100%;font:inherit;padding:10px;border:2px solid var(--ink);border-radius:10px;margin:10px 0}
+.gate button{font:inherit;font-weight:800;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
+@media (min-width:760px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const SUBJ={se:"Software Engg",cd:"Compiler Design",oop:"OOP · Java",im:"Industrial Mgmt",ai:"AI",all:"Mix"};
+const app=document.getElementById("app");
+let KEY=new URLSearchParams(location.search).get("key")||localStorage.getItem("statsKey")||"", DAYS=30, DATA=null, SORT={k:"views",d:-1}, TITLES={};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=n=>n==null?"–":(+n).toLocaleString("en-IN");
+fetch("shorts.json",{cache:"no-store"}).then(r=>r.json()).then(l=>l.forEach(x=>TITLES[x.id]=x.title)).catch(()=>{});
+function gate(msg){ app.innerHTML=`<div class="gate"><h1>Insights</h1><p class="sub">${msg||"Enter your stats key."}</p>
+  <input id="k" type="password" autocomplete="current-password" placeholder="stats key"><button id="go">Open</button></div>`;
+  const go=()=>{ KEY=document.getElementById("k").value.trim(); load(); }; document.getElementById("go").onclick=go; document.getElementById("k").onkeydown=e=>{ if(e.key==="Enter") go(); }; }
+async function load(){ if(!KEY) return gate();
+  const r=await fetch(`/api/stats?key=${encodeURIComponent(KEY)}&days=${DAYS}`,{cache:"no-store"});
+  if(r.status===403){ localStorage.removeItem("statsKey"); return gate("That key didn't work."); }
+  localStorage.setItem("statsKey",KEY); if(new URLSearchParams(location.search).get("key")) history.replaceState(null,"",location.pathname);
+  DATA=await r.json(); render(); }
+function hbars(rows,label,val,fmtv){ if(!rows||!rows.length) return `<div class="empty">No data yet.</div>`;
+  const max=Math.max(...rows.map(r=>+r[val]||0),1);
+  return `<div class="hb">${rows.map(r=>`<span>${esc(label(r))}</span><span class="t" style="width:${(+r[val]||0)/max*100}%"></span><span class="n">${fmtv?fmtv(r[val]):fmt(r[val])}</span>`).join("")}</div>`; }
+function reelTable(){ const rows=[...(DATA.reels||[])].sort((a,b)=>((+a[SORT.k]||0)-(+b[SORT.k]||0))*SORT.d||String(a.reel).localeCompare(b.reel));
+  if(!rows.length) return `<div class="empty">No reels watched yet.</div>`;
+  const cols=[["reel","Reel"],["views","Views"],["viewers","Viewers"],["watch_min","Watch min"],["p50","Reached 50%"],["completes","Finished"],["comp","Finish rate"],
+    ["avg_speed","Avg speed"],["likes","Likes"],["saves","Saves"],["shares","Shares"],["answers","Answer opens"],["answer_read_s","Answer read s"],["hint_clicks","Hint taps"],["scrubs","Scrubs"]];
+  rows.forEach(r=>r.comp=r.views?Math.round(r.completes/r.views*100):0);
+  return `<div class="tblwrap"><table><thead><tr>${cols.map(([k,n])=>`<th data-k="${k}">${n}${SORT.k===k?(SORT.d<0?" ▾":" ▴"):""}</th>`).join("")}</tr></thead><tbody>
+  ${rows.map(r=>`<tr><td><span class="dot" style="background:var(--${esc(r.subject)})"></span>${esc(r.reel)} · ${esc(TITLES[r.reel]||"")}</td>
+    <td>${fmt(r.views)}</td><td>${fmt(r.viewers)}</td><td>${fmt(r.watch_min)}</td><td>${fmt(r.p50)}</td><td>${fmt(r.completes)}</td><td>${r.comp}%</td>
+    <td>${r.avg_speed?r.avg_speed+"×":"–"}</td><td>${fmt(r.likes)}</td><td>${fmt(r.saves)}</td><td>${fmt(r.shares)}</td><td>${fmt(r.answers)}</td>
+    <td>${r.answer_read_s??"–"}</td><td>${fmt(r.hint_clicks)}</td><td>${fmt(r.scrubs)}</td></tr>`).join("")}</tbody></table></div>`; }
+function render(){ const t=DATA.totals||{};
+  const k=[["visitors","Visitors"],["sessions","Visits"],["reel_views","Reels viewed"],["completes","Reels finished"],["watch_min","Minutes watched"],["likes","Likes"],["answers","Answer opens"],["shares","Shares"]];
+  const daily=DATA.daily||[], dmax=Math.max(...daily.map(d=>+d.views||0),1);
+  app.innerHTML=`<h1>Sloppy Studies · Insights</h1><p class="sub">Anonymous, first-party. Times in IST. Updated ${new Date(DATA.generated).toLocaleString("en-IN")}.</p>
+  <div class="bar">${[1,7,30,90].map(d=>`<button data-d="${d}" aria-pressed="${d===DAYS}">${d===1?"24 h":d+" days"}</button>`).join("")}<button id="rf">Refresh</button></div>
+  <div class="kpis">${k.map(([key,n])=>`<div class="kpi"><b>${fmt(t[key])}</b><span>${n}</span></div>`).join("")}</div>
+  <div class="grid">
+    <div class="card wide"><h2>Every reel</h2><p class="note">Tap a column to sort. Finish rate = finished ÷ views.</p>${reelTable()}</div>
+    <div class="card wide"><h2>Reels viewed per day</h2>${daily.length?`<div class="spark">${daily.map(d=>`<i title="${esc(d.d)}: ${d.views} views, ${d.visitors} visitors" style="height:${(+d.views||0)/dmax*100}%"></i>`).join("")}</div>
+      <p class="note" style="margin-top:6px">${esc(daily[0].d)} → ${esc(daily[daily.length-1].d)}</p>`:`<div class="empty">No data yet.</div>`}</div>
+    <div class="card"><h2>Playback speed</h2><p class="note">Minutes of video watched at each speed.</p>${hbars(DATA.speeds,r=>(r.speed||1)+"×","watch_min")}</div>
+    <div class="card"><h2>Subjects opened</h2>${hbars(DATA.subjects,r=>SUBJ[r.k]||r.k,"n")}</div>
+    <div class="card"><h2>How many reels per visit</h2>${hbars(DATA.depth,r=>r.reels+" reel"+(r.reels==1?"":"s"),"sessions")}</div>
+    <div class="card"><h2>When they watch (IST)</h2>${hbars((DATA.hours||[]).map(h=>({...h,lab:String(h.h).padStart(2,"0")+":00"})),r=>r.lab,"n")}</div>
+    <div class="card"><h2>Devices</h2>${hbars(DATA.devices,r=>r.k,"n")}</div>
+    <div class="card"><h2>Operating system</h2>${hbars(DATA.oss,r=>r.k,"n")}</div>
+    <div class="card"><h2>Browser</h2>${hbars(DATA.browsers,r=>r.k,"n")}</div>
+    <div class="card"><h2>Where from (link source)</h2>${hbars(DATA.refs,r=>r.k,"n")}</div>
+    <div class="card"><h2>Countries</h2>${hbars(DATA.countries,r=>r.k||"unknown","n")}</div>
+    <div class="card"><h2>Cities</h2>${hbars(DATA.cities,r=>r.k,"n")}</div>
+    <div class="card"><h2>Sound settings</h2><p class="note">Average slider level chosen (default 50%), and how many people changed it.</p>
+      ${hbars(DATA.sliders,r=>(r.k==="music"?"Music":"Sound effects")+" · "+Math.round(r.avg_level*100)+"%","n")}</div>
+  </div>`;
+  app.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{ DAYS=+b.dataset.d; load(); });
+  document.getElementById("rf").onclick=load;
+  app.querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{ const k=th.dataset.k; SORT={k,d:SORT.k===k?-SORT.d:-1}; render(); }); }
+load();
+</script>
+</body>
+</html>

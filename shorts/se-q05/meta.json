@@ -1,0 +1,18 @@
+{
+  "id": "se-q05",
+  "subject": "se",
+  "qno": 5,
+  "question": "Draw a Use Case Diagram for a Library Management System (search, issue, return, reserve books; librarian manages records; fines for overdue books). Identify actors and use cases, with at least one <<include>>.",
+  "title": "Vending Machine Diagram",
+  "hook": "A vending machine is already a use case diagram: people outside, things it does for them inside.",
+  "answer": [
+    "Actors (stick figures, outside the system boundary): Student, Librarian.",
+    "Use cases (ovals inside the boundary): Search Book, Reserve Book, Issue Book, Return Book, Manage Records.",
+    "Student is linked to Search, Reserve, Issue, Return. Librarian is linked to Issue, Return, Manage Records.",
+    "Issue Book <<include>> Check Availability (dashed arrow from base to included use case).",
+    "Return Book <<include>> Calculate Fine (fine is zero if returned on time).",
+    "Memory trick: actors outside, ovals inside, include means always."
+  ],
+  "voice": "Kevin (f1373f24-3b96-433f-9a68-e595810ef608), ElevenLabs v4, stability 0.45, 112.43 s",
+  "marks": 5
+}

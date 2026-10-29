@@ -1,0 +1,17 @@
+{
+  "id": "cd-q09",
+  "subject": "cd",
+  "qno": 9,
+  "question": "Why is LR parsing good and attractive? Also explain its demerits.",
+  "title": "Powerful But Heavy",
+  "hook": "What if a parser never had to guess and go back?",
+  "answer": [
+    "Merit: handles virtually all programming-language constructs for which a context-free grammar can be written.",
+    "Merit: the most general non-backtracking shift-reduce method, yet as efficient as the others.",
+    "Merit: LR grammars are a proper superset of LL (predictive) grammars, so LR is more powerful.",
+    "Merit: detects a syntax error as early as possible in a left-to-right scan.",
+    "Demerits: too much work to build the tables by hand (needs a parser generator such as YACC); canonical LR(1) tables are very large; ambiguous grammars cause shift/reduce or reduce/reduce conflicts and must be rewritten."
+  ],
+  "voice": "Gideon",
+  "marks": 5
+}

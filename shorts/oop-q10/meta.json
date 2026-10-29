@@ -1,0 +1,19 @@
+{
+  "id": "oop-q10",
+  "subject": "oop",
+  "qno": 10,
+  "question": "What happens to a thread when sleep() is called on it?",
+  "title": "Sleep: A Locked Nap",
+  "hook": "The cook naps for ten seconds, but keeps the kitchen key.",
+  "answer": [
+    "sleep() pauses the currently executing thread for the given number of milliseconds.",
+    "The thread moves to the TIMED_WAITING state and uses no CPU.",
+    "It does not release any locks it holds.",
+    "When the time is over it returns to the RUNNABLE state and waits for the scheduler to give it the CPU.",
+    "If interrupted while sleeping, it throws InterruptedException."
+  ],
+  "voice": "Kiki",
+  "marks": 2,
+  "seconds": 67,
+  "format": "teaching-v3"
+}

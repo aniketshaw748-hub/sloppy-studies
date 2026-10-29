@@ -1,0 +1,17 @@
+{
+ "id": "ai-q03",
+ "subject": "ai",
+ "qno": 3,
+ "question": "What is Bayes' theorem?",
+ "title": "Bayes: Update Your Belief",
+ "hook": "A positive test, yet only 8% are sick?",
+ "answer": [
+  "Bayes' theorem: P(A|B) = P(B|A) x P(A) / P(B)",
+  "P(A) = prior, P(B|A) = likelihood, P(B) = evidence, P(A|B) = posterior (updated belief)",
+  "It updates the belief in hypothesis A when new evidence B arrives",
+  "Example: 1000 people, 10 sick; test catches 9 of 10 and flags 99 of 990 healthy; 108 positives, 9 truly sick; P(sick|positive) = 9/108, about 8%",
+  "Applications: spam filters, medical diagnosis, Naive Bayes classifier"
+ ],
+ "voice": "Zoe",
+ "marks": 5
+}
