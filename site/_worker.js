@@ -11,7 +11,10 @@ function uaInfo(ua) {
   const device = /iPad|Tablet/i.test(ua) ? "tablet" : /Mobi|Android|iPhone/i.test(ua) ? "mobile" : "desktop";
   const os = /Android/i.test(ua) ? "Android" : /iPhone|iPad|iPod/i.test(ua) ? "iOS" : /Windows/i.test(ua) ? "Windows" : /Mac OS X/i.test(ua) ? "macOS" : /Linux/i.test(ua) ? "Linux" : "other";
   const browser = /SamsungBrowser/i.test(ua) ? "Samsung" : /Edg\//i.test(ua) ? "Edge" : /OPR\//i.test(ua) ? "Opera" : /Firefox/i.test(ua) ? "Firefox" : /CriOS|Chrome/i.test(ua) ? "Chrome" : /Safari/i.test(ua) ? "Safari" : "other";
-  return { device, os, browser };
+  // phone model: Chrome hides it in the UA ("Android 10; K") but sends it when asked (body.mdl); older UAs still carry it
+  const m = /Android [\d.]+;(?: [a-z]{2}[-_][a-z]{2};)? ([^;)]+?)(?: Build[^;)]*)?\)/i.exec(ua);
+  const model = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : m && m[1] !== "K" ? m[1].trim() : null;
+  return { device, os, browser, model };
 }
 const clip = (s, n) => (s == null ? null : String(s).slice(0, n));
 const num = v => (typeof v === "number" && isFinite(v) ? v : null);
@@ -23,17 +26,29 @@ async function intake(request, env) {
   if (!evs.length || !body.vid || !body.sid) return new Response(null, { status: 204 });
   const cf = request.cf || {}, u = uaInfo(request.headers.get("User-Agent"));
   const now = Date.now();
-  const stmt = env.DB.prepare(`INSERT INTO events (ts,vid,sid,type,reel,subject,val,val2,extra,country,city,device,os,browser,ref,screen)
-    VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)`);
+  const model = clip(body.mdl, 40) || u.model, net = clip(cf.asOrganization, 60);   // net = mobile network / ISP, e.g. Reliance Jio
+  const stmt = env.DB.prepare(`INSERT INTO events (ts,vid,sid,type,reel,subject,val,val2,extra,country,city,device,os,browser,ref,screen,model,net)
+    VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18)`);
   const rows = [];
   for (const e of evs) {
     if (!e || !TYPES.has(e.t)) continue;
     const ago = Math.min(Math.max(0, num(e.ago) || 0), 600000);            // client-side delay since the event, capped
     rows.push(stmt.bind(now - ago, clip(body.vid, 40), clip(body.sid, 40), e.t, clip(e.r, 20), clip(e.s, 8), num(e.v), num(e.v2),
-      clip(e.x, 200), clip(cf.country, 4), clip(cf.city, 60), u.device, u.os, u.browser, clip(body.ref, 120), clip(body.scr, 20)));
+      clip(e.x, 200), clip(cf.country, 4), clip(cf.city, 60), u.device, u.os, u.browser, clip(body.ref, 120), clip(body.scr, 20), model, net));
   }
   if (rows.length) await env.DB.batch(rows);
   return new Response(null, { status: 204 });
+}
+
+// public like counts: one per visitor per reel, using their latest like/unlike; edge-cached 30 s
+async function likeCounts(request, env) {
+  const cache = caches.default, hit = await cache.match(request.url);
+  if (hit) return hit;
+  const { results } = await env.DB.prepare(`SELECT reel, COUNT(*) n FROM (SELECT vid, reel, type FROM events e WHERE type IN ('like','unlike')
+      AND id = (SELECT MAX(id) FROM events WHERE vid=e.vid AND reel=e.reel AND type IN ('like','unlike'))) WHERE type='like' GROUP BY reel`).all();
+  const res = Response.json(Object.fromEntries(results.map(r => [r.reel, r.n])), { headers: { "Cache-Control": "public, max-age=30" } });
+  await cache.put(request.url, res.clone());
+  return res;
 }
 
 async function stats(url, env) {
@@ -41,7 +56,7 @@ async function stats(url, env) {
   const days = Math.min(365, Math.max(1, parseInt(url.searchParams.get("days") || "30", 10)));
   const since = Date.now() - days * 86400000;
   const q = (sql, ...a) => env.DB.prepare(sql).bind(since, ...a).all().then(r => r.results);
-  const [totals, reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders] = await Promise.all([
+  const [totals, reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets] = await Promise.all([
     q(`SELECT COUNT(DISTINCT vid) visitors, COUNT(DISTINCT sid) sessions,
          SUM(type='reel_view') reel_views, SUM(type='complete') completes, ROUND(SUM(CASE WHEN type='watch' THEN val ELSE 0 END)/60.0,1) watch_min,
          SUM(type='like') likes, SUM(type='save') saves, SUM(type='share') shares, SUM(type='answer_open') answers,
@@ -69,8 +84,10 @@ async function stats(url, env) {
     q(`SELECT CAST(strftime('%H', ts/1000,'unixepoch','+5 hours','+30 minutes') AS INT) h, COUNT(*) n FROM events WHERE ts>=?1 AND type='reel_view' GROUP BY h ORDER BY h`),
     q(`SELECT n reels, COUNT(*) sessions FROM (SELECT sid, COUNT(DISTINCT reel) n FROM events WHERE ts>=?1 AND type='reel_view' GROUP BY sid) GROUP BY n ORDER BY n`),
     q(`SELECT type k, ROUND(AVG(val),2) avg_level, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND type IN ('music','sfx') GROUP BY type`),
+    q(`SELECT model k, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND model IS NOT NULL GROUP BY model ORDER BY n DESC LIMIT 15`),
+    q(`SELECT net k, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND net IS NOT NULL GROUP BY net ORDER BY n DESC LIMIT 10`),
   ]);
-  return Response.json({ days, generated: Date.now(), totals: totals[0], reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders },
+  return Response.json({ days, generated: Date.now(), totals: totals[0], reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets },
     { headers: { "Cache-Control": "no-store" } });
 }
 
@@ -79,6 +96,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/e" && request.method === "POST") return intake(request, env);
     if (url.pathname === "/api/stats") return stats(url, env);
+    if (url.pathname === "/api/likes") return env.DB ? likeCounts(request, env) : Response.json({});
     const res = await env.ASSETS.fetch(request);
     const range = request.headers.get("Range");
     if (!range || !/\.(mp4|m4a)$/.test(url.pathname) || res.status !== 200) {

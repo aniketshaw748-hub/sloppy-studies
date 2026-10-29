@@ -10,7 +10,9 @@ CREATE TABLE IF NOT EXISTS events (
   val     REAL,                      -- main number (seconds watched, position, speed, level...)
   val2    REAL,                      -- second number (playback rate, from-position, ...)
   extra   TEXT,                      -- small JSON/text detail
-  country TEXT, city TEXT, device TEXT, os TEXT, browser TEXT, ref TEXT, screen TEXT
+  country TEXT, city TEXT, device TEXT, os TEXT, browser TEXT, ref TEXT, screen TEXT,
+  model   TEXT,                      -- phone model when the browser shares it, e.g. "Redmi Note 12"
+  net     TEXT                       -- mobile network / ISP, e.g. "Reliance Jio Infocomm Limited"
 );
 CREATE INDEX IF NOT EXISTS ev_type_ts ON events(type, ts);
 CREATE INDEX IF NOT EXISTS ev_reel ON events(reel, type);

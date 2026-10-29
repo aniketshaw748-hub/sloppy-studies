@@ -138,6 +138,8 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 .card .cc{display:inline-block;margin-top:9px;font-size:12px;font-weight:800;color:#141414;padding:4px 9px;border-radius:999px;background:var(--c);border:2px solid #141414}
 .card.wide{grid-column:1/-1;aspect-ratio:auto;min-height:96px;justify-content:center;background:#141414;--r:0deg}
 .card.wide .ct{display:flex;align-items:center;gap:14px}
+.card.sv{background:#FF4D8D}.card.sv .cn,.card.sv .cw{color:#141414}
+.svic{width:46px;height:46px;flex:none;border-radius:13px;background:#fff;border:2.5px solid #141414;box-shadow:3px 3px 0 #141414;display:grid;place-items:center;transform:rotate(-6deg)}.svic svg{width:24px;height:24px}
 .mixdots{display:flex;flex:none}.mixdots i{width:22px;height:22px;border-radius:50%;border:2.5px solid #141414;margin-left:-7px}.mixdots i:first-child{margin-left:0}
 .hfoot{margin-top:30px;font-size:13px;color:#5b4b2a;text-align:center}
 .hfoot b{font-family:Caveat,cursive;font-size:19px}
@@ -180,7 +182,7 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 <section class="sheet" id="sheet" aria-label="Exam answer notes"><div class="grab"></div><h3 id="sh-t"></h3><p class="sq" id="sh-q"></p><ol id="sh-a"></ol></section>
 <div class="toast" id="toast"></div>
 <script>
-const SUBJ={all:{n:"For you"},se:{n:"Software Engg",a:"SE",full:"Software Engineering",w:"Whiteboard · UML drawn the way you draw it in the exam"},
+const SUBJ={all:{n:"For you"},saved:{n:"Saved"},se:{n:"Software Engg",a:"SE",full:"Software Engineering",w:"Whiteboard · UML drawn the way you draw it in the exam"},
   cd:{n:"Compiler Design",a:"CD",full:"Compiler Design",w:"Terminal · parsing, grammars, LR and YACC"},
   oop:{n:"OOP · Java",a:"OOP",full:"OOP · Java",w:"Blueprint · packages, exceptions, threads"},
   im:{n:"Industrial Mgmt",a:"IM",full:"Industrial Management",w:"Warehouse · CPM, inventory, EOQ sums"},
@@ -197,6 +199,8 @@ const ICON={
  off:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/></svg>'};
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
 // browsers only allow sound after a tap, so the feed starts muted until the viewer taps once (like Reels on the web)
+let LC={};   // public like counts per reel (GET /api/likes)
+const likeTxt=id=>LC[id]>0?LC[id].toLocaleString("en-IN"):likes[id]?"Liked":"Like";
 let likes=store.get("likes",{}),saves=store.get("saves",{}),muted=true,all=[],cur="all";
 // Music and sound effects are separate tracks (<id>.music.m4a, <id>.sfx.m4a), each with its own viewer slider.
 // They play in two shared <audio> elements kept in sync with the active video, through Web Audio gain nodes
@@ -228,9 +232,10 @@ const toast=m=>{const t=document.getElementById("toast");t.textContent=m;t.class
 const AN=(()=>{ const live=/\.pages\.dev$/.test(location.hostname);
   const rid=()=>crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now().toString(36);
   let vid=store.get("vid",null); if(!vid){ vid=rid(); store.set("vid",vid); } const sid=rid(); let q=[];
+  let mdl=""; try{ navigator.userAgentData&&navigator.userAgentData.getHighEntropyValues(["model"]).then(h=>{ mdl=h.model||""; }).catch(()=>{}); }catch{}
   let ref=""; try{ ref=document.referrer?new URL(document.referrer).hostname:""; if(ref===location.hostname) ref=""; }catch{}
   const send=()=>{ if(!q.length||!live){ q=[]; return; } const now=Date.now();
-    const body=JSON.stringify({vid,sid,ref,scr:screen.width+"x"+screen.height,e:q.map(({at,...e})=>({...e,ago:now-at}))}); q=[];
+    const body=JSON.stringify({vid,sid,ref,mdl,scr:screen.width+"x"+screen.height,e:q.map(({at,...e})=>({...e,ago:now-at}))}); q=[];
     if(!(navigator.sendBeacon&&navigator.sendBeacon("/e",new Blob([body],{type:"application/json"}))))
       fetch("/e",{method:"POST",body,keepalive:true,headers:{"content-type":"application/json"}}).catch(()=>{}); };
   return { t(t,o){ q.push({t,at:Date.now(),...(o||{})}); if(q.length>=40) send(); }, send };
@@ -248,6 +253,8 @@ function track(n,d){ const o={}; if(d&&d.id){ o.r=d.id; const S=all.find(x=>x.id
 const home=document.getElementById("home");
 const subjOf=()=>{const s=new URLSearchParams(location.search).get("s"); if(SUBJ[s]) return s;
   const h=location.hash.slice(1); return h&&all.some(x=>x.id===h)?"all":null;};   // old share links: "/#se-q03"
+fetch("/api/likes").then(r=>r.ok?r.json():{}).then(d=>{ LC=d||{};
+  document.querySelectorAll(".reel").forEach(el=>{ const t=el.querySelector(".like span"); if(t) t.textContent=likeTxt(el.id.slice(2)); }); }).catch(()=>{});
 fetch("shorts.json",{cache:"no-store"}).then(r=>r.json()).then(list=>{all=list; renderHome();
   const s=subjOf();
   if(s){ const tail=location.search+location.hash;          // deep link: put the home page underneath it
@@ -260,11 +267,16 @@ function route(){const s=subjOf();
   const id=location.hash.slice(1); const el=id&&document.getElementById("r-"+id); feed.scrollTop=el?el.offsetTop:0;}
 function showHome(){ flushWatch(); AN.t("home"); io&&io.disconnect(); bedPause(); activeV=null; const hv0=document.getElementById("heroVid"); hv0&&hv0.play&&hv0.play().catch(()=>{}); document.querySelectorAll(".reel video").forEach(v=>v.pause());
   document.getElementById("sheet").classList.remove("open"); document.getElementById("scrim").classList.remove("open");
-  tabs.hidden=true; document.getElementById("app").hidden=true; home.hidden=false; feed.innerHTML=""; }
+  tabs.hidden=true; document.getElementById("app").hidden=true; home.hidden=false; feed.innerHTML=""; renderHome(); }
 function openSubject(s){ history.pushState({view:"feed"},"","?s="+s); route(); AN.t("subject",{s}); }
 function goHome(){ AN.t("back_home"); if(history.state&&history.state.view==="feed") history.back(); else { history.replaceState({view:"home"},"",location.pathname); route(); } }
 addEventListener("popstate",route);
 function renderHome(){ const g=document.getElementById("hgrid"); g.innerHTML="";
+  const nSaved=all.filter(x=>saves[x.id]).length;
+  if(nSaved){ const sv=document.createElement("button"); sv.className="card wide sv";
+    sv.innerHTML=`<div class="ct"><span class="svic">${ICON.save.replace('stroke="#fff"','stroke="#141414" fill="#FF4D8D"')}</span>
+      <div><div class="cn">Saved for revision</div><div class="cw">${nSaved} reel${nSaved===1?"":"s"} you saved · watch them again before the exam</div></div></div>`;
+    sv.onclick=()=>openSubject("saved"); g.appendChild(sv); }
   const DOODLE={se:'<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',cd:'<path d="M4 7l5 5-5 5"/><path d="M12 18h8"/>',
     oop:'<path d="M3 21h18"/><path d="M6 21V8l6-4 6 4v13"/><path d="M10 21v-6h4v6"/>',im:'<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
     ai:'<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/>'};
@@ -277,7 +289,7 @@ function renderHome(){ const g=document.getElementById("hgrid"); g.innerHTML="";
       <div class="ct"><div class="cn">${v.full}</div><div class="cw">${v.w}${v.by?" · by "+v.by:""}</div><span class="cc">${items.length} questions</span></div>`;
     c.onclick=()=>openSubject(k); g.appendChild(c); });
   const mix=document.createElement("button"); mix.className="card wide";
-  mix.innerHTML=`<div class="ct"><span class="mixdots">${Object.keys(SUBJ).filter(k=>k!=="all").map(k=>`<i style="background:var(--${k})"></i>`).join("")}</span>
+  mix.innerHTML=`<div class="ct"><span class="mixdots">${Object.keys(SUBJ).filter(k=>k!=="all"&&k!=="saved").map(k=>`<i style="background:var(--${k})"></i>`).join("")}</span>
     <div><div class="cn">Mix of everything</div><div class="cw">All ${all.length} questions, every subject in turn</div></div></div>`;
   mix.onclick=()=>openSubject("all"); g.appendChild(mix);
 }
@@ -290,16 +302,17 @@ function renderTabs(){tabs.innerHTML='<button class="back" aria-label="Back to s
   mx.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span class="spd" hidden></span>';
   mx.onclick=e=>{ e.stopPropagation(); togglePop(); }; ctl.appendChild(mx); setTimeout(applySpeed,0);
   const m=document.createElement("button"); m.className="mute"; m.setAttribute("aria-label","Toggle sound"); m.innerHTML=muted?ICON.off:ICON.on; m.onclick=toggleSound; ctl.appendChild(m);
-  Object.entries(SUBJ).forEach(([k,v])=>{if(k!=="all"&&!all.some(s=>s.subject===k))return;
+  Object.entries(SUBJ).forEach(([k,v])=>{if(k==="saved"?!all.some(s=>saves[s.id]):k!=="all"&&!all.some(s=>s.subject===k))return;
   const b=document.createElement("button");b.className="tab";b.textContent=v.n;b.setAttribute("aria-pressed",k===cur);
   b.onclick=()=>{cur=k;history.replaceState({view:"feed"},"","?s="+k);renderTabs();render();feed.scrollTop=0;AN.t("tab",{s:k})};lane.appendChild(b);});
   const on=lane.querySelector('.tab[aria-pressed="true"]'); on&&on.scrollIntoView({inline:"center",block:"nearest"});}
-function order(){ if(cur!=="all") return all.filter(s=>s.subject===cur);
+function order(){ if(cur==="saved") return all.filter(s=>saves[s.id]);
+  if(cur!=="all") return all.filter(s=>s.subject===cur);
   // "For you": interleave subjects so the feed keeps switching
   const by={};all.forEach(s=>(by[s.subject]=by[s.subject]||[]).push(s));const ks=Object.keys(by),out=[];let i=0;
   while(out.length<all.length){ks.forEach(k=>{if(by[k][i])out.push(by[k][i])});i++;} return out;}
 function render(){feed.innerHTML="";const list=order();
-  if(!list.length){feed.innerHTML='<div class="empty">No reels yet.</div>';return;}
+  if(!list.length){feed.innerHTML=`<div class="empty">${cur==="saved"?"Nothing saved yet. Tap Save on a reel to keep it here.":"No reels yet."}</div>`;return;}
   list.forEach(s=>feed.appendChild(reel(s)));observe();}
 function reel(s){const el=document.createElement("article");el.className="reel";el.id="r-"+s.id;
   const col=getComputedStyle(document.documentElement).getPropertyValue("--"+s.subject)||"#fff";
@@ -310,7 +323,7 @@ function reel(s){const el=document.createElement("article");el.className="reel";
     <div class="info"><div class="who"><span class="av" style="background:${col}">${SUBJ[s.subject].a}</span>Q${s.qno} · ${s.marks} marks</div>
      <div class="title"></div><div class="q"></div></div>
     <div class="rail">
-     <button class="rb like ${likes[s.id]?"on":""}" aria-label="Like">${ICON.heart}<span>${likes[s.id]?"Liked":"Like"}</span></button>
+     <button class="rb like ${likes[s.id]?"on":""}" aria-label="Like">${ICON.heart}<span>${likeTxt(s.id)}</span></button>
      <button class="rb notes" aria-label="Exam answer">${ICON.notes}<span>Answer</span></button>
      <button class="rb save ${saves[s.id]?"on":""}" aria-label="Save">${ICON.save}<span>${saves[s.id]?"Saved":"Save"}</span></button>
      <button class="rb share" aria-label="Share">${ICON.share}<span>Share</span></button></div></div>`;
@@ -354,9 +367,10 @@ function reel(s){const el=document.createElement("article");el.className="reel";
   el.querySelector(".share").onclick=async()=>{const url=location.origin+location.pathname+"?s="+s.subject+"#"+s.id;AN.t("share",{r:s.id,s:s.subject});
     try{ if(navigator.share){await navigator.share({title:s.title+" · Sloppy Studies by Aniket Shaw",url});} else {await navigator.clipboard.writeText(url);toast("Link copied");} }catch{toast(url)}};
   return el;}
-function like(s,el,on,e){likes[s.id]=on;store.set("likes",likes);const b=el.querySelector(".like");b.classList.toggle("on",on);b.querySelector("span").textContent=on?"Liked":"Like";
+function like(s,el,on,e){const was=!!likes[s.id];likes[s.id]=on;store.set("likes",likes);if(was!==on) LC[s.id]=Math.max(0,(LC[s.id]||0)+(on?1:-1));
+  const b=el.querySelector(".like");b.classList.toggle("on",on);b.querySelector("span").textContent=likeTxt(s.id);
   if(on&&e&&e.currentTarget&&e.currentTarget.tagName==="VIDEO"||on&&e&&e.type==="click"&&e.target.tagName==="VIDEO"){const r=el.getBoundingClientRect(),h=document.createElement("div");h.className="burst";h.style.left=(e.clientX-r.left)+"px";h.style.top=(e.clientY-r.top)+"px";h.innerHTML=ICON.heart.replace('stroke="#fff"','stroke="#ff3b5c" fill="#ff3b5c"');el.appendChild(h);setTimeout(()=>h.remove(),800);}
-  AN.t(on?"like":"unlike",{r:s.id,s:s.subject});}
+  if(was!==on) AN.t(on?"like":"unlike",{r:s.id,s:s.subject});}
 let sheetOpen=null;
 function openSheet(s){ sheetOpen={r:s.id,s:s.subject,at:Date.now()};document.getElementById("sh-t").textContent=s.title;document.getElementById("sh-q").textContent="Q"+s.qno+". "+s.question;
   const ol=document.getElementById("sh-a");ol.innerHTML="";s.answer.forEach(a=>{const li=document.createElement("li");li.textContent=a;ol.appendChild(li)});

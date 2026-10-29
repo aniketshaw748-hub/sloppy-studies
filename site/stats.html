@@ -46,7 +46,7 @@ td .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right
 <body>
 <div class="wrap" id="app"></div>
 <script>
-const SUBJ={se:"Software Engg",cd:"Compiler Design",oop:"OOP · Java",im:"Industrial Mgmt",ai:"AI",all:"Mix"};
+const SUBJ={se:"Software Engg",cd:"Compiler Design",oop:"OOP · Java",im:"Industrial Mgmt",ai:"AI",all:"Mix",saved:"Saved list"};
 const app=document.getElementById("app");
 let KEY=new URLSearchParams(location.search).get("key")||localStorage.getItem("statsKey")||"", DAYS=30, DATA=null, SORT={k:"views",d:-1}, TITLES={};
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -89,6 +89,8 @@ function render(){ const t=DATA.totals||{};
     <div class="card"><h2>When they watch (IST)</h2>${hbars((DATA.hours||[]).map(h=>({...h,lab:String(h.h).padStart(2,"0")+":00"})),r=>r.lab,"n")}</div>
     <div class="card"><h2>Devices</h2>${hbars(DATA.devices,r=>r.k,"n")}</div>
     <div class="card"><h2>Operating system</h2>${hbars(DATA.oss,r=>r.k,"n")}</div>
+    <div class="card"><h2>Phone models</h2><p class="note">Android Chrome only; iPhones never share their model.</p>${hbars(DATA.models,r=>r.k,"n")}</div>
+    <div class="card"><h2>Network</h2>${hbars(DATA.nets,r=>r.k,"n")}</div>
     <div class="card"><h2>Browser</h2>${hbars(DATA.browsers,r=>r.k,"n")}</div>
     <div class="card"><h2>Where from (link source)</h2>${hbars(DATA.refs,r=>r.k,"n")}</div>
     <div class="card"><h2>Countries</h2>${hbars(DATA.countries,r=>r.k||"unknown","n")}</div>
