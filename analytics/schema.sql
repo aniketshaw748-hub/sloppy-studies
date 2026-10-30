@@ -19,7 +19,15 @@ CREATE INDEX IF NOT EXISTS ev_reel ON events(reel, type);
 CREATE INDEX IF NOT EXISTS ev_vid ON events(vid);
 CREATE INDEX IF NOT EXISTS ev_ts ON events(ts);
 
--- Feedback comments from the reel player (private inbox on stats.html). The worker also creates this on first use.
+-- Accounts and comments. The worker creates (and upgrades) both on first use, so this is documentation.
+-- An account is automatic: one per browser (vid), shown as "Anonymous 4821" until renamed.
+CREATE TABLE IF NOT EXISTS users (
+  vid     TEXT PRIMARY KEY,          -- anonymous visitor id (same as events.vid); never sent to other viewers
+  num     INTEGER NOT NULL,          -- random 4-digit number in the default name
+  name    TEXT NOT NULL,             -- display name on comments, 2-24 characters
+  ts      INTEGER NOT NULL           -- created, ms
+);
+-- Public comment threads per reel, tagged with the moment in the video; one level of replies.
 CREATE TABLE IF NOT EXISTS comments (
   id      INTEGER PRIMARY KEY AUTOINCREMENT,
   ts      INTEGER NOT NULL,          -- server time, ms
@@ -28,7 +36,10 @@ CREATE TABLE IF NOT EXISTS comments (
   reel    TEXT NOT NULL,             -- e.g. "cd-q03"
   subject TEXT,
   t       REAL,                      -- video position the comment is about, seconds
-  text    TEXT NOT NULL,             -- the feedback, up to 1000 characters
-  country TEXT, city TEXT, device TEXT, os TEXT, browser TEXT, screen TEXT, model TEXT, net TEXT
+  text    TEXT NOT NULL,             -- the comment, up to 500 characters
+  country TEXT, city TEXT, device TEXT, os TEXT, browser TEXT, screen TEXT, model TEXT, net TEXT,
+  parent  INTEGER,                   -- top-level comment this replies to (replies take its t)
+  hidden  INTEGER NOT NULL DEFAULT 0 -- 1 = private feedback from the first version, shown only on stats.html
 );
 CREATE INDEX IF NOT EXISTS cm_ts ON comments(ts);
+CREATE INDEX IF NOT EXISTS cm_reel ON comments(reel, hidden);

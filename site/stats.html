@@ -44,6 +44,9 @@ td .dot,.fb .dot{display:inline-block;width:9px;height:9px;border-radius:50%;mar
 .cm a{grid-row:span 2;align-self:start;font-weight:800;font-size:13px;color:var(--ink);background:var(--oop);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;text-decoration:none;font-variant-numeric:tabular-nums}
 .cm p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .cm small{color:var(--muted);font-size:11.5px}
+.cm.rep{padding-left:24px}.cm i{grid-row:span 2;font-style:normal;color:var(--muted);font-weight:800}
+.cm .priv{font-style:normal;font-size:11px;font-weight:800;background:var(--ai);border-radius:999px;padding:1px 7px}
+.cm .del{font:inherit;font-weight:700;color:#C8261B;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 .gate{max-width:380px;margin:60px auto;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:18px;box-shadow:5px 5px 0 var(--ink)}
 .gate input{width:100%;font:inherit;padding:10px;border:2px solid var(--ink);border-radius:10px;margin:10px 0}
 .gate button{font:inherit;font-weight:800;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
@@ -58,7 +61,7 @@ const app=document.getElementById("app");
 let KEY=new URLSearchParams(location.search).get("key")||localStorage.getItem("statsKey")||"", DAYS=30, DATA=null, SORT={k:"views",d:-1}, TITLES={};
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=n=>n==null?"–":(+n).toLocaleString("en-IN");
-fetch("shorts.json",{cache:"no-store"}).then(r=>r.json()).then(l=>l.forEach(x=>TITLES[x.id]=x.title)).catch(()=>{});
+fetch("shorts.json",{cache:"no-store"}).then(r=>r.json()).then(l=>{ l.forEach(x=>TITLES[x.id]=x.title); if(DATA) render(); }).catch(()=>{});
 function gate(msg){ app.innerHTML=`<div class="gate"><h1>Insights</h1><p class="sub">${msg||"Enter your stats key."}</p>
   <input id="k" type="password" autocomplete="current-password" placeholder="stats key"><button id="go">Open</button></div>`;
   const go=()=>{ KEY=document.getElementById("k").value.trim(); load(); }; document.getElementById("go").onclick=go; document.getElementById("k").onkeydown=e=>{ if(e.key==="Enter") go(); }; }
@@ -80,15 +83,19 @@ function reelTable(){ const rows=[...(DATA.reels||[])].sort((a,b)=>((+a[SORT.k]|
     <td>${fmt(r.views)}</td><td>${fmt(r.viewers)}</td><td>${fmt(r.watch_min)}</td><td>${fmt(r.p50)}</td><td>${fmt(r.completes)}</td><td>${r.comp}%</td>
     <td>${r.avg_speed?r.avg_speed+"×":"–"}</td><td>${fmt(r.likes)}</td><td>${fmt(r.saves)}</td><td>${fmt(r.shares)}</td><td>${fmt(r.answers)}</td>
     <td>${r.answer_read_s??"–"}</td><td>${fmt(r.hint_clicks)}</td><td>${fmt(r.scrubs)}</td></tr>`).join("")}</tbody></table></div>`; }
-// feedback inbox: grouped by reel (newest feedback first), each reel's notes in video order; the time opens the reel there
-function feedback(){ const cs=DATA.comments||[]; if(!cs.length) return `<div class="empty">No feedback yet.</div>`;
+// comments: grouped by reel (latest activity first), threads in video order with replies under them; the time opens
+// the reel there. "private" = feedback from the first version of the box, which promised only the owner would read it.
+function comments(){ const cs=DATA.comments||[]; if(!cs.length) return `<div class="empty">No comments yet.</div>`;
   const by={}; cs.forEach(c=>(by[c.reel]=by[c.reel]||[]).push(c));
   const mmss=t=>Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
-  return Object.values(by).map(g=>{ const r=g[0]; g.sort((a,b)=>a.t-b.t);
+  const row=c=>`<div class="cm${c.parent?" rep":""}">${c.parent?`<i>↳</i>`:`<a href="/?s=${encodeURIComponent(c.subject||"all")}&t=${Math.floor(c.t||0)}#${encodeURIComponent(c.reel)}" target="_blank" rel="noopener" title="Open the reel at this moment">${mmss(c.t||0)}</a>`}
+    <p><b>${esc(c.name||"Anonymous")}</b>${c.hidden?` <em class="priv">private</em>`:""} ${esc(c.text)}</p>
+    <small>${new Date(c.ts).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})} · ${esc([c.model||c.device,c.os,c.browser,c.city,c.net].filter(Boolean).join(" · "))}
+      · <button class="del" data-del="${c.id}">Delete</button></small></div>`;
+  return Object.values(by).map(g=>{ const r=g[0], tops=g.filter(c=>!c.parent).sort((a,b)=>a.t-b.t||a.id-b.id), orphans=g.filter(c=>c.parent&&!g.some(t=>t.id===c.parent));
     return `<div class="fb"><h3><span class="dot" style="background:var(--${esc(r.subject)})"></span>
       ${esc(r.reel)} · ${esc(TITLES[r.reel]||"")} <em>${g.length}</em></h3>
-      ${g.map(c=>`<div class="cm"><a href="/?s=${encodeURIComponent(c.subject||"all")}&t=${Math.floor(c.t||0)}#${encodeURIComponent(c.reel)}" target="_blank" rel="noopener" title="Open the reel at this moment">${mmss(c.t||0)}</a>
-        <p>${esc(c.text)}</p><small>${new Date(c.ts).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})} · ${esc([c.model||c.device,c.os,c.browser,c.city,c.net].filter(Boolean).join(" · "))}</small></div>`).join("")}</div>`; }).join(""); }
+      ${[...tops.flatMap(t=>[t,...g.filter(c=>c.parent===t.id).sort((a,b)=>a.id-b.id)]),...orphans].map(row).join("")}</div>`; }).join(""); }
 function render(){ const t=DATA.totals||{};
   const k=[["visitors","Visitors"],["sessions","Visits"],["reel_views","Reels viewed"],["completes","Reels finished"],["watch_min","Minutes watched"],["likes","Likes"],["answers","Answer opens"],["shares","Shares"]];
   const daily=DATA.daily||[], dmax=Math.max(...daily.map(d=>+d.views||0),1);
@@ -96,7 +103,7 @@ function render(){ const t=DATA.totals||{};
   <div class="bar">${[1,7,30,90].map(d=>`<button data-d="${d}" aria-pressed="${d===DAYS}">${d===1?"24 h":d+" days"}</button>`).join("")}<button id="rf">Refresh</button></div>
   <div class="kpis">${k.map(([key,n])=>`<div class="kpi"><b>${fmt(t[key])}</b><span>${n}</span></div>`).join("")}</div>
   <div class="grid">
-    <div class="card wide"><h2>Feedback (${(DATA.comments||[]).length})</h2><p class="note">Comments viewers left on a reel, at the moment they paused. Tap a time to open the reel there.</p>${feedback()}</div>
+    <div class="card wide"><h2>Comments (${(DATA.comments||[]).length})</h2><p class="note">Public comment threads, each pinned to a moment in the reel. Tap a time to open the reel there; Delete removes a comment and its replies for everyone.</p>${comments()}</div>
     <div class="card wide"><h2>Every reel</h2><p class="note">Tap a column to sort. Finish rate = finished ÷ views.</p>${reelTable()}</div>
     <div class="card wide"><h2>Reels viewed per day</h2>${daily.length?`<div class="spark">${daily.map(d=>`<i title="${esc(d.d)}: ${d.views} views, ${d.visitors} visitors" style="height:${(+d.views||0)/dmax*100}%"></i>`).join("")}</div>
       <p class="note" style="margin-top:6px">${esc(daily[0].d)} → ${esc(daily[daily.length-1].d)}</p>`:`<div class="empty">No data yet.</div>`}</div>
@@ -117,6 +124,9 @@ function render(){ const t=DATA.totals||{};
   </div>`;
   app.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{ DAYS=+b.dataset.d; load(); });
   document.getElementById("rf").onclick=load;
+  app.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{ if(!confirm("Delete this comment (and its replies) for everyone?")) return;
+    const r=await fetch(`/api/comment/delete?key=${encodeURIComponent(KEY)}`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({vid:"owner",id:+b.dataset.del})});
+    if(r.ok) load(); else alert("Couldn't delete ("+r.status+")"); });
   app.querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{ const k=th.dataset.k; SORT={k,d:SORT.k===k?-SORT.d:-1}; render(); }); }
 load();
 </script>
