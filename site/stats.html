@@ -33,10 +33,17 @@ table{border-collapse:collapse;width:100%;font-size:12.5px;white-space:nowrap}
 th,td{padding:6px 8px;border-bottom:1px solid #eee;text-align:right}
 th:first-child,td:first-child{text-align:left}
 th{font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none;position:sticky;top:0;background:#fff}
-td .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;border:1.5px solid var(--ink)}
+td .dot,.fb .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;border:1.5px solid var(--ink)}
 .spark{display:flex;align-items:flex-end;gap:3px;height:90px}
 .spark i{flex:1;background:var(--pink);border-radius:3px 3px 0 0;min-height:2px;position:relative}
 .empty{color:var(--muted);padding:6px 0}
+.fb{border-top:1px solid #eee;padding:10px 0 4px}.fb:first-of-type{border-top:0;padding-top:2px}
+.fb h3{font-size:14px;margin:0 0 6px;display:flex;gap:6px;align-items:center}
+.fb h3 em{font-style:normal;font-size:11.5px;font-weight:800;background:var(--ink);color:#fff;border-radius:999px;padding:1px 7px}
+.cm{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:6px 0}
+.cm a{grid-row:span 2;align-self:start;font-weight:800;font-size:13px;color:var(--ink);background:var(--oop);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;text-decoration:none;font-variant-numeric:tabular-nums}
+.cm p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.cm small{color:var(--muted);font-size:11.5px}
 .gate{max-width:380px;margin:60px auto;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:18px;box-shadow:5px 5px 0 var(--ink)}
 .gate input{width:100%;font:inherit;padding:10px;border:2px solid var(--ink);border-radius:10px;margin:10px 0}
 .gate button{font:inherit;font-weight:800;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
@@ -46,7 +53,7 @@ td .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right
 <body>
 <div class="wrap" id="app"></div>
 <script>
-const SUBJ={se:"Software Engg",cd:"Compiler Design",oop:"OOP · Java",im:"Industrial Mgmt",ai:"AI",all:"Mix",saved:"Saved list"};
+const SUBJ={se:"Software Engg",cd:"Compiler Design",oop:"OOP · Java",im:"Industrial Mgmt",ai:"AI",all:"Mix",saved:"Saved list",liked:"Liked list"};
 const app=document.getElementById("app");
 let KEY=new URLSearchParams(location.search).get("key")||localStorage.getItem("statsKey")||"", DAYS=30, DATA=null, SORT={k:"views",d:-1}, TITLES={};
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -73,6 +80,15 @@ function reelTable(){ const rows=[...(DATA.reels||[])].sort((a,b)=>((+a[SORT.k]|
     <td>${fmt(r.views)}</td><td>${fmt(r.viewers)}</td><td>${fmt(r.watch_min)}</td><td>${fmt(r.p50)}</td><td>${fmt(r.completes)}</td><td>${r.comp}%</td>
     <td>${r.avg_speed?r.avg_speed+"×":"–"}</td><td>${fmt(r.likes)}</td><td>${fmt(r.saves)}</td><td>${fmt(r.shares)}</td><td>${fmt(r.answers)}</td>
     <td>${r.answer_read_s??"–"}</td><td>${fmt(r.hint_clicks)}</td><td>${fmt(r.scrubs)}</td></tr>`).join("")}</tbody></table></div>`; }
+// feedback inbox: grouped by reel (newest feedback first), each reel's notes in video order; the time opens the reel there
+function feedback(){ const cs=DATA.comments||[]; if(!cs.length) return `<div class="empty">No feedback yet.</div>`;
+  const by={}; cs.forEach(c=>(by[c.reel]=by[c.reel]||[]).push(c));
+  const mmss=t=>Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
+  return Object.values(by).map(g=>{ const r=g[0]; g.sort((a,b)=>a.t-b.t);
+    return `<div class="fb"><h3><span class="dot" style="background:var(--${esc(r.subject)})"></span>
+      ${esc(r.reel)} · ${esc(TITLES[r.reel]||"")} <em>${g.length}</em></h3>
+      ${g.map(c=>`<div class="cm"><a href="/?s=${encodeURIComponent(c.subject||"all")}&t=${Math.floor(c.t||0)}#${encodeURIComponent(c.reel)}" target="_blank" rel="noopener" title="Open the reel at this moment">${mmss(c.t||0)}</a>
+        <p>${esc(c.text)}</p><small>${new Date(c.ts).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})} · ${esc([c.model||c.device,c.os,c.browser,c.city,c.net].filter(Boolean).join(" · "))}</small></div>`).join("")}</div>`; }).join(""); }
 function render(){ const t=DATA.totals||{};
   const k=[["visitors","Visitors"],["sessions","Visits"],["reel_views","Reels viewed"],["completes","Reels finished"],["watch_min","Minutes watched"],["likes","Likes"],["answers","Answer opens"],["shares","Shares"]];
   const daily=DATA.daily||[], dmax=Math.max(...daily.map(d=>+d.views||0),1);
@@ -80,6 +96,7 @@ function render(){ const t=DATA.totals||{};
   <div class="bar">${[1,7,30,90].map(d=>`<button data-d="${d}" aria-pressed="${d===DAYS}">${d===1?"24 h":d+" days"}</button>`).join("")}<button id="rf">Refresh</button></div>
   <div class="kpis">${k.map(([key,n])=>`<div class="kpi"><b>${fmt(t[key])}</b><span>${n}</span></div>`).join("")}</div>
   <div class="grid">
+    <div class="card wide"><h2>Feedback (${(DATA.comments||[]).length})</h2><p class="note">Comments viewers left on a reel, at the moment they paused. Tap a time to open the reel there.</p>${feedback()}</div>
     <div class="card wide"><h2>Every reel</h2><p class="note">Tap a column to sort. Finish rate = finished ÷ views.</p>${reelTable()}</div>
     <div class="card wide"><h2>Reels viewed per day</h2>${daily.length?`<div class="spark">${daily.map(d=>`<i title="${esc(d.d)}: ${d.views} views, ${d.visitors} visitors" style="height:${(+d.views||0)/dmax*100}%"></i>`).join("")}</div>
       <p class="note" style="margin-top:6px">${esc(daily[0].d)} → ${esc(daily[daily.length-1].d)}</p>`:`<div class="empty">No data yet.</div>`}</div>

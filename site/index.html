@@ -40,12 +40,12 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 .mute svg{width:18px;height:18px}
 .tab{white-space:nowrap;padding:7px 13px;border-radius:999px;font-weight:600;font-size:13px;color:var(--dim);background:rgba(255,255,255,.08);backdrop-filter:blur(8px)}
 .tab[aria-pressed=true]{color:#000;background:#fff}
-.rail{display:flex;gap:4px;align-items:flex-start;flex:none}
+.rail{display:flex;gap:10px;align-items:flex-start;flex:none}
 .rb{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--dim);width:46px;min-height:44px;padding-top:2px}
-@media (max-width:380px){.rb{width:42px}.rail{gap:0}.dock{gap:8px;padding-left:10px;padding-right:8px}}
+@media (max-width:380px){.rb{width:42px}.rail{gap:6px}.dock{gap:8px;padding-left:10px;padding-right:8px}}
 .rb svg{width:26px;height:26px}
+.rb.cmt{width:54px}
 .rb.on .heart{fill:var(--accent);stroke:var(--accent)}
-.rb.on .bm{fill:#fff}
 .info{flex:1;min-width:0}
 .who{display:flex;align-items:center;gap:7px;font-weight:800;font-size:13px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .av{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:800;color:#000;flex:none}
@@ -78,9 +78,18 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 .sheet .sq{color:var(--dim);margin:0 0 14px}
 .sheet ol{margin:0;padding-left:20px}
 .sheet li{margin:0 0 10px;line-height:1.45}
+/* feedback sheet (Comment button): the video pauses and the note is tagged with that moment, frame.io style */
+.csheet h3{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tc{font-size:13px;font-weight:800;color:#000;background:#fff;border-radius:999px;padding:3px 10px;font-variant-numeric:tabular-nums}
+.csheet textarea{display:block;width:100%;min-height:96px;resize:none;font:16px/1.4 Inter,system-ui,sans-serif;color:#fff;background:#1f1f25;border:1.5px solid #2e2e36;border-radius:12px;padding:10px 12px;outline:none}
+.csheet textarea:focus{border-color:#8a8a96}
+.crow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.crow small{color:var(--dim);font-size:12px;line-height:1.3}
+.csend{flex:none;background:var(--accent);color:#fff;font-weight:800;padding:10px 20px;border-radius:999px}
+.csend:disabled{opacity:.45}
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:19;opacity:0;pointer-events:none;transition:opacity .2s}
 .scrim.open{opacity:1;pointer-events:auto}
-.toast{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);background:rgba(30,30,34,.92);padding:10px 16px;border-radius:10px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none;font-weight:600}
+.toast{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);background:rgba(30,30,34,.92);padding:10px 16px;border-radius:10px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none;font-weight:600;white-space:nowrap}
 .toast.show{opacity:1}
 .empty{height:100dvh;display:grid;place-items:center;color:var(--dim);text-align:center;padding:24px}
 @media (min-width:700px){#feed{border-left:1px solid #111;border-right:1px solid #111}}
@@ -180,20 +189,24 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 <nav class="top" id="tabs" aria-label="Subjects"></nav>
 <div class="scrim" id="scrim"></div>
 <section class="sheet" id="sheet" aria-label="Exam answer notes"><div class="grab"></div><h3 id="sh-t"></h3><p class="sq" id="sh-q"></p><ol id="sh-a"></ol></section>
+<section class="sheet csheet" id="csheet" role="dialog" aria-label="Feedback on this reel"><div class="grab"></div><h3>Feedback <span class="tc" id="c-at"></span></h3>
+  <textarea id="c-tx" maxlength="1000" rows="4" aria-label="Your feedback" placeholder="What should change here? A mistake, something unclear, too fast..."></textarea>
+  <div class="crow"><small>Only Aniket sees this. It goes straight into fixing the videos.</small><button class="csend" id="c-go">Send</button></div></section>
 <div class="toast" id="toast"></div>
 <script>
-const SUBJ={all:{n:"For you"},saved:{n:"Saved"},se:{n:"Software Engg",a:"SE",full:"Software Engineering",w:"Whiteboard · UML drawn the way you draw it in the exam"},
+const SUBJ={all:{n:"For you"},liked:{n:"Liked"},se:{n:"Software Engg",a:"SE",full:"Software Engineering",w:"Whiteboard · UML drawn the way you draw it in the exam"},
   cd:{n:"Compiler Design",a:"CD",full:"Compiler Design",w:"Terminal · parsing, grammars, LR and YACC"},
   oop:{n:"OOP · Java",a:"OOP",full:"OOP · Java",w:"Blueprint · packages, exceptions, threads"},
   im:{n:"Industrial Mgmt",a:"IM",full:"Industrial Management",w:"Warehouse · CPM, inventory, EOQ sums"},
-  ai:{n:"AI",a:"AI",full:"Artificial Intelligence",w:"Search space · minimax, fuzzy, Bayes, CSP"}};
+  ai:{n:"AI",a:"AI",full:"Artificial Intelligence",w:"Search space · minimax, fuzzy, Bayes, CSP"},
+  os:{n:"OS",a:"OS",full:"Operating Systems",w:"Machine room · deadlock, semaphores, memory, Banker's",c:"#22C3E6"},
+  cg:{n:"Graphics",a:"CG",full:"Computer Graphics",w:"Graph paper · transformations, clipping, curves",c:"#3D7BFF"}};
 // a contributed subject brings its own colour (c) and credit (by); see "Add your own subject" in README.md
 for(const [k,v] of Object.entries(SUBJ)) if(v.c) document.documentElement.style.setProperty("--"+k,v.c);
 const ICON={
  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path class="heart" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.2 5.3 3 1.7-1.8 3.2-3 5.3-3 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>',
+ comment:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3.5 20.5l1.4-4.6A8.5 8.5 0 1 1 21 11.5z"/></svg>',
  notes:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/></svg>',
- save:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path class="bm" d="M6 3h12v18l-6-4-6 4z"/></svg>',
- share:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>',
  play:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M7 4v16l13-8z"/></svg>',
  on:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>',
  off:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/></svg>'};
@@ -201,7 +214,9 @@ const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{re
 // browsers only allow sound after a tap, so the feed starts muted until the viewer taps once (like Reels on the web)
 let LC={};   // public like counts per reel (GET /api/likes)
 const likeTxt=id=>LC[id]>0?LC[id].toLocaleString("en-IN"):likes[id]?"Liked":"Like";
-let likes=store.get("likes",{}),saves=store.get("saves",{}),muted=true,all=[],cur="all";
+let likes=store.get("likes",{}),muted=true,all=[],cur="all";
+// Save was folded into Like (one "Liked" list): reels saved before carry over once
+{ const old=store.get("saves",null); if(old){ for(const k in old) if(old[k]) likes[k]=true; store.set("likes",likes); try{ localStorage.removeItem("saves"); }catch{} } }
 // Music and sound effects are separate tracks (<id>.music.m4a, <id>.sfx.m4a), each with its own viewer slider.
 // They play in two shared <audio> elements kept in sync with the active video, through Web Audio gain nodes
 // (iOS ignores media.volume; a GainNode works everywhere).
@@ -238,7 +253,7 @@ const AN=(()=>{ const live=/\.pages\.dev$/.test(location.hostname);
     const body=JSON.stringify({vid,sid,ref,mdl,scr:screen.width+"x"+screen.height,e:q.map(({at,...e})=>({...e,ago:now-at}))}); q=[];
     if(!(navigator.sendBeacon&&navigator.sendBeacon("/e",new Blob([body],{type:"application/json"}))))
       fetch("/e",{method:"POST",body,keepalive:true,headers:{"content-type":"application/json"}}).catch(()=>{}); };
-  return { t(t,o){ q.push({t,at:Date.now(),...(o||{})}); if(q.length>=40) send(); }, send };
+  return { t(t,o){ q.push({t,at:Date.now(),...(o||{})}); if(q.length>=40) send(); }, send, who:()=>({vid,sid,mdl,scr:screen.width+"x"+screen.height}) };
 })();
 // watch time per reel and playback speed, accumulated from the video clock and flushed in chunks
 const WT={}; function addWatch(id,subj,sec,rate){ if(!(sec>0)) return; const k=id+"|"+rate; (WT[k]=WT[k]||{r:id,s:subj,v:0,v2:rate}).v+=sec; }
@@ -253,6 +268,10 @@ function track(n,d){ const o={}; if(d&&d.id){ o.r=d.id; const S=all.find(x=>x.id
 const home=document.getElementById("home");
 const subjOf=()=>{const s=new URLSearchParams(location.search).get("s"); if(SUBJ[s]) return s;
   const h=location.hash.slice(1); return h&&all.some(x=>x.id===h)?"all":null;};   // old share links: "/#se-q03"
+// "?s=cd&t=42#cd-q03" (feedback links on the stats page): that reel starts at 42 s the first time it plays
+let START=null; { const p=new URLSearchParams(location.search), t=+p.get("t");
+  if(t>0){ START={id:location.hash.slice(1),t}; p.delete("t"); history.replaceState(null,"",location.pathname+(p.toString()?"?"+p:"")+location.hash); } }
+const startAt=id=>{ if(START&&START.id===id){ const t=START.t; START=null; return t; } return 0; };
 fetch("/api/likes").then(r=>r.ok?r.json():{}).then(d=>{ LC=d||{};
   document.querySelectorAll(".reel").forEach(el=>{ const t=el.querySelector(".like span"); if(t) t.textContent=likeTxt(el.id.slice(2)); }); }).catch(()=>{});
 fetch("shorts.json",{cache:"no-store"}).then(r=>r.json()).then(list=>{all=list; renderHome();
@@ -266,21 +285,21 @@ function route(){const s=subjOf();
   if(cur!==s||!feed.children.length){cur=s; renderTabs(); render();} else renderTabs();
   const id=location.hash.slice(1); const el=id&&document.getElementById("r-"+id); feed.scrollTop=el?el.offsetTop:0;}
 function showHome(){ flushWatch(); AN.t("home"); io&&io.disconnect(); bedPause(); activeV=null; const hv0=document.getElementById("heroVid"); hv0&&hv0.play&&hv0.play().catch(()=>{}); document.querySelectorAll(".reel video").forEach(v=>v.pause());
-  document.getElementById("sheet").classList.remove("open"); document.getElementById("scrim").classList.remove("open");
+  document.getElementById("sheet").classList.remove("open"); document.getElementById("csheet").classList.remove("open"); cmt=null; document.getElementById("scrim").classList.remove("open");
   tabs.hidden=true; document.getElementById("app").hidden=true; home.hidden=false; feed.innerHTML=""; renderHome(); }
 function openSubject(s){ history.pushState({view:"feed"},"","?s="+s); route(); AN.t("subject",{s}); }
 function goHome(){ AN.t("back_home"); if(history.state&&history.state.view==="feed") history.back(); else { history.replaceState({view:"home"},"",location.pathname); route(); } }
 addEventListener("popstate",route);
 function renderHome(){ const g=document.getElementById("hgrid"); g.innerHTML="";
-  const nSaved=all.filter(x=>saves[x.id]).length;
-  if(nSaved){ const sv=document.createElement("button"); sv.className="card wide sv";
-    sv.innerHTML=`<div class="ct"><span class="svic">${ICON.save.replace('stroke="#fff"','stroke="#141414" fill="#FF4D8D"')}</span>
-      <div><div class="cn">Saved for revision</div><div class="cw">${nSaved} reel${nSaved===1?"":"s"} you saved · watch them again before the exam</div></div></div>`;
-    sv.onclick=()=>openSubject("saved"); g.appendChild(sv); }
-  const DOODLE={se:'<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',cd:'<path d="M4 7l5 5-5 5"/><path d="M12 18h8"/>',
+  const nLiked=all.filter(x=>likes[x.id]).length;
+  if(nLiked){ const sv=document.createElement("button"); sv.className="card wide sv";
+    sv.innerHTML=`<div class="ct"><span class="svic">${ICON.heart.replace('fill="none" stroke="#fff"','fill="#FF4D8D" stroke="#141414"')}</span>
+      <div><div class="cn">Liked videos</div><div class="cw">${nLiked} reel${nLiked===1?"":"s"} you liked · watch them again before the exam</div></div></div>`;
+    sv.onclick=()=>openSubject("liked"); g.appendChild(sv); }
+  const DOODLE={os:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>',cg:'<path d="M4 20V4"/><path d="M4 20h16"/><path d="M6 16c4 0 5-9 12-10"/>',se:'<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',cd:'<path d="M4 7l5 5-5 5"/><path d="M12 18h8"/>',
     oop:'<path d="M3 21h18"/><path d="M6 21V8l6-4 6 4v13"/><path d="M10 21v-6h4v6"/>',im:'<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
     ai:'<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/>'};
-  const WORLD={se:"whiteboard",cd:"terminal",oop:"blueprint",im:"warehouse",ai:"night"}, TILT={se:-1.6,cd:1.2,oop:-1,im:1.6,ai:-1.3};
+  const WORLD={se:"whiteboard",cd:"terminal",oop:"blueprint",im:"warehouse",ai:"night",os:"machine",cg:"graph"}, TILT={os:1.4,cg:-1.2,se:-1.6,cd:1.2,oop:-1,im:1.6,ai:-1.3};
   Object.entries(SUBJ).forEach(([k,v])=>{ if(k==="all") return; const items=all.filter(x=>x.subject===k); if(!items.length) return;
     const c=document.createElement("button"); c.className="card"; c.style.setProperty("--c",`var(--${k})`); c.style.setProperty("--r",(TILT[k]||0)+"deg");
     c.setAttribute("aria-label",v.full+", "+items.length+" questions");
@@ -289,7 +308,7 @@ function renderHome(){ const g=document.getElementById("hgrid"); g.innerHTML="";
       <div class="ct"><div class="cn">${v.full}</div><div class="cw">${v.w}${v.by?" · by "+v.by:""}</div><span class="cc">${items.length} questions</span></div>`;
     c.onclick=()=>openSubject(k); g.appendChild(c); });
   const mix=document.createElement("button"); mix.className="card wide";
-  mix.innerHTML=`<div class="ct"><span class="mixdots">${Object.keys(SUBJ).filter(k=>k!=="all"&&k!=="saved").map(k=>`<i style="background:var(--${k})"></i>`).join("")}</span>
+  mix.innerHTML=`<div class="ct"><span class="mixdots">${Object.keys(SUBJ).filter(k=>k!=="all"&&k!=="liked").map(k=>`<i style="background:var(--${k})"></i>`).join("")}</span>
     <div><div class="cn">Mix of everything</div><div class="cw">All ${all.length} questions, every subject in turn</div></div></div>`;
   mix.onclick=()=>openSubject("all"); g.appendChild(mix);
 }
@@ -302,17 +321,17 @@ function renderTabs(){tabs.innerHTML='<button class="back" aria-label="Back to s
   mx.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span class="spd" hidden></span>';
   mx.onclick=e=>{ e.stopPropagation(); togglePop(); }; ctl.appendChild(mx); setTimeout(applySpeed,0);
   const m=document.createElement("button"); m.className="mute"; m.setAttribute("aria-label","Toggle sound"); m.innerHTML=muted?ICON.off:ICON.on; m.onclick=toggleSound; ctl.appendChild(m);
-  Object.entries(SUBJ).forEach(([k,v])=>{if(k==="saved"?!all.some(s=>saves[s.id]):k!=="all"&&!all.some(s=>s.subject===k))return;
+  Object.entries(SUBJ).forEach(([k,v])=>{if(k==="liked"?!all.some(s=>likes[s.id]):k!=="all"&&!all.some(s=>s.subject===k))return;
   const b=document.createElement("button");b.className="tab";b.textContent=v.n;b.setAttribute("aria-pressed",k===cur);
   b.onclick=()=>{cur=k;history.replaceState({view:"feed"},"","?s="+k);renderTabs();render();feed.scrollTop=0;AN.t("tab",{s:k})};lane.appendChild(b);});
   const on=lane.querySelector('.tab[aria-pressed="true"]'); on&&on.scrollIntoView({inline:"center",block:"nearest"});}
-function order(){ if(cur==="saved") return all.filter(s=>saves[s.id]);
+function order(){ if(cur==="liked") return all.filter(s=>likes[s.id]);
   if(cur!=="all") return all.filter(s=>s.subject===cur);
   // "For you": interleave subjects so the feed keeps switching
   const by={};all.forEach(s=>(by[s.subject]=by[s.subject]||[]).push(s));const ks=Object.keys(by),out=[];let i=0;
   while(out.length<all.length){ks.forEach(k=>{if(by[k][i])out.push(by[k][i])});i++;} return out;}
 function render(){feed.innerHTML="";const list=order();
-  if(!list.length){feed.innerHTML=`<div class="empty">${cur==="saved"?"Nothing saved yet. Tap Save on a reel to keep it here.":"No reels yet."}</div>`;return;}
+  if(!list.length){feed.innerHTML=`<div class="empty">${cur==="liked"?"No liked videos yet. Tap the heart on a reel to keep it here.":"No reels yet."}</div>`;return;}
   list.forEach(s=>feed.appendChild(reel(s)));observe();}
 function reel(s){const el=document.createElement("article");el.className="reel";el.id="r-"+s.id;
   const col=getComputedStyle(document.documentElement).getPropertyValue("--"+s.subject)||"#fff";
@@ -324,9 +343,8 @@ function reel(s){const el=document.createElement("article");el.className="reel";
      <div class="title"></div><div class="q"></div></div>
     <div class="rail">
      <button class="rb like ${likes[s.id]?"on":""}" aria-label="Like">${ICON.heart}<span>${likeTxt(s.id)}</span></button>
-     <button class="rb notes" aria-label="Exam answer">${ICON.notes}<span>Answer</span></button>
-     <button class="rb save ${saves[s.id]?"on":""}" aria-label="Save">${ICON.save}<span>${saves[s.id]?"Saved":"Save"}</span></button>
-     <button class="rb share" aria-label="Share">${ICON.share}<span>Share</span></button></div></div>`;
+     <button class="rb cmt" aria-label="Comment on this moment">${ICON.comment}<span>Comment</span></button>
+     <button class="rb notes" aria-label="Exam answer">${ICON.notes}<span>Answer</span></button></div></div>`;
   el.querySelector(".title").textContent=s.title; const q=el.querySelector(".q"); q.textContent=s.question; q.onclick=()=>q.classList.toggle("open");
   const v=el.querySelector("video"); v.muted=muted; v.preservesPitch=true; v.playbackRate=SPEED;
   v.addEventListener("loadedmetadata",()=>{ v.playbackRate=SPEED; });
@@ -362,15 +380,13 @@ function reel(s){const el=document.createElement("article");el.className="reel";
   ["play","pause","seeked","ratechange"].forEach(ev=>v.addEventListener(ev,()=>{ if(v===activeV) bedSync(ev!=="pause"); }));
 
   el.querySelector(".like").onclick=e=>like(s,el,!likes[s.id],e);
-  el.querySelector(".save").onclick=()=>{saves[s.id]=!saves[s.id];store.set("saves",saves);const b=el.querySelector(".save");b.classList.toggle("on",saves[s.id]);b.querySelector("span").textContent=saves[s.id]?"Saved":"Save";AN.t(saves[s.id]?"save":"unsave",{r:s.id,s:s.subject});toast(saves[s.id]?"Saved for revision":"Removed")};
   el.querySelector(".notes").onclick=()=>openSheet(s);
-  el.querySelector(".share").onclick=async()=>{const url=location.origin+location.pathname+"?s="+s.subject+"#"+s.id;AN.t("share",{r:s.id,s:s.subject});
-    try{ if(navigator.share){await navigator.share({title:s.title+" · Sloppy Studies by Aniket Shaw",url});} else {await navigator.clipboard.writeText(url);toast("Link copied");} }catch{toast(url)}};
+  el.querySelector(".cmt").onclick=()=>openComment(s,el,v);
   return el;}
 function like(s,el,on,e){const was=!!likes[s.id];likes[s.id]=on;store.set("likes",likes);if(was!==on) LC[s.id]=Math.max(0,(LC[s.id]||0)+(on?1:-1));
   const b=el.querySelector(".like");b.classList.toggle("on",on);b.querySelector("span").textContent=likeTxt(s.id);
   if(on&&e&&e.currentTarget&&e.currentTarget.tagName==="VIDEO"||on&&e&&e.type==="click"&&e.target.tagName==="VIDEO"){const r=el.getBoundingClientRect(),h=document.createElement("div");h.className="burst";h.style.left=(e.clientX-r.left)+"px";h.style.top=(e.clientY-r.top)+"px";h.innerHTML=ICON.heart.replace('stroke="#fff"','stroke="#ff3b5c" fill="#ff3b5c"');el.appendChild(h);setTimeout(()=>h.remove(),800);}
-  if(was!==on) AN.t(on?"like":"unlike",{r:s.id,s:s.subject});}
+  if(was!==on){ AN.t(on?"like":"unlike",{r:s.id,s:s.subject}); toast(on?"Added to Liked videos":"Removed from Liked videos"); }}
 let sheetOpen=null;
 function openSheet(s){ sheetOpen={r:s.id,s:s.subject,at:Date.now()};document.getElementById("sh-t").textContent=s.title;document.getElementById("sh-q").textContent="Q"+s.qno+". "+s.question;
   const ol=document.getElementById("sh-a");ol.innerHTML="";s.answer.forEach(a=>{const li=document.createElement("li");li.textContent=a;ol.appendChild(li)});
@@ -393,12 +409,33 @@ function togglePop(){ let pop=document.getElementById("mixpop");
     r.onchange=()=>AN.t(k,{v:LV[k]});
     r.oninput=()=>{ LV[k]=r.value/100; store.set(k+"Level",LV[k]); pop.querySelector("#v-"+k).textContent=r.value+"%"; ensureAudio(); applyBed(); bedSync(); }; }
   setTimeout(()=>addEventListener("click",function close(ev){ if(!pop.contains(ev.target)){ pop.remove(); removeEventListener("click",close); } }),0); }
-document.getElementById("scrim").onclick=()=>{ if(sheetOpen){ AN.t("answer_close",{r:sheetOpen.r,s:sheetOpen.s,v:+((Date.now()-sheetOpen.at)/1000).toFixed(1)}); sheetOpen=null; }document.getElementById("sheet").classList.remove("open");document.getElementById("scrim").classList.remove("open")};
+// feedback: pause, tag the current video time, POST it to /api/comment (text goes in the body, never in a URL)
+let cmt=null; const fmtT=t=>Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
+function openComment(s,el,v){ cmt={s,el,v,t:v.currentTime,play:!v.paused}; v.pause(); el.querySelector(".paused").classList.add("show");
+  document.getElementById("c-at").textContent="at "+fmtT(cmt.t);
+  document.getElementById("csheet").classList.add("open"); document.getElementById("scrim").classList.add("open"); document.getElementById("c-tx").focus(); }
+function closeComment(){ if(!cmt) return; const {el,v,play}=cmt; cmt=null; document.getElementById("c-tx").blur();
+  document.getElementById("csheet").classList.remove("open"); document.getElementById("scrim").classList.remove("open");
+  if(play){ v.play().catch(()=>{}); el.querySelector(".paused").classList.remove("show"); } }
+document.getElementById("c-go").onclick=async()=>{ const tx=document.getElementById("c-tx"), b=document.getElementById("c-go"), text=tx.value.trim();
+  if(!cmt) return; if(text.length<2){ tx.focus(); return; }
+  b.disabled=true;
+  try{ const r=await fetch("/api/comment",{method:"POST",headers:{"content-type":"application/json"},
+      body:JSON.stringify({...AN.who(),r:cmt.s.id,s:cmt.s.subject,t:+cmt.t.toFixed(1),text})});
+    if(r.status===429) toast("Too many comments, try again later");
+    else if(!r.ok) throw 0;
+    else { tx.value=""; closeComment(); toast("Thanks! Feedback sent"); } }
+  catch{ toast("Couldn't send, try again"); }
+  b.disabled=false; };
+// keep the feedback sheet above the on-screen keyboard (phones shrink only the visual viewport)
+const VV=window.visualViewport; if(VV){ const lift=()=>{ document.getElementById("csheet").style.bottom=Math.max(0,innerHeight-VV.height-VV.offsetTop)+"px"; };
+  VV.addEventListener("resize",lift); VV.addEventListener("scroll",lift); }
+document.getElementById("scrim").onclick=()=>{ closeComment(); if(sheetOpen){ AN.t("answer_close",{r:sheetOpen.r,s:sheetOpen.s,v:+((Date.now()-sheetOpen.at)/1000).toFixed(1)}); sheetOpen=null; }document.getElementById("sheet").classList.remove("open");document.getElementById("scrim").classList.remove("open")};
 let io;function observe(){io&&io.disconnect();io=new IntersectionObserver(es=>es.forEach(en=>{const v=en.target.querySelector("video");
-  if(en.isIntersecting&&en.intersectionRatio>.6){v.currentTime=0;v.muted=muted;v.play().catch(e=>{ if(e.name!=="NotAllowedError") return; v.muted=true; v.play().catch(()=>{}); });en.target.querySelector(".paused").classList.remove("show"); const sid=en.target.id.slice(2); const S=all.find(x=>x.id===sid); if(S){ bedFor(S,v); AN.t("reel_view",{r:S.id,s:S.subject,v2:SPEED}); }history.replaceState({view:"feed"},"","#"+en.target.id.slice(2));
+  if(en.isIntersecting&&en.intersectionRatio>.6){v.currentTime=startAt(en.target.id.slice(2));v.muted=muted;v.play().catch(e=>{ if(e.name!=="NotAllowedError") return; v.muted=true; v.play().catch(()=>{}); });en.target.querySelector(".paused").classList.remove("show"); const sid=en.target.id.slice(2); const S=all.find(x=>x.id===sid); if(S){ bedFor(S,v); AN.t("reel_view",{r:S.id,s:S.subject,v2:SPEED}); }history.replaceState({view:"feed"},"","#"+en.target.id.slice(2));
     const nx=en.target.nextElementSibling;nx&&nx.querySelector("video")&&(nx.querySelector("video").preload="auto");}
   else { v.pause(); const h=en.target.querySelector(".hint"); h&&h.classList.remove("show"); if(v===activeV) bedPause(); } }),{root:feed,threshold:[0,.6,1]});document.querySelectorAll(".reel").forEach(r=>io.observe(r));}
-addEventListener("keydown",e=>{ if(!home.hidden) return; if(e.key==="Escape"){ goHome(); return; } if(e.key==="ArrowDown"||e.key==="j"){feed.scrollBy({top:feed.clientHeight,behavior:"smooth"})}if(e.key==="ArrowUp"||e.key==="k"){feed.scrollBy({top:-feed.clientHeight,behavior:"smooth"})}
+addEventListener("keydown",e=>{ if(!home.hidden) return; if(e.target.tagName==="TEXTAREA"){ if(e.key==="Escape") closeComment(); return; } if(e.key==="Escape"){ goHome(); return; } if(e.key==="ArrowDown"||e.key==="j"){feed.scrollBy({top:feed.clientHeight,behavior:"smooth"})}if(e.key==="ArrowUp"||e.key==="k"){feed.scrollBy({top:-feed.clientHeight,behavior:"smooth"})}
   if(e.key===" "){e.preventDefault();const r=[...document.querySelectorAll(".reel")].find(x=>Math.abs(x.getBoundingClientRect().top)<50);r&&r.querySelector("video").click()}});
 </script>
 <!-- Cloudflare Web Analytics (added by hand: the custom _worker.js blocks Pages' automatic injection) -->

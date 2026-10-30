@@ -1,6 +1,7 @@
 // Sloppy Studies worker (Pages advanced mode):
 //  - serves the static site, answering byte-range requests for video/audio (iOS needs 206 Partial Content);
 //  - POST /e         : first-party analytics intake (anonymous batched events -> D1, env.DB);
+//  - POST /api/comment: timestamped feedback on a reel (private inbox, read back through /api/stats);
 //  - GET  /api/stats : aggregated insights for the private dashboard (stats.html), needs ?key=<STATS_KEY secret>.
 const TYPES = new Set(["visit", "home", "subject", "reel_view", "watch", "progress", "complete", "speed", "music", "sfx", "sound_on",
   "sound_off", "like", "unlike", "save", "unsave", "share", "answer_open", "answer_close", "scrub", "hint_shown", "hint_click",
@@ -40,6 +41,35 @@ async function intake(request, env) {
   return new Response(null, { status: 204 });
 }
 
+// feedback comments: created on first use (same definition as analytics/schema.sql), so a deploy needs no migration step
+let cmtReady = null;
+const ensureComments = env => cmtReady ||= env.DB.batch([
+  env.DB.prepare(`CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, vid TEXT NOT NULL, sid TEXT,
+    reel TEXT NOT NULL, subject TEXT, t REAL, text TEXT NOT NULL, country TEXT, city TEXT, device TEXT, os TEXT, browser TEXT, screen TEXT, model TEXT, net TEXT)`),
+  env.DB.prepare(`CREATE INDEX IF NOT EXISTS cm_ts ON comments(ts)`),
+]).catch(e => { cmtReady = null; throw e; });
+
+async function comment(request, env) {
+  if (!env.DB) return new Response(null, { status: 503 });
+  if (+request.headers.get("Content-Length") > 8000) return new Response("too big", { status: 413 });
+  let b; try { b = await request.json(); } catch { return new Response("bad json", { status: 400 }); }
+  const text = typeof b.text === "string" ? b.text.trim() : "";
+  if (!b.vid || !b.r || text.length < 2 || text.length > 1000) return new Response("bad comment", { status: 400 });
+  await ensureComments(env);
+  const now = Date.now(), vid = clip(b.vid, 40);
+  // abuse limits: 5 per device per 10 min, 30 per device per day, 200 per hour site-wide
+  const lim = await env.DB.prepare(`SELECT SUM(vid=?1 AND ts>=?2) m10, SUM(vid=?1) day, SUM(ts>=?3) hour FROM comments WHERE ts>=?4`)
+    .bind(vid, now - 600000, now - 3600000, now - 86400000).first();
+  if (lim && (lim.m10 >= 5 || lim.day >= 30 || lim.hour >= 200)) return new Response("slow down", { status: 429 });
+  const cf = request.cf || {}, u = uaInfo(request.headers.get("User-Agent"));
+  const t = Math.min(Math.max(0, num(b.t) || 0), 36000);
+  await env.DB.prepare(`INSERT INTO comments (ts,vid,sid,reel,subject,t,text,country,city,device,os,browser,screen,model,net)
+    VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15)`)
+    .bind(now, vid, clip(b.sid, 40), clip(b.r, 20), clip(b.s, 8), Math.round(t * 10) / 10, text, clip(cf.country, 4), clip(cf.city, 60),
+      u.device, u.os, u.browser, clip(b.scr, 20), clip(b.mdl, 40) || u.model, clip(cf.asOrganization, 60)).run();
+  return new Response(null, { status: 204 });
+}
+
 // public like counts: one per visitor per reel, using their latest like/unlike; edge-cached 30 s
 async function likeCounts(request, env) {
   const cache = caches.default, hit = await cache.match(request.url);
@@ -56,7 +86,8 @@ async function stats(url, env) {
   const days = Math.min(365, Math.max(1, parseInt(url.searchParams.get("days") || "30", 10)));
   const since = Date.now() - days * 86400000;
   const q = (sql, ...a) => env.DB.prepare(sql).bind(since, ...a).all().then(r => r.results);
-  const [totals, reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets] = await Promise.all([
+  await ensureComments(env);
+  const [totals, reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments] = await Promise.all([
     q(`SELECT COUNT(DISTINCT vid) visitors, COUNT(DISTINCT sid) sessions,
          SUM(type='reel_view') reel_views, SUM(type='complete') completes, ROUND(SUM(CASE WHEN type='watch' THEN val ELSE 0 END)/60.0,1) watch_min,
          SUM(type='like') likes, SUM(type='save') saves, SUM(type='share') shares, SUM(type='answer_open') answers,
@@ -86,8 +117,9 @@ async function stats(url, env) {
     q(`SELECT type k, ROUND(AVG(val),2) avg_level, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND type IN ('music','sfx') GROUP BY type`),
     q(`SELECT model k, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND model IS NOT NULL GROUP BY model ORDER BY n DESC LIMIT 15`),
     q(`SELECT net k, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND net IS NOT NULL GROUP BY net ORDER BY n DESC LIMIT 10`),
+    q(`SELECT id, ts, reel, subject, t, text, vid, device, os, browser, model, net, city, country FROM comments WHERE ts>=?1 ORDER BY ts DESC LIMIT 1000`),
   ]);
-  return Response.json({ days, generated: Date.now(), totals: totals[0], reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets },
+  return Response.json({ days, generated: Date.now(), totals: totals[0], reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments },
     { headers: { "Cache-Control": "no-store" } });
 }
 
@@ -95,6 +127,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/e" && request.method === "POST") return intake(request, env);
+    if (url.pathname === "/api/comment" && request.method === "POST") return comment(request, env);
     if (url.pathname === "/api/stats") return stats(url, env);
     if (url.pathname === "/api/likes") return env.DB ? likeCounts(request, env) : Response.json({});
     const res = await env.ASSETS.fetch(request);
