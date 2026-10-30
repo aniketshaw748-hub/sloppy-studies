@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS users (
   vid     TEXT PRIMARY KEY,          -- anonymous visitor id (same as events.vid); never sent to other viewers
   num     INTEGER NOT NULL,          -- random 4-digit number in the default name
   name    TEXT NOT NULL,             -- display name on comments, 2-24 characters
-  ts      INTEGER NOT NULL           -- created, ms
+  ts      INTEGER NOT NULL,          -- created, ms
+  author  INTEGER NOT NULL DEFAULT 0 -- 1 = the site owner (claimed by opening stats.html with STATS_KEY); shows an Author badge
 );
 -- Public comment threads per reel, tagged with the moment in the video; one level of replies.
 CREATE TABLE IF NOT EXISTS comments (

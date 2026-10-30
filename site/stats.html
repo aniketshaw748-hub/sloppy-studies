@@ -45,7 +45,7 @@ td .dot,.fb .dot{display:inline-block;width:9px;height:9px;border-radius:50%;mar
 .cm p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .cm small{color:var(--muted);font-size:11.5px}
 .cm.rep{padding-left:24px}.cm i{grid-row:span 2;font-style:normal;color:var(--muted);font-weight:800}
-.cm .priv{font-style:normal;font-size:11px;font-weight:800;background:var(--ai);border-radius:999px;padding:1px 7px}
+.cm .priv{font-style:normal;font-size:11px;font-weight:800;background:var(--ai);border-radius:999px;padding:1px 7px}.cm .priv.auth{background:var(--pink)}
 .cm .del{font:inherit;font-weight:700;color:#C8261B;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 .gate{max-width:380px;margin:60px auto;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:18px;box-shadow:5px 5px 0 var(--ink)}
 .gate input{width:100%;font:inherit;padding:10px;border:2px solid var(--ink);border-radius:10px;margin:10px 0}
@@ -69,7 +69,14 @@ async function load(){ if(!KEY) return gate();
   const r=await fetch(`/api/stats?key=${encodeURIComponent(KEY)}&days=${DAYS}`,{cache:"no-store"});
   if(r.status===403){ localStorage.removeItem("statsKey"); return gate("That key didn't work."); }
   localStorage.setItem("statsKey",KEY); if(new URLSearchParams(location.search).get("key")) history.replaceState(null,"",location.pathname);
-  DATA=await r.json(); render(); }
+  DATA=await r.json(); render(); claimAuthor(); }
+// this is the owner's browser: make its comment account (same visitor id as the reels site) the verified author.
+// The key goes in the POST body, never in a URL.
+async function claimAuthor(){ try{ let vid=JSON.parse(localStorage.getItem("vid"));
+  if(!vid){ vid=crypto.randomUUID(); localStorage.setItem("vid",JSON.stringify(vid)); }
+  const r=await fetch("/api/me",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({vid,key:KEY})});
+  if(r.ok){ const u=await r.json(); localStorage.setItem("me",JSON.stringify(u)); const s=document.querySelector(".sub");
+    if(s&&!s.querySelector(".authme")) s.insertAdjacentHTML("beforeend",` <span class="authme">On the reels, this browser comments as <b>${esc(u.name)}</b> with the Author badge.</span>`); } }catch{} }
 function hbars(rows,label,val,fmtv){ if(!rows||!rows.length) return `<div class="empty">No data yet.</div>`;
   const max=Math.max(...rows.map(r=>+r[val]||0),1);
   return `<div class="hb">${rows.map(r=>`<span>${esc(label(r))}</span><span class="t" style="width:${(+r[val]||0)/max*100}%"></span><span class="n">${fmtv?fmtv(r[val]):fmt(r[val])}</span>`).join("")}</div>`; }
@@ -89,7 +96,7 @@ function comments(){ const cs=DATA.comments||[]; if(!cs.length) return `<div cla
   const by={}; cs.forEach(c=>(by[c.reel]=by[c.reel]||[]).push(c));
   const mmss=t=>Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
   const row=c=>`<div class="cm${c.parent?" rep":""}">${c.parent?`<i>↳</i>`:`<a href="/?s=${encodeURIComponent(c.subject||"all")}&t=${Math.floor(c.t||0)}#${encodeURIComponent(c.reel)}" target="_blank" rel="noopener" title="Open the reel at this moment">${mmss(c.t||0)}</a>`}
-    <p><b>${esc(c.name||"Anonymous")}</b>${c.hidden?` <em class="priv">private</em>`:""} ${esc(c.text)}</p>
+    <p><b>${esc(c.name||"Anonymous")}</b>${c.author?` <em class="priv auth">Author</em>`:""}${c.hidden?` <em class="priv">private</em>`:""} ${esc(c.text)}</p>
     <small>${new Date(c.ts).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})} · ${esc([c.model||c.device,c.os,c.browser,c.city,c.net].filter(Boolean).join(" · "))}
       · <button class="del" data-del="${c.id}">Delete</button></small></div>`;
   return Object.values(by).map(g=>{ const r=g[0], tops=g.filter(c=>!c.parent).sort((a,b)=>a.t-b.t||a.id-b.id), orphans=g.filter(c=>c.parent&&!g.some(t=>t.id===c.parent));

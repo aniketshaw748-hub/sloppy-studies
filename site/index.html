@@ -108,6 +108,8 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 .chd b{color:#fff;font-weight:700}
 .cx{margin:2px 0 3px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.4}
 .cacts{display:flex;gap:16px;font-size:12px;font-weight:700;color:var(--dim)}
+.cauth{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.2px;color:#141414;background:#FF4D8D;border-radius:999px;padding:1px 7px}
+.ci.byauth .cav{box-shadow:0 0 0 2px #FF4D8D}
 .cacts button{padding:2px 0}
 .tc{font-size:12px;font-weight:800;color:#000;background:#fff;border-radius:999px;padding:2px 8px;font-variant-numeric:tabular-nums}
 .ccomp{flex:none;border-top:1px solid #26262c;margin:0 -18px;padding:10px 18px 0}
@@ -250,7 +252,7 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
    <div class="crow"><span class="tc" id="c-at"></span><textarea id="c-tx" maxlength="500" rows="1" aria-label="Your comment" placeholder="Add a comment..."></textarea><button class="csend" id="c-go">Post</button></div>
    <div class="cme">Commenting as <b id="c-me"></b><button id="c-chg">Change</button></div></div></section>
 <div class="pscrim" id="pscrim" hidden></div>
-<section class="prof" id="prof" role="dialog" aria-label="Your account" hidden><span class="pav" id="p-av"></span><h3>Your account</h3>
+<section class="prof" id="prof" role="dialog" aria-label="Your account" hidden><span class="pav" id="p-av"></span><h3>Your account <i class="cauth" id="p-auth" hidden>Author</i></h3>
   <p>No sign-up needed. This is the name people see on your comments.</p>
   <label for="p-nm">Name</label><input id="p-nm" maxlength="24" autocomplete="nickname" enterkeyhint="done">
   <p class="perr" id="p-err" hidden>Use 2 to 24 characters. Names like Aniket or admin are reserved.</p>
@@ -514,8 +516,8 @@ function drawComments(scrollId){ const box=document.getElementById("c-list"); bo
   if(!CM.length){ box.innerHTML=`<div class="cempty">No comments yet.<br>Pause on a moment and start the conversation.</div>`; return; }
   const tops=CM.filter(c=>!c.parent).sort((a,b)=>a.t-b.t||a.id-b.id);
   for(const top of tops) for(const c of [top,...CM.filter(r=>r.parent===top.id)]){
-    const d=document.createElement("div"); d.className="ci"+(c.parent?" rep":""); d.id="cm-"+c.id;
-    d.innerHTML=`<span class="cav"></span><div class="cb"><div class="chd"><b></b>${c.parent?"":`<button class="tc" aria-label="Jump to this moment"></button>`}<span></span></div>
+    const d=document.createElement("div"); d.className="ci"+(c.parent?" rep":"")+(c.author?" byauth":""); d.id="cm-"+c.id;
+    d.innerHTML=`<span class="cav"></span><div class="cb"><div class="chd"><b></b>${c.author?`<i class="cauth">Author</i>`:""}${c.parent?"":`<button class="tc" aria-label="Jump to this moment"></button>`}<span></span></div>
       <p class="cx"></p><div class="cacts"><button class="crp">Reply</button>${c.mine?`<button class="cdl">Delete</button>`:""}</div></div>`;
     const av=d.querySelector(".cav"); av.textContent=(c.name||"A")[0].toUpperCase(); av.style.background=hue(c.num);
     d.querySelector(".chd b").textContent=c.name; d.querySelector(".chd span").textContent=ago(c.ts); d.querySelector(".cx").textContent=c.text;
@@ -540,7 +542,7 @@ document.getElementById("c-go").onclick=async()=>{ const b=document.getElementBy
   b.disabled=false; };
 // account card: opened from the home chip or "Change" under the comment box
 function openProfile(){ if(!ME) return toast("Connecting, try again in a moment"); const i=document.getElementById("p-nm"), av=document.getElementById("p-av");
-  i.value=ME.name; av.textContent=ME.name[0].toUpperCase(); av.style.background=hue(ME.num); document.getElementById("p-err").hidden=true;
+  i.value=ME.name; av.textContent=ME.name[0].toUpperCase(); av.style.background=hue(ME.num); document.getElementById("p-err").hidden=true; document.getElementById("p-auth").hidden=!ME.author;
   document.getElementById("prof").hidden=false; document.getElementById("pscrim").hidden=false; i.focus(); i.select(); }
 function closeProfile(){ document.getElementById("prof").hidden=true; document.getElementById("pscrim").hidden=true; }
 async function saveProfile(){ const i=document.getElementById("p-nm"), name=i.value.replace(/\s+/g," ").trim();

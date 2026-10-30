@@ -48,7 +48,8 @@ async function intake(request, env) {
 let cmtReady = null;
 const ensureComments = env => cmtReady ||= (async () => {
   await env.DB.batch([
-    env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (vid TEXT PRIMARY KEY, num INTEGER NOT NULL, name TEXT NOT NULL, ts INTEGER NOT NULL)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (vid TEXT PRIMARY KEY, num INTEGER NOT NULL, name TEXT NOT NULL, ts INTEGER NOT NULL,
+      author INTEGER NOT NULL DEFAULT 0)`),
     env.DB.prepare(`CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, vid TEXT NOT NULL, sid TEXT,
       reel TEXT NOT NULL, subject TEXT, t REAL, text TEXT NOT NULL, country TEXT, city TEXT, device TEXT, os TEXT, browser TEXT, screen TEXT, model TEXT, net TEXT,
       parent INTEGER, hidden INTEGER NOT NULL DEFAULT 0)`),
@@ -62,35 +63,44 @@ const ensureComments = env => cmtReady ||= (async () => {
     env.DB.prepare(`UPDATE comments SET hidden=1`),
   ]);
   await env.DB.prepare(`CREATE INDEX IF NOT EXISTS cm_reel ON comments(reel, hidden)`).run();
+  // accounts made before the author badge existed
+  const ucols = (await env.DB.prepare(`PRAGMA table_info(users)`).all()).results.map(c => c.name);
+  if (!ucols.includes("author")) await env.DB.prepare(`ALTER TABLE users ADD COLUMN author INTEGER NOT NULL DEFAULT 0`).run();
 })().catch(e => { cmtReady = null; throw e; });
 
 const readBody = async request => {
   if (+request.headers.get("Content-Length") > 8000) return null;
   try { const b = await request.json(); return b && typeof b.vid === "string" && b.vid ? b : null; } catch { return null; }
 };
-// display names: 2-24 characters, no impersonating the site or its author
-const cleanName = n => {
+// display names: 2-24 characters; only the verified author may use names that look like the site or its author
+const cleanName = (n, author) => {
   n = typeof n === "string" ? n.replace(/\s+/g, " ").trim() : "";
-  return n.length >= 2 && n.length <= 24 && !/aniket|sloppy\s*studies|admin|moderator/i.test(n) ? n : null;
+  return n.length >= 2 && n.length <= 24 && (author || !/aniket|sloppy\s*studies|admin|moderator/i.test(n)) ? n : null;
 };
 async function account(env, vid) {
   const num = 1000 + Math.floor(Math.random() * 9000);
   await env.DB.prepare(`INSERT OR IGNORE INTO users (vid,num,name,ts) VALUES (?1,?2,?3,?4)`).bind(vid, num, "Anonymous " + num, Date.now()).run();
-  return env.DB.prepare(`SELECT num, name FROM users WHERE vid=?1`).bind(vid).first();
+  return env.DB.prepare(`SELECT num, name, author FROM users WHERE vid=?1`).bind(vid).first();
 }
 
-// POST /api/me {vid[, name]} : the visitor's account (made on first visit); with name, renames it
+// POST /api/me {vid[, name][, key]} : the visitor's account (made on first visit); with name, renames it;
+// with the owner's STATS_KEY (sent by stats.html), marks this browser's account as the verified author
 async function me(request, env) {
   const b = await readBody(request); if (!b) return new Response("bad request", { status: 400 });
   await ensureComments(env);
-  const vid = clip(b.vid, 40), u = await account(env, vid);
+  const vid = clip(b.vid, 40); let u = await account(env, vid);
+  if (b.key !== undefined) {
+    if (!env.STATS_KEY || b.key !== env.STATS_KEY) return new Response("forbidden", { status: 403 });
+    await env.DB.prepare(`UPDATE users SET author=1, name=CASE WHEN name LIKE 'Anonymous %' THEN 'Aniket Shaw' ELSE name END WHERE vid=?1`).bind(vid).run();
+    u = await account(env, vid);
+  }
   if (b.name === undefined) return Response.json(u);
-  const name = cleanName(b.name); if (!name) return new Response("bad name", { status: 400 });
+  const name = cleanName(b.name, u.author); if (!name) return new Response("bad name", { status: 400 });
   await env.DB.prepare(`UPDATE users SET name=?2 WHERE vid=?1`).bind(vid, name).run();
-  return Response.json({ num: u.num, name });
+  return Response.json({ ...u, name });
 }
 
-const CM_COLS = `c.id, c.ts, c.t, c.text, c.parent, COALESCE(u.name, 'Anonymous') name, u.num, c.vid=?2 mine`;
+const CM_COLS = `c.id, c.ts, c.t, c.text, c.parent, COALESCE(u.name, 'Anonymous') name, u.num, u.author, c.vid=?2 mine`;
 // POST /api/comments {vid, r} : the public thread of one reel
 async function thread(request, env) {
   const b = await readBody(request); if (!b || !b.r) return new Response("bad request", { status: 400 });
@@ -197,7 +207,7 @@ async function stats(url, env) {
     q(`SELECT type k, ROUND(AVG(val),2) avg_level, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND type IN ('music','sfx') GROUP BY type`),
     q(`SELECT model k, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND model IS NOT NULL GROUP BY model ORDER BY n DESC LIMIT 15`),
     q(`SELECT net k, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND net IS NOT NULL GROUP BY net ORDER BY n DESC LIMIT 10`),
-    q(`SELECT c.id, c.ts, c.reel, c.subject, c.t, c.text, c.parent, c.hidden, u.name, c.device, c.os, c.browser, c.model, c.net, c.city, c.country
+    q(`SELECT c.id, c.ts, c.reel, c.subject, c.t, c.text, c.parent, c.hidden, u.name, u.author, c.device, c.os, c.browser, c.model, c.net, c.city, c.country
        FROM comments c LEFT JOIN users u ON u.vid=c.vid WHERE c.ts>=?1 ORDER BY c.ts DESC LIMIT 1000`),
   ]);
   return Response.json({ days, generated: Date.now(), totals: totals[0], reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments },
