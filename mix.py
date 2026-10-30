@@ -28,6 +28,8 @@ THEME = {  # overrides: the world decides the sound
     "blueprint": {"pop": ["Click 03.wav", "Click 04.wav"], "tick": ["Click 02.wav"]},
     "whiteboard": {},
     "warehouse": {"pop": ["_ Short foley 1.wav", "_ Short foley 2.wav"], "tick": ["_ Short foley 10"], "hit": ["FW_01 N.Jolt Standard"]},
+    "machine": {"pop": ["Click 03.wav", "Click 04.wav"], "tick": ["Mechanical Keyboard Click 03"]},
+    "graph": {"pop": ["Click 01.wav", "Click 02.wav"], "tick": ["Click 02.wav"]},
     "night": {"pop": ["UI Beep 4", "iMessage SFX 02"], "tick": ["Click 01.wav"], "whoosh": ["Whoosh 16"]},
 }
 MUSIC = {"terminal": "ES_Digital Titan", "blueprint": "solving-puzzles-alistair-sung", "whiteboard": "ES_Keys of Confidence - Experia.mp3",

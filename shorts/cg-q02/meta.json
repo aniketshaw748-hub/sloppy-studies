@@ -1,0 +1,12 @@
+{
+  "id": "cg-q02",
+  "subject": "cg",
+  "qno": 2,
+  "question": "Calculate the final coordinates of triangle A ( 2, 2 ), B ( 3, 3 ), C ( 6, 5 ) when the triangle is to be reflected about a line y = x + 1.",
+  "title": "Reflect about y = x + 1",
+  "answer": [
+    "A′(1, 3)  B′(2, 4)  C′(4, 7)"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

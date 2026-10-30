@@ -56,6 +56,8 @@ THEMES = {  # bpm, chords (midi roots + quality), lead instrument, groove
     "terminal":   dict(bpm=92, inst="square", prog=[(57, "m"), (53, "maj"), (60, "maj"), (55, "maj")], drums="soft"),
     "blueprint":  dict(bpm=96, inst="marimba", prog=[(60, "maj"), (55, "maj"), (57, "m"), (53, "maj")], drums="tick"),
     "warehouse":  dict(bpm=90, inst="pluck", prog=[(52, "m7"), (55, "maj"), (57, "m7"), (50, "maj")], drums="shop"),
+    "machine":    dict(bpm=88, inst="pluck", prog=[(57, "m7"), (53, "maj7"), (55, "maj"), (52, "m7")], drums="tick"),
+    "graph":      dict(bpm=94, inst="marimba", prog=[(62, "maj"), (59, "m"), (55, "maj"), (57, "sus")], drums="brush"),
     "night":      dict(bpm=76, inst="bell", prog=[(62, "m9"), (58, "maj7"), (55, "m7"), (57, "sus")], drums=None),
 }
 Q = {"maj": [0, 4, 7], "m": [0, 3, 7], "maj7": [0, 4, 7, 11], "m7": [0, 3, 7, 10], "m9": [0, 3, 7, 10, 14], "sus": [0, 5, 7, 10]}

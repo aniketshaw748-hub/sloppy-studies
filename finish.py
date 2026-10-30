@@ -44,6 +44,9 @@ def hint_at(sid):
             if n[i] == "in" and n[i + 1] == "your" and n[i + 2] in ("exam", "exams"):
                 j = i - 1 if i > 0 and n[i - 1] == "so" else i
                 if not T or w[j]["t0"] > T * 0.4: return round(w[j]["t0"], 2)
+        for i in range(len(n) - 1):    # OS/CG reels open their answer cards with "Write this / the / it like this…"
+            if n[i] == "write" and n[i + 1] in ("this", "the", "it", "both", "what", "your") and (not T or w[i]["t0"] > T * 0.6):
+                return round(w[i]["t0"], 2)
     return round(max(0, T - 15), 2)
 
 def ver(rel):

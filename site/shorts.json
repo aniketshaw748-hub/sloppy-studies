@@ -1444,5 +1444,328 @@
   "sfx": "v/ai-q13.sfx.m4a?v=b7aaca85",
   "poster": "v/ai-q13.jpg?v=4eaac0ad",
   "hint": 93.5
+ },
+ {
+  "id": "os-q01",
+  "subject": "os",
+  "qno": 1,
+  "question": "Short questions: 1. Discuss the four conditions of deadlock. 2. Define race conditions. 3. What is virtual memory? 4. The solution to External fragmentation is called ____. 5. What is mutex?",
+  "title": "Five short answers",
+  "answer": [
+   "All four together cause deadlock",
+   "Result depends on timing",
+   "Run a process only partly in RAM",
+   "Compaction",
+   "A lock with an owner"
+  ],
+  "voice": "Julian",
+  "marks": 2,
+  "video": "v/os-q01.mp4?v=eacf9f6b",
+  "music": "v/os-q01.music.m4a?v=4f71248f",
+  "sfx": "v/os-q01.sfx.m4a?v=68bfc6ee",
+  "poster": "v/os-q01.jpg?v=78893d8a",
+  "hint": 109.44
+ },
+ {
+  "id": "os-q02",
+  "subject": "os",
+  "qno": 2,
+  "question": "Explain the Producer Consumer problem.",
+  "title": "Producer–consumer",
+  "answer": [
+   "Bounded buffer of N slots",
+   "mutex = 1 · empty = N · full = 0",
+   "Count first, lock second"
+  ],
+  "voice": "Julian",
+  "marks": 5,
+  "video": "v/os-q02.mp4?v=71afe1fa",
+  "music": "v/os-q02.music.m4a?v=88543bdd",
+  "sfx": "v/os-q02.sfx.m4a?v=d71d0472",
+  "poster": "v/os-q02.jpg?v=050a6f57",
+  "hint": 102.06
+ },
+ {
+  "id": "os-q03",
+  "subject": "os",
+  "qno": 3,
+  "question": "What are Semaphores (both). How does Semaphore help to achieve synchronization?",
+  "title": "Semaphores",
+  "answer": [
+   "An integer changed only by atomic wait and signal",
+   "The start value sets the job"
+  ],
+  "voice": "Julian",
+  "marks": 5,
+  "video": "v/os-q03.mp4?v=620e188d",
+  "music": "v/os-q03.music.m4a?v=203a0c70",
+  "sfx": "v/os-q03.sfx.m4a?v=1cb000b9",
+  "poster": "v/os-q03.jpg?v=870b4c9e",
+  "hint": 98.7
+ },
+ {
+  "id": "os-q04",
+  "subject": "os",
+  "qno": 4,
+  "question": "Discuss basic concepts on memory management.",
+  "title": "Memory management basics",
+  "answer": [
+   "Allocate, free, protect, use memory well",
+   "How memory is shared out"
+  ],
+  "voice": "Julian",
+  "marks": 5,
+  "video": "v/os-q04.mp4?v=076edb70",
+  "music": "v/os-q04.music.m4a?v=9b9d6966",
+  "sfx": "v/os-q04.sfx.m4a?v=0f4d652b",
+  "poster": "v/os-q04.jpg?v=9f391799",
+  "hint": 88.5
+ },
+ {
+  "id": "os-q05",
+  "subject": "os",
+  "qno": 5,
+  "question": "Explain the algorithms - first fit, best fit & worst fit.",
+  "title": "First, best, worst fit",
+  "answer": [
+   "First, smallest, biggest",
+   "Best fit wins here: all four fit"
+  ],
+  "voice": "Julian",
+  "marks": 5,
+  "video": "v/os-q05.mp4?v=c83c11d1",
+  "music": "v/os-q05.music.m4a?v=6e1b2da2",
+  "sfx": "v/os-q05.sfx.m4a?v=dfee028a",
+  "poster": "v/os-q05.jpg?v=0915f55c",
+  "hint": 90.92
+ },
+ {
+  "id": "os-q06",
+  "subject": "os",
+  "qno": 6,
+  "question": "Banker's algorithm snapshot (Allocation, Max, Available): (i) What is the content of need matrix? (ii) Is the system in safe state? iii) For a request from P1 (0, 4, 2, 0), can the request be granted immediately?",
+  "title": "Banker's algorithm",
+  "answer": [
+   "Need = Max − Allocation",
+   "SAFE · ⟨P0, P2, P1, P3, P4⟩",
+   "Request (0 4 2 0): grant immediately"
+  ],
+  "voice": "Julian",
+  "marks": 5,
+  "video": "v/os-q06.mp4?v=dec195e6",
+  "music": "v/os-q06.music.m4a?v=cb8d5281",
+  "sfx": "v/os-q06.sfx.m4a?v=05f04213",
+  "poster": "v/os-q06.jpg?v=88e8781b",
+  "hint": 117.22
+ },
+ {
+  "id": "cg-q01",
+  "subject": "cg",
+  "qno": 1,
+  "question": "Find normalized transformation matrix for window to viewport transformation, which uses the rectangle whose left corner is at (2, 2 ) and upper right corner is at ( 6, 10 ) as a window and the viewport that has lower left corner at ( 0, 0 ) and upper right corner at ( 1, 1 ).",
+  "title": "Window to viewport",
+  "answer": [
+   "xv = (xw − 2)/4,  yv = (yw − 2)/8"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q01.mp4?v=76d4011a",
+  "music": "v/cg-q01.music.m4a?v=8e766256",
+  "sfx": "v/cg-q01.sfx.m4a?v=05066f99",
+  "poster": "v/cg-q01.jpg?v=1a1f196b",
+  "hint": 64.02
+ },
+ {
+  "id": "cg-q02",
+  "subject": "cg",
+  "qno": 2,
+  "question": "Calculate the final coordinates of triangle A ( 2, 2 ), B ( 3, 3 ), C ( 6, 5 ) when the triangle is to be reflected about a line y = x + 1.",
+  "title": "Reflect about y = x + 1",
+  "answer": [
+   "A′(1, 3)  B′(2, 4)  C′(4, 7)"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q02.mp4?v=151384fb",
+  "music": "v/cg-q02.music.m4a?v=ee751d59",
+  "sfx": "v/cg-q02.sfx.m4a?v=15f7ba52",
+  "poster": "v/cg-q02.jpg?v=e684d3b4",
+  "hint": 69.68
+ },
+ {
+  "id": "cg-q03",
+  "subject": "cg",
+  "qno": 3,
+  "question": "If a point (20, 30) is rotated by 90° anticlockwise, then translated by (-20, 0) and then scaled by (2, 1), where will the point be?",
+  "title": "Rotate, translate, scale",
+  "answer": [
+   "Final point (−100, 20)"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q03.mp4?v=04f0c7a9",
+  "music": "v/cg-q03.music.m4a?v=0d1d4915",
+  "sfx": "v/cg-q03.sfx.m4a?v=27f31a17",
+  "poster": "v/cg-q03.jpg?v=6d29dafc",
+  "hint": 51.9
+ },
+ {
+  "id": "cg-q04",
+  "subject": "cg",
+  "qno": 4,
+  "question": "Use the Cohen-Sutherland out code algorithm to clip two lines P1 ( 40, 15 ) – P2 ( 75 , 45) and P3 (70, 20 ) -- P4 (100, 10 ) against a window A ( 50, 10 ), B ( 80, 10 ), C ( 80, 40 ) and D ( 50, 40).",
+  "title": "Cohen–Sutherland",
+  "answer": [
+   "Code → test → cut → repeat",
+   "(50, 23.57) – (69.17, 40); (70, 20) – (80, 16.67)"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q04.mp4?v=59edf3c3",
+  "music": "v/cg-q04.music.m4a?v=bba60ee6",
+  "sfx": "v/cg-q04.sfx.m4a?v=eec617bc",
+  "poster": "v/cg-q04.jpg?v=da2be7e8",
+  "hint": 92.36
+ },
+ {
+  "id": "cg-q05",
+  "subject": "cg",
+  "qno": 5,
+  "question": "Show that two consecutive scaling are multiplicative.",
+  "title": "Two scalings multiply",
+  "answer": [
+   "S2 · S1 = S(sx1·sx2, sy1·sy2)"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q05.mp4?v=5b854948",
+  "music": "v/cg-q05.music.m4a?v=ae56111b",
+  "sfx": "v/cg-q05.sfx.m4a?v=13ca78ef",
+  "poster": "v/cg-q05.jpg?v=bcd6eaad",
+  "hint": 53.88
+ },
+ {
+  "id": "cg-q06",
+  "subject": "cg",
+  "qno": 6,
+  "question": "Apply Liang Barsky line clipping algorithm for the line AB where A=(-1,7) and B=(11,1) against the clipping window having xmin=1, xmax=9, ymin=2, ymax=8.",
+  "title": "Liang–Barsky",
+  "answer": [
+   "Enter late, leave early",
+   "Clipped line: (1, 6) to (9, 2)"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q06.mp4?v=5959d054",
+  "music": "v/cg-q06.music.m4a?v=debcbdd7",
+  "sfx": "v/cg-q06.sfx.m4a?v=41a1893d",
+  "poster": "v/cg-q06.jpg?v=d490c45a",
+  "hint": 71.4
+ },
+ {
+  "id": "cg-q07",
+  "subject": "cg",
+  "qno": 7,
+  "question": "Explain the fundamental difference between parametric continuity (Cn) and geometric continuity (Gn). Under what practical design conditions would an engineer choose G¹ continuity over C¹ continuity?",
+  "title": "Parametric vs geometric continuity",
+  "answer": [
+   "C = equal derivatives · G = same shape",
+   "G is shape, C is shape plus speed"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q07.mp4?v=75797ca2",
+  "music": "v/cg-q07.music.m4a?v=45d5cb72",
+  "sfx": "v/cg-q07.sfx.m4a?v=fa5af8bb",
+  "poster": "v/cg-q07.jpg?v=6fd83f82",
+  "hint": 90.82
+ },
+ {
+  "id": "cg-q08",
+  "subject": "cg",
+  "qno": 8,
+  "question": "Explain Composite Transformation in 2-D graphics of following problem: Consider we have a square O (0,0), B(4,0), C(4,4), D(0,4) on which we first apply T1(scaling transformation) given scaling factor is Sx=Sy=0.5 and then we apply T2(rotation transformation in clockwise direction) it by 90o(angle), in last we perform T3(reflection transformation about origin).",
+  "title": "Composite: scale, rotate, reflect",
+  "answer": [
+   "O(0, 0)  B(0, 2)  C(−2, 2)  D(−2, 0)"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q08.mp4?v=cee9470a",
+  "music": "v/cg-q08.music.m4a?v=d4b59994",
+  "sfx": "v/cg-q08.sfx.m4a?v=e04cbf40",
+  "poster": "v/cg-q08.jpg?v=b94a8389",
+  "hint": 80.36
+ },
+ {
+  "id": "cg-q09",
+  "subject": "cg",
+  "qno": 9,
+  "question": "Analyze the geometric outcome and determine the final transformation coordinates of a triangle A(0,0), B(1,1), and C(5,3) when it is first reflected about the x-axis and then about the line y = -x, explaining the net structural transformation that occurred.",
+  "title": "Two reflections",
+  "answer": [
+   "Net: rotation of 90° clockwise"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q09.mp4?v=005c2e39",
+  "music": "v/cg-q09.music.m4a?v=03071c08",
+  "sfx": "v/cg-q09.sfx.m4a?v=096b8352",
+  "poster": "v/cg-q09.jpg?v=390e1cbd",
+  "hint": 74.88
+ },
+ {
+  "id": "cg-q10",
+  "subject": "cg",
+  "qno": 10,
+  "question": "Reflect the rectange PQRS about the line 2x-8y+4 =0. The position vector of the coordinate PQRS is given as P(2,2), Q(5,2), R(2,5) and C(5,5).",
+  "title": "Reflect about 2x − 8y + 4 = 0",
+  "answer": [
+   "M = T(0,½)·R(θ)·Rfx·R(−θ)·T(0,−½)",
+   "P′  Q′  R′  S′"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q10.mp4?v=c4febcff",
+  "music": "v/cg-q10.music.m4a?v=877ce376",
+  "sfx": "v/cg-q10.sfx.m4a?v=69295a10",
+  "poster": "v/cg-q10.jpg?v=b149175b",
+  "hint": 85.84
+ },
+ {
+  "id": "cg-q11",
+  "subject": "cg",
+  "qno": 11,
+  "question": "Find the normalized transformation N, which uses the rectangle A(1,1), B(5,3), C(4,5) and D(0,3) as a window onto normalized device screen as a viewport where x-extent is from 0 to 1 and y-extent from 0 to 1.",
+  "title": "Tilted window to unit square",
+  "answer": [
+   "Move, untilt, resize",
+   "N"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q11.mp4?v=897615ae",
+  "music": "v/cg-q11.music.m4a?v=e8509ffa",
+  "sfx": "v/cg-q11.sfx.m4a?v=53bb2d8a",
+  "poster": "v/cg-q11.jpg?v=83b8d226",
+  "hint": 66.84
+ },
+ {
+  "id": "cg-q12",
+  "subject": "cg",
+  "qno": 12,
+  "question": "What is curve? How to draw the smooth curve? Describe about natural cubic spline curve.",
+  "title": "Curves and the natural cubic spline",
+  "answer": [
+   "Curve: a continuous set of points",
+   "4n unknowns, 4n conditions"
+  ],
+  "voice": "Chloe",
+  "marks": 5,
+  "video": "v/cg-q12.mp4?v=41ae4a72",
+  "music": "v/cg-q12.music.m4a?v=2b2352fe",
+  "sfx": "v/cg-q12.sfx.m4a?v=d6de4e1e",
+  "poster": "v/cg-q12.jpg?v=52644a15",
+  "hint": 83.74
  }
 ]

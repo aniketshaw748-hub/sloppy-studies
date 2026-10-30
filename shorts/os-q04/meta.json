@@ -1,0 +1,13 @@
+{
+  "id": "os-q04",
+  "subject": "os",
+  "qno": 4,
+  "question": "Discuss basic concepts on memory management.",
+  "title": "Memory management basics",
+  "answer": [
+    "Allocate, free, protect, use memory well",
+    "How memory is shared out"
+  ],
+  "voice": "Julian",
+  "marks": 5
+}

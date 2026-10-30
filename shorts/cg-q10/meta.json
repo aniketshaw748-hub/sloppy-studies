@@ -1,0 +1,13 @@
+{
+  "id": "cg-q10",
+  "subject": "cg",
+  "qno": 10,
+  "question": "Reflect the rectange PQRS about the line 2x-8y+4 =0. The position vector of the coordinate PQRS is given as P(2,2), Q(5,2), R(2,5) and C(5,5).",
+  "title": "Reflect about 2x − 8y + 4 = 0",
+  "answer": [
+    "M = T(0,½)·R(θ)·Rfx·R(−θ)·T(0,−½)",
+    "P′  Q′  R′  S′"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

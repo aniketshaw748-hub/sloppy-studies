@@ -1,0 +1,13 @@
+{
+  "id": "os-q03",
+  "subject": "os",
+  "qno": 3,
+  "question": "What are Semaphores (both). How does Semaphore help to achieve synchronization?",
+  "title": "Semaphores",
+  "answer": [
+    "An integer changed only by atomic wait and signal",
+    "The start value sets the job"
+  ],
+  "voice": "Julian",
+  "marks": 5
+}

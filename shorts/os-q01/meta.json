@@ -1,0 +1,16 @@
+{
+  "id": "os-q01",
+  "subject": "os",
+  "qno": 1,
+  "question": "Assignment 2 · A. Short questions — 1. Discuss the four conditions of deadlock. 2. Define race conditions. 3. What is virtual memory? 4. The solution to External fragmentation is called ____. 5. What is mutex?",
+  "title": "Five short answers",
+  "answer": [
+    "All four together cause deadlock",
+    "Result depends on timing",
+    "Run a process only partly in RAM",
+    "Compaction",
+    "A lock with an owner"
+  ],
+  "voice": "Julian",
+  "marks": 2
+}

@@ -1,5 +1,6 @@
 {
- "se": ["Explain testing. Explain integration testing.",
+ "se": [
+  "Explain testing. Explain integration testing.",
   "Draw and explain a UML Sequence Diagram for a Library Management System showing the process of issuing a book (Student, Librarian, Library Management System).",
   "Name any three UML diagrams used to represent the behavioural view of a system. Briefly explain the purpose of each.",
   "Draw a UML Class Diagram for a Library Management System using the classes Student, Book, Librarian, Issue Record and Fine, with attributes, methods, relationships and multiplicities.",
@@ -8,8 +9,10 @@
   "What is the purpose of code review? Explain any four benefits of code reviews.",
   "What does multiplicity represent in a UML Class Diagram? Explain 1, 0..1, 1..* and 0..* with examples.",
   "Differentiate between <<include>> and <<extend>> relationships in a Use Case Diagram, with example and notation.",
-  "Differentiate between association and aggregation in a UML Class Diagram with examples and notations."],
- "cd": ["For E→E+T|T, T→T*F|F, F→(E)|id design a Syntax-Directed Definition to evaluate arithmetic expressions; demonstrate for 3+4*5.",
+  "Differentiate between association and aggregation in a UML Class Diagram with examples and notations."
+ ],
+ "cd": [
+  "For E→E+T|T, T→T*F|F, F→(E)|id design a Syntax-Directed Definition to evaluate arithmetic expressions; demonstrate for 3+4*5.",
   "Design the LL(1) parsing table for S→aBDh, B→cC, C→bC|ε, D→EF, E→g|ε, F→f|ε.",
   "Explain bottom-up parsing with an example. Also discuss reduction in bottom-up parsing.",
   "Eliminate left recursion from: S→A, A→Ad|Ae|aB|aC, B→bBC|f, C→CF|Cd|g|h, E→g|ε, F→f|ε. Rule: A→Aα|β becomes A→βA', A'→αA'|ε.",
@@ -20,8 +23,10 @@
   "Why is LR parsing good and attractive? Also explain its demerits.",
   "Explain viable prefixes.",
   "Discuss how YACC can be used to generate a parser.",
-  "Discuss the applications of syntax-directed translation."],
- "oop": ["What is the purpose of the package keyword in Java?",
+  "Discuss the applications of syntax-directed translation."
+ ],
+ "oop": [
+  "What is the purpose of the package keyword in Java?",
   "Which access specifier allows a class member to be accessed only within its own class?",
   "Can an interface contain a constructor? Justify.",
   "What is the use of the finally block in exception handling?",
@@ -39,8 +44,10 @@
   "Discuss the access privileges of class members within the same and different packages.",
   "Write a program showing one interface extending another.",
   "Checked vs unchecked exceptions in Java with examples.",
-  "Purpose of currentThread() in multithreading, with a small program."],
- "im": ["What are concurrent activities?",
+  "Purpose of currentThread() in multithreading, with a small program."
+ ],
+ "im": [
+  "What are concurrent activities?",
   "Why do we crash critical activities?",
   "What is the full form of GOLF? (inventory classification: Government, Ordinary, Local, Foreign)",
   "What is JIT?",
@@ -54,8 +61,10 @@
   "Why is updating of the project network required?",
   "What are the types of purchase orders?",
   "Difference between EOQ and EPQ.",
-  "EOQ numericals: formula EOQ = sqrt(2DS/H), a worked example and how to solve the class sums."],
- "ai": ["What is a membership function in fuzzy logic?",
+  "EOQ numericals: formula EOQ = sqrt(2DS/H), a worked example and how to solve the class sums."
+ ],
+ "ai": [
+  "What is a membership function in fuzzy logic?",
   "Explain the Minimax algorithm with an example.",
   "What is Bayes' theorem?",
   "Explain the hill climbing algorithm and discuss its limitations.",
@@ -67,5 +76,28 @@
   "Explain Alpha-Beta Pruning and show how it improves Minimax.",
   "Explain the complete process of a fuzzy system with a block diagram.",
   "Explain Bayesian networks and their applications in AI.",
-  "Explain backtracking search and constraint propagation in CSP."]
+  "Explain backtracking search and constraint propagation in CSP."
+ ],
+ "os": [
+  "Short questions: 1. Discuss the four conditions of deadlock. 2. Define race conditions. 3. What is virtual memory? 4. The solution to External fragmentation is called ____. 5. What is mutex?",
+  "Explain the Producer Consumer problem.",
+  "What are Semaphores (both). How does Semaphore help to achieve synchronization?",
+  "Discuss basic concepts on memory management.",
+  "Explain the algorithms - first fit, best fit & worst fit.",
+  "Banker's algorithm snapshot (Allocation, Max, Available): (i) What is the content of need matrix? (ii) Is the system in safe state? iii) For a request from P1 (0, 4, 2, 0), can the request be granted immediately?"
+ ],
+ "cg": [
+  "Find normalized transformation matrix for window to viewport transformation, which uses the rectangle whose left corner is at (2, 2 ) and upper right corner is at ( 6, 10 ) as a window and the viewport that has lower left corner at ( 0, 0 ) and upper right corner at ( 1, 1 ).",
+  "Calculate the final coordinates of triangle A ( 2, 2 ), B ( 3, 3 ), C ( 6, 5 ) when the triangle is to be reflected about a line y = x + 1.",
+  "If a point (20, 30) is rotated by 90° anticlockwise, then translated by (-20, 0) and then scaled by (2, 1), where will the point be?",
+  "Use the Cohen-Sutherland out code algorithm to clip two lines P1 ( 40, 15 ) – P2 ( 75 , 45) and P3 (70, 20 ) -- P4 (100, 10 ) against a window A ( 50, 10 ), B ( 80, 10 ), C ( 80, 40 ) and D ( 50, 40).",
+  "Show that two consecutive scaling are multiplicative.",
+  "Apply Liang Barsky line clipping algorithm for the line AB where A=(-1,7) and B=(11,1) against the clipping window having xmin=1, xmax=9, ymin=2, ymax=8.",
+  "Explain the fundamental difference between parametric continuity (Cn) and geometric continuity (Gn). Under what practical design conditions would an engineer choose G¹ continuity over C¹ continuity?",
+  "Explain Composite Transformation in 2-D graphics of following problem: Consider we have a square O (0,0), B(4,0), C(4,4), D(0,4) on which we first apply T1(scaling transformation) given scaling factor is Sx=Sy=0.5 and then we apply T2(rotation transformation in clockwise direction) it by 90o(angle), in last we perform T3(reflection transformation about origin).",
+  "Analyze the geometric outcome and determine the final transformation coordinates of a triangle A(0,0), B(1,1), and C(5,3) when it is first reflected about the x-axis and then about the line y = -x, explaining the net structural transformation that occurred.",
+  "Reflect the rectange PQRS about the line 2x-8y+4 =0. The position vector of the coordinate PQRS is given as P(2,2), Q(5,2), R(2,5) and C(5,5).",
+  "Find the normalized transformation N, which uses the rectangle A(1,1), B(5,3), C(4,5) and D(0,3) as a window onto normalized device screen as a viewport where x-extent is from 0 to 1 and y-extent from 0 to 1.",
+  "What is curve? How to draw the smooth curve? Describe about natural cubic spline curve."
+ ]
 }

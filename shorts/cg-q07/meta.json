@@ -1,0 +1,13 @@
+{
+  "id": "cg-q07",
+  "subject": "cg",
+  "qno": 7,
+  "question": "Explain the fundamental difference between parametric continuity (Cn) and geometric continuity (Gn). Under what practical design conditions would an engineer choose G¹ continuity over C¹ continuity?",
+  "title": "Parametric vs geometric continuity",
+  "answer": [
+    "C = equal derivatives · G = same shape",
+    "G is shape, C is shape plus speed"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

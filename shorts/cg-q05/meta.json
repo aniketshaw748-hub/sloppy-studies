@@ -1,0 +1,12 @@
+{
+  "id": "cg-q05",
+  "subject": "cg",
+  "qno": 5,
+  "question": "Show that two consecutive scaling are multiplicative.",
+  "title": "Two scalings multiply",
+  "answer": [
+    "S2 · S1 = S(sx1·sx2, sy1·sy2)"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

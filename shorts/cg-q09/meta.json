@@ -1,0 +1,12 @@
+{
+  "id": "cg-q09",
+  "subject": "cg",
+  "qno": 9,
+  "question": "Analyze the geometric outcome and determine the final transformation coordinates of a triangle A(0,0), B(1,1), and C(5,3) when it is first reflected about the x-axis and then about the line y = -x, explaining the net structural transformation that occurred.",
+  "title": "Two reflections",
+  "answer": [
+    "Net: rotation of 90° clockwise"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

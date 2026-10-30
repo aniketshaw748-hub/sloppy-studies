@@ -1,0 +1,12 @@
+{
+  "id": "cg-q08",
+  "subject": "cg",
+  "qno": 8,
+  "question": "Explain Composite Transformation in 2-D graphics of following problem: Consider we have a square O (0,0), B(4,0), C(4,4), D(0,4) on which we first apply T1(scaling transformation) given scaling factor is Sx=Sy=0.5 and then we apply T2(rotation transformation in clockwise direction) it by 90o(angle), in last we perform T3(reflection transformation about origin).",
+  "title": "Composite: scale, rotate, reflect",
+  "answer": [
+    "O(0, 0)  B(0, 2)  C(−2, 2)  D(−2, 0)"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

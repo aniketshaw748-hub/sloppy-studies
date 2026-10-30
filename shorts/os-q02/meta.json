@@ -1,0 +1,14 @@
+{
+  "id": "os-q02",
+  "subject": "os",
+  "qno": 2,
+  "question": "Explain the Producer Consumer problem.",
+  "title": "Producer–consumer",
+  "answer": [
+    "Bounded buffer of N slots",
+    "mutex = 1 · empty = N · full = 0",
+    "Count first, lock second"
+  ],
+  "voice": "Julian",
+  "marks": 5
+}

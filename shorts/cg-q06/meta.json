@@ -1,0 +1,13 @@
+{
+  "id": "cg-q06",
+  "subject": "cg",
+  "qno": 6,
+  "question": "Apply Liang Barsky line clipping algorithm for the line AB where A=(-1,7) and B=(11,1) against the clipping window having xmin=1, xmax=9, ymin=2, ymax=8.",
+  "title": "Liang–Barsky",
+  "answer": [
+    "Enter late, leave early",
+    "Clipped line: (1, 6) to (9, 2)"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

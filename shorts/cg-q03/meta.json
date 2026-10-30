@@ -1,0 +1,12 @@
+{
+  "id": "cg-q03",
+  "subject": "cg",
+  "qno": 3,
+  "question": "If a point (20, 30) is rotated by 90° anticlockwise, then translated by (-20, 0) and then scaled by (2, 1), where will the point be?",
+  "title": "Rotate, translate, scale",
+  "answer": [
+    "Final point (−100, 20)"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

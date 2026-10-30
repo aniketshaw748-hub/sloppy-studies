@@ -1,0 +1,12 @@
+{
+  "id": "cg-q01",
+  "subject": "cg",
+  "qno": 1,
+  "question": "Find normalized transformation matrix for window to viewport transformation, which uses the rectangle whose left corner is at (2, 2 ) and upper right corner is at ( 6, 10 ) as a window and the viewport that has lower left corner at ( 0, 0 ) and upper right corner at ( 1, 1 ).",
+  "title": "Window to viewport",
+  "answer": [
+    "xv = (xw − 2)/4,  yv = (yw − 2)/8"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

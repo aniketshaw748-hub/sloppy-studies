@@ -1,0 +1,13 @@
+{
+  "id": "os-q05",
+  "subject": "os",
+  "qno": 5,
+  "question": "Explain the algorithms - first fit, best fit & worst fit.",
+  "title": "First, best, worst fit",
+  "answer": [
+    "First, smallest, biggest",
+    "Best fit wins here: all four fit"
+  ],
+  "voice": "Julian",
+  "marks": 5
+}

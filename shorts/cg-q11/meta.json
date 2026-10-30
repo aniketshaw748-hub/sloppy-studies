@@ -1,0 +1,13 @@
+{
+  "id": "cg-q11",
+  "subject": "cg",
+  "qno": 11,
+  "question": "Find the normalized transformation N, which uses the rectangle A(1,1), B(5,3), C(4,5) and D(0,3) as a window onto normalized device screen as a viewport where x-extent is from 0 to 1 and y-extent from 0 to 1.",
+  "title": "Tilted window to unit square",
+  "answer": [
+    "Move, untilt, resize",
+    "N"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}

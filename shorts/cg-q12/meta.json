@@ -1,0 +1,13 @@
+{
+  "id": "cg-q12",
+  "subject": "cg",
+  "qno": 12,
+  "question": "What is curve? How to draw the smooth curve? Describe about natural cubic spline curve.",
+  "title": "Curves and the natural cubic spline",
+  "answer": [
+    "Curve: a continuous set of points",
+    "4n unknowns, 4n conditions"
+  ],
+  "voice": "Chloe",
+  "marks": 5
+}
