@@ -179,14 +179,28 @@ async function commentCounts(request, env) {
   return res;
 }
 
-// public like counts: one per visitor per reel, using their latest like/unlike; edge-cached 30 s
+// public like counts: one per visitor per reel, using their latest like/unlike; edge-cached 2 min.
+// Reads only like/unlike rows: SQLite takes `type` from the row holding MAX(id), i.e. each visitor's latest choice.
 async function likeCounts(request, env) {
   const cache = caches.default, hit = await cache.match(request.url);
   if (hit) return hit;
-  const { results } = await env.DB.prepare(`SELECT reel, COUNT(*) n FROM (SELECT vid, reel, type FROM events e WHERE type IN ('like','unlike')
-      AND id = (SELECT MAX(id) FROM events WHERE vid=e.vid AND reel=e.reel AND type IN ('like','unlike'))) WHERE type='like' GROUP BY reel`).all();
-  const res = Response.json(Object.fromEntries(results.map(r => [r.reel, r.n])), { headers: { "Cache-Control": "public, max-age=30" } });
+  const { results } = await env.DB.prepare(`SELECT reel, COUNT(*) n FROM (SELECT reel, type, MAX(id) FROM events WHERE type IN ('like','unlike')
+      GROUP BY vid, reel) WHERE type='like' GROUP BY reel`).all();
+  const res = Response.json(Object.fromEntries(results.map(r => [r.reel, r.n])), { headers: { "Cache-Control": "public, max-age=120" } });
   await cache.put(request.url, res.clone());
+  return res;
+}
+
+// every stats load reads each event ~20 times, so a computed result is reused for 5 minutes per key+range
+// (only successful results are cached, so a wrong key never gets one; &fresh=1 skips the cache)
+async function cachedStats(request, url, env) {
+  const ck = new URL(url); ck.searchParams.delete("fresh"); const cacheKey = new Request(ck.toString());
+  if (!url.searchParams.has("fresh")) { const hit = await caches.default.match(cacheKey); if (hit) return hit; }
+  const res = await stats(request, url, env);
+  if (res.status === 200) {
+    const copy = new Response(res.clone().body, res); copy.headers.set("Cache-Control", "public, max-age=300");
+    await caches.default.put(cacheKey, copy);
+  }
   return res;
 }
 
@@ -266,7 +280,7 @@ export default {
       if (url.pathname === "/api/comment/delete") return uncomment(request, url, env);
     }
     if (url.pathname === "/api/comment-counts") return env.DB ? commentCounts(request, env) : Response.json({});
-    if (url.pathname === "/api/stats") return stats(request, url, env);
+    if (url.pathname === "/api/stats") return cachedStats(request, url, env);
     if (url.pathname === "/api/likes") return env.DB ? likeCounts(request, env) : Response.json({});
     const res = await env.ASSETS.fetch(request);
     const range = request.headers.get("Range");

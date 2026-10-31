@@ -209,8 +209,9 @@ addEventListener("scroll",()=>{ tip.hidden=true; },{passive:true});
 function gate(msg){ app.innerHTML=`<div class="gate card"><h3 style="font-size:22px">Insights</h3><p class="hint">${msg||"Enter your stats key."}</p>
   <input id="k" type="password" autocomplete="current-password" placeholder="stats key"><button id="go">Open</button></div>`;
   const go=()=>{ KEY=document.getElementById("k").value.trim(); load(); }; document.getElementById("go").onclick=go; document.getElementById("k").onkeydown=e=>{ if(e.key==="Enter") go(); }; }
-async function load(){ if(!KEY) return gate();
-  const r=await fetch(`/api/stats?key=${encodeURIComponent(KEY)}&days=${DAYS}`,{cache:"no-store"});
+// stats are cached for 5 minutes on the server (database reads are limited); fresh=true skips that, e.g. after a delete
+async function load(fresh){ if(!KEY) return gate();
+  const r=await fetch(`/api/stats?key=${encodeURIComponent(KEY)}&days=${DAYS}${fresh===true?"&fresh=1":""}`,{cache:"no-store"});
   if(r.status===403){ localStorage.removeItem("statsKey"); return gate("That key didn't work."); }
   if(r.status===429){ localStorage.removeItem("statsKey"); return gate("Too many wrong keys. Try again in 15 minutes."); }
   localStorage.setItem("statsKey",KEY); if(new URLSearchParams(location.search).get("key")) history.replaceState(null,"",location.pathname);
@@ -395,7 +396,7 @@ function render(){ const nc=(DATA.comments||[]).length, y=scrollY;
   const mo=document.getElementById("more"); if(mo) mo.onclick=()=>{ SHOWN+=24; render(); };
   app.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{ if(!confirm("Delete this comment (and its replies) for everyone?")) return;
     const r=await fetch(`/api/comment/delete?key=${encodeURIComponent(KEY)}`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({vid:"owner",id:+b.dataset.del})});
-    if(r.ok) load(); else alert("Couldn't delete ("+r.status+")"); }); }
+    if(r.ok) load(true); else alert("Couldn't delete ("+r.status+")"); }); }
 load();
 </script>
 </body>
