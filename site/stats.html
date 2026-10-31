@@ -66,6 +66,13 @@ section>h2{font-size:20px;letter-spacing:-.4px;margin:0 0 10px}
 .cols .c em{position:absolute;font-style:normal;font-size:11.5px;font-weight:800;transform:translateY(-4px)}
 .xax{display:flex;justify-content:space-between;font-size:11.5px;color:var(--soft);margin-top:5px}
 .cols.short{height:110px}
+/* hourly line (24 h view): SVG line + area; transparent hour columns on top carry the hover tooltip */
+.lc{position:relative;height:160px;border-bottom:1.5px solid #d9cba6}
+.lc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.lc .ln{fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.lc .ar{fill:var(--blue);opacity:.1}
+.lc .hit{position:absolute;inset:0;display:flex}.lc .hit i{flex:1}.lc .hit i:hover{background:rgba(47,107,255,.09);box-shadow:inset 0 0 0 0 transparent}
+.lc .pk{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--pink);border:2px solid #fff;box-shadow:0 0 0 1.5px var(--pink)}
 /* funnel */
 .fun{display:grid;grid-template-columns:96px 1fr 46px;gap:8px 10px;align-items:center}
 .fun span{font-size:13px;font-weight:600}
@@ -247,19 +254,29 @@ function hero(){ const t=DATA.totals||{}, p=DATA.prev||{}, f=DATA.funnel||{}, lb
     ["Comments",(DATA.comments||[]).filter(c=>!c.hidden).length],["Answer opens",t.answers],["Shares",t.shares]]
     .map(([n,v,h])=>`<div class="mini"${h?` data-tip="${esc(n+": "+h)}"`:""}><b class="num">${fmt(v)}</b><span>${n}</span></div>`).join("")}</div>`; }
 
-function trend(){ const d=DATA.daily||[]; if(!d.length) return `<div class="card"><h3>Day by day</h3><div class="empty">No data yet.</div></div>`;
-  // fill missing days so gaps show as gaps
-  const by=Object.fromEntries(d.map(x=>[x.d,x])), out=[]; for(let t=new Date(d[0].d+"T00:00:00Z"), end=new Date(d[d.length-1].d+"T00:00:00Z"); t<=end; t.setUTCDate(t.getUTCDate()+1)){
-    const k=t.toISOString().slice(0,10); out.push(by[k]||{d:k,visitors:0,views:0,watch_min:0}); }
-  const M={visitors:["Visitors","visitors"],views:["Reel plays","plays"],watch_min:["Minutes","minutes"]}, [nm,unit]=M[TREND];
-  const day=k=>new Date(k+"T00:00:00Z").toLocaleDateString("en-IN",{day:"numeric",month:"short",timeZone:"UTC"});
-  const best=out.reduce((a,b)=>(+b[TREND]>+a[TREND]?b:a),out[0]);
-  return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap"><div><h3>Day by day</h3>
-      <p class="hint">Best day: <b>${day(best.d)}</b> · ${fmt(Math.round(best[TREND]))} ${unit}</p></div>
-    <div class="seg">${Object.entries(M).map(([k,[n]])=>`<button data-trend="${k}" aria-pressed="${k===TREND}">${n}</button>`).join("")}</div></div>
-    ${columns(out,{val:r=>+r[TREND]||0,hi:r=>r===best,tip:r=>`${day(r.d)}<br><b>${fmt(Math.round(r[TREND]))}</b> ${unit} · ${fmt(r.visitors)} visitors · ${fmt(r.views)} plays`})}
-    <div class="xax"><span>${day(out[0].d)}</span><span>${day(out[out.length-1].d)}</span></div></div>`; }
-
+// tooltip tail: the two measures not being charted
+const others=r=>[["visitors","visitors"],["views","plays"],["watch_min","min"]].filter(([k])=>k!==TREND).map(([k,u])=>` · ${fmt(Math.round(+r[k]||0))} ${u}`).join("");
+// over time: one line graph for every range. 24 h = the last 24 IST clock hours; 7/30/90 d = every IST day in the range
+function trend(){ const M={visitors:["Visitors","visitors"],views:["Reel plays","plays"],watch_min:["Minutes","minutes"]}, [,unit]=M[TREND];
+  const Z={visitors:0,views:0,watch_min:0}, rows=[]; let title, sub, best, name, tick;
+  if(DAYS===1){ const now=Math.floor((Date.now()+19800000)/3600000), by=Object.fromEntries((DATA.hourly||[]).map(x=>[x.h,x]));
+    for(let h=now-23;h<=now;h++) rows.push(by[h]||{...Z,h});
+    const H=h=>new Date(h*3600000).toLocaleTimeString("en-IN",{hour:"numeric",timeZone:"UTC"}).replace(" ","\u00a0");
+    title="Hour by hour"; sub="Last 24 hours, IST."; best="Busiest"; name=r=>`${H(r.h)}–${H(r.h+1)}`; tick=(r,last)=>last?"now":H(r.h); }
+  else { const by=Object.fromEntries((DATA.daily||[]).map(x=>[x.d,x])), today=Date.parse(new Date(Date.now()+19800000).toISOString().slice(0,10));
+    for(let k=DAYS-1;k>=0;k--){ const d=new Date(today-k*86400000).toISOString().slice(0,10); rows.push(by[d]||{...Z,d}); }
+    const D=d=>new Date(d+"T00:00:00Z").toLocaleDateString("en-IN",{day:"numeric",month:"short",timeZone:"UTC"});
+    title="Day by day"; sub=`Last ${DAYS} days, IST.`; best="Best day"; name=r=>D(r.d); tick=(r,last)=>last?"today":D(r.d); }
+  const v=r=>+r[TREND]||0, n=rows.length, max=Math.max(...rows.map(v),1), X=i=>i/(n-1)*600, Y=r=>156-v(r)/max*140;
+  const pts=rows.map((r,i)=>`${X(i).toFixed(1)},${Y(r).toFixed(1)}`).join(" "), top=rows.reduce((a,b)=>v(b)>v(a)?b:a,rows[0]), ti=rows.indexOf(top);
+  const ticks=[...new Set([0,.25,.5,.75,1].map(f=>Math.round(f*(n-1))))];
+  return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap"><div><h3>${title}</h3>
+      <p class="hint">${sub}${v(top)?` ${best}: <b>${name(top)}</b> · ${fmt(Math.round(v(top)))} ${unit}`:""}</p></div>
+    <div class="seg">${Object.entries(M).map(([k,[m]])=>`<button data-trend="${k}" aria-pressed="${k===TREND}">${m}</button>`).join("")}</div></div>
+    <div class="lc"><svg viewBox="0 0 600 160" preserveAspectRatio="none" aria-hidden="true"><polygon class="ar" points="0,160 ${pts} 600,160"/><polyline class="ln" points="${pts}"/></svg>
+      ${v(top)?`<span class="pk" style="left:${ti/(n-1)*100}%;top:${Y(top)/160*100}%"></span>`:""}
+      <div class="hit">${rows.map(r=>`<i data-tip="${esc(`${name(r)}<br><b>${fmt(Math.round(v(r)))}</b> ${unit}${others(r)}`)}"></i>`).join("")}</div></div>
+    <div class="xax">${ticks.map(i=>`<span>${tick(rows[i],i===n-1)}</span>`).join("")}</div></div>`; }
 // Bunk-o-Meter promos: every click from all three placements combined, then the split
 function promo(){ const t=DATA.totals||{}, P={"sloppy-studies":"Home page card","sloppy-answer":"Link under answers","sloppy-feed":"Promo reel in the feed"};
   return `<div class="card" style="margin-top:14px"><h3>Bunk-o-Meter promo clicks</h3><p class="hint">All promos combined: home card, link under answers, promo reel.</p>

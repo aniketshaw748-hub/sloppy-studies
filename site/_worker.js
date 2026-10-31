@@ -197,7 +197,7 @@ async function stats(request, url, env) {
   const q = (sql, ...a) => env.DB.prepare(sql).bind(since, ...a).all().then(r => r.results);
   await ensureComments(env);
   const [totals, reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments,
-    returning, prev, funnel, promos] = await Promise.all([
+    returning, prev, funnel, promos, hourly] = await Promise.all([
     q(`SELECT COUNT(DISTINCT vid) visitors, COUNT(DISTINCT sid) sessions,
          SUM(type='reel_view') reel_views, SUM(type='complete') completes, ROUND(SUM(CASE WHEN type='watch' THEN val ELSE 0 END)/60.0,1) watch_min,
          SUM(type='like') likes, SUM(type='save') saves, SUM(type='share') shares, SUM(type='answer_open') answers,
@@ -246,8 +246,11 @@ async function stats(request, url, env) {
        FROM events WHERE ts>=?1 AND reel IS NOT NULL`),
     // Bunk-o-Meter promo clicks by placement (the link's ?src tag)
     q(`SELECT extra k, COUNT(*) n FROM events WHERE ts>=?1 AND type='promo_click' GROUP BY extra`),
+    // 24 h view only: per IST clock hour (h = hours since epoch, shifted to IST)
+    days === 1 ? q(`SELECT CAST((ts+19800000)/3600000 AS INT) h, COUNT(DISTINCT vid) visitors, SUM(type='reel_view') views,
+         ROUND(SUM(CASE WHEN type='watch' THEN val ELSE 0 END)/60.0,1) watch_min FROM events WHERE ts>=?1 GROUP BY h`) : [],
   ]);
-  return Response.json({ days, generated: Date.now(), totals: { ...totals[0], returning: returning[0].n }, prev: prev[0], funnel: funnel[0], promos,
+  return Response.json({ days, generated: Date.now(), totals: { ...totals[0], returning: returning[0].n }, prev: prev[0], funnel: funnel[0], promos, hourly,
     reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments },
     { headers: { "Cache-Control": "no-store" } });
 }
