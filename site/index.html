@@ -9,7 +9,7 @@
 <meta property="og:title" content="Sloppy Studies">
 <meta name="author" content="Aniket Shaw">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Caveat:wght@700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#000;--fg:#fff;--dim:rgba(255,255,255,.72);--glass:rgba(20,20,24,.55);--accent:#ff3b5c;
   --se:#D9654F;--cd:#2BD97A;--oop:#FFD23F;--im:#E63B2E;--ai:#A78BFA}
@@ -207,6 +207,18 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 .card.sv{background:#FF4D8D}.card.sv .cn,.card.sv .cw{color:#141414}
 .svic{width:46px;height:46px;flex:none;border-radius:13px;background:#fff;border:2.5px solid #141414;box-shadow:3px 3px 0 #141414;display:grid;place-items:center;transform:rotate(-6deg)}.svic svg{width:24px;height:24px}
 .mixdots{display:flex;flex:none}.mixdots i{width:22px;height:22px;border-radius:50%;border:2.5px solid #141414;margin-left:-7px}.mixdots i:first-child{margin-left:0}
+/* Bunk-o-Meter promo: the author's attendance app, drawn in that app's own look (yellow, ink, red, sticker logo) */
+.card.bom{--c:#c8322b;--r:1.4deg;background:#f6e04a;color:#1a1414;text-decoration:none;justify-content:space-between;container-type:inline-size;font-family:"Bricolage Grotesque",Inter,system-ui,sans-serif}
+.bom-logo{position:relative;margin:6% 0 0 7%;display:flex;flex-direction:column;align-items:flex-start;transform:rotate(-6deg)}
+.bom-logo b{background:#fff;border:2.5px solid #1a1414;border-radius:9px;padding:.08em .32em;font:800 max(13px,7cqw)/1 Inter,system-ui,sans-serif;letter-spacing:-.02em;box-shadow:2px 2px 0 #1a1414}
+.bom-logo i{font-style:normal;background:#3ccf6e;border:2.5px solid #1a1414;border-radius:7px;padding:.1em .38em;margin:-3px 0 0 14%;font:800 max(8px,4.2cqw)/1.05 Inter,system-ui,sans-serif;box-shadow:2px 2px 0 #1a1414;transform:rotate(3deg)}
+.bom-st{position:absolute;top:9%;right:6%;font:500 max(8px,3.6cqw)/1 "DM Mono",monospace;letter-spacing:.04em;background:#fff;border:2px solid #1a1414;border-radius:999px;padding:.5em .8em;transform:rotate(7deg);box-shadow:2px 2px 0 #1a1414}
+.bom-ct{position:relative;padding:0 7% 7%}
+.bom-h{font-weight:800;font-size:max(19px,8.8cqw);line-height:.92;letter-spacing:-.045em}
+.bom-h span{display:inline-block;background:#1a1414;color:#f6e04a;padding:0 .14em .04em;transform:rotate(-2.5deg);margin:.06em 0}
+.bom-s{margin:.5em 0 0;font-weight:600;font-size:max(11px,4cqw);line-height:1.3}
+.bom-cta{display:inline-flex;align-items:center;gap:.3em;margin-top:.6em;background:#c8322b;color:#fff;border:2.5px solid #1a1414;border-radius:999px;font-weight:800;font-size:max(11.5px,4.6cqw);padding:.5em .95em;box-shadow:2px 2px 0 #1a1414;white-space:nowrap}
+@container (max-width:230px){.bom-s,.bom-st{display:none}.bom-h{font-size:15cqw}.bom-cta{font-size:11px;padding:.5em .75em}}
 .hfoot{margin-top:30px;font-size:13px;color:#5b4b2a;text-align:center}
 .hfoot b{font-family:Caveat,cursive;font-size:19px}
 @media (min-width:760px){
@@ -386,6 +398,13 @@ function renderHome(){ const g=document.getElementById("hgrid"); g.innerHTML="";
       ${DOODLE[k]?`<span class="doodle"><svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${DOODLE[k]}</svg></span>`:""}
       <div class="ct"><div class="cn">${v.full}</div><div class="cw">${v.w}${v.by?" · by "+v.by:""}</div><span class="cc">${items.length} questions</span></div>`;
     c.onclick=()=>openSubject(k); g.appendChild(c); });
+  // promo for the author's attendance app; ?src tags these visits in Bunk-o-Meter's own analytics
+  const bom=document.createElement("a"); bom.className="card bom"; bom.href="https://bunkometer.pages.dev/?src=sloppy-studies"; bom.target="_blank"; bom.rel="noopener";
+  bom.setAttribute("aria-label","Try Bunk-o-Meter, the most effortless attendance tracking app");
+  bom.innerHTML=`<span class="bom-logo" aria-hidden="true"><b>BUNK</b><i>O-METER</i></span><span class="bom-st">FREE · ANDROID</span>
+    <div class="bom-ct"><div class="bom-h">The most <span>effortless</span> attendance app</div><p class="bom-s">Ek tap per class. Bunk budget aur teacher ki vibe, sab ek jagah.</p>
+    <span class="bom-cta">Try Bunk-o-Meter ↗</span></div>`;
+  g.appendChild(bom);
   const mix=document.createElement("button"); mix.className="card wide";
   mix.innerHTML=`<div class="ct"><span class="mixdots">${Object.keys(SUBJ).filter(k=>k!=="all"&&k!=="liked").map(k=>`<i style="background:var(--${k})"></i>`).join("")}</span>
     <div><div class="cn">Mix of everything</div><div class="cw">All ${all.length} questions, every subject in turn</div></div></div>`;
