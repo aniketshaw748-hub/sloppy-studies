@@ -54,6 +54,7 @@ const ensureComments = env => cmtReady ||= (async () => {
       reel TEXT NOT NULL, subject TEXT, t REAL, text TEXT NOT NULL, country TEXT, city TEXT, device TEXT, os TEXT, browser TEXT, screen TEXT, model TEXT, net TEXT,
       parent INTEGER, hidden INTEGER NOT NULL DEFAULT 0)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS cm_ts ON comments(ts)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS key_fails (ip TEXT NOT NULL, ts INTEGER NOT NULL)`),
   ]);
   // the first version's table was a private feedback inbox: add the new columns and keep those rows out of public view
   const cols = (await env.DB.prepare(`PRAGMA table_info(comments)`).all()).results.map(c => c.name);
@@ -67,6 +68,22 @@ const ensureComments = env => cmtReady ||= (async () => {
   const ucols = (await env.DB.prepare(`PRAGMA table_info(users)`).all()).results.map(c => c.name);
   if (!ucols.includes("author")) await env.DB.prepare(`ALTER TABLE users ADD COLUMN author INTEGER NOT NULL DEFAULT 0`).run();
 })().catch(e => { cmtReady = null; throw e; });
+
+// owner key guard: the key is short, so wrong guesses are counted. 5 wrong in 15 min locks that IP for 15 min, and
+// 100 wrong site-wide in an hour pauses every key check (the owner too) until the hour clears. IPs are stored hashed.
+async function checkKey(request, env, key) {
+  if (!env.STATS_KEY || !env.DB) return "bad";
+  await ensureComments(env);
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("sloppy|" + (request.headers.get("CF-Connecting-IP") || "?")));
+  const ip = [...new Uint8Array(d)].slice(0, 8).map(x => x.toString(16).padStart(2, "0")).join(""), now = Date.now();
+  const f = await env.DB.prepare(`SELECT SUM(ip=?1 AND ts>=?2) mine, COUNT(*) total FROM key_fails WHERE ts>=?3`).bind(ip, now - 900000, now - 3600000).first();
+  if (f.mine >= 5 || f.total >= 100) return "locked";
+  if (key === env.STATS_KEY) return "ok";
+  await env.DB.batch([env.DB.prepare(`INSERT INTO key_fails (ip, ts) VALUES (?1, ?2)`).bind(ip, now),
+    env.DB.prepare(`DELETE FROM key_fails WHERE ts<?1`).bind(now - 86400000)]);
+  return "bad";
+}
+const keyRefused = k => k === "locked" ? new Response("too many wrong keys, try again in 15 minutes", { status: 429 }) : new Response("forbidden", { status: 403 });
 
 const readBody = async request => {
   if (+request.headers.get("Content-Length") > 8000) return null;
@@ -90,7 +107,7 @@ async function me(request, env) {
   await ensureComments(env);
   const vid = clip(b.vid, 40); let u = await account(env, vid);
   if (b.key !== undefined) {
-    if (!env.STATS_KEY || b.key !== env.STATS_KEY) return new Response("forbidden", { status: 403 });
+    const k = await checkKey(request, env, b.key); if (k !== "ok") return keyRefused(k);
     await env.DB.prepare(`UPDATE users SET author=1, name=CASE WHEN name LIKE 'Anonymous %' THEN 'Aniket Shaw' ELSE name END WHERE vid=?1`).bind(vid).run();
     u = await account(env, vid);
   }
@@ -142,7 +159,9 @@ async function comment(request, env) {
 async function uncomment(request, url, env) {
   const b = await readBody(request); if (!b) return new Response("bad request", { status: 400 });
   await ensureComments(env);
-  const owner = env.STATS_KEY && url.searchParams.get("key") === env.STATS_KEY;
+  const key = url.searchParams.get("key"), k = key === null ? null : await checkKey(request, env, key);
+  if (k && k !== "ok") return keyRefused(k);
+  const owner = k === "ok";
   const c = await env.DB.prepare(`SELECT id, vid FROM comments WHERE id=?1`).bind(num(b.id)).first();
   if (!c || (!owner && c.vid !== clip(b.vid, 40))) return new Response("not yours", { status: 403 });
   await env.DB.prepare(`DELETE FROM comments WHERE id=?1 OR parent=?1`).bind(c.id).run();
@@ -171,13 +190,14 @@ async function likeCounts(request, env) {
   return res;
 }
 
-async function stats(url, env) {
-  if (!env.STATS_KEY || url.searchParams.get("key") !== env.STATS_KEY) return new Response("forbidden", { status: 403 });
+async function stats(request, url, env) {
+  const k = await checkKey(request, env, url.searchParams.get("key")); if (k !== "ok") return keyRefused(k);
   const days = Math.min(365, Math.max(1, parseInt(url.searchParams.get("days") || "30", 10)));
   const since = Date.now() - days * 86400000;
   const q = (sql, ...a) => env.DB.prepare(sql).bind(since, ...a).all().then(r => r.results);
   await ensureComments(env);
-  const [totals, reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments] = await Promise.all([
+  const [totals, reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments,
+    returning, prev, funnel] = await Promise.all([
     q(`SELECT COUNT(DISTINCT vid) visitors, COUNT(DISTINCT sid) sessions,
          SUM(type='reel_view') reel_views, SUM(type='complete') completes, ROUND(SUM(CASE WHEN type='watch' THEN val ELSE 0 END)/60.0,1) watch_min,
          SUM(type='like') likes, SUM(type='save') saves, SUM(type='share') shares, SUM(type='answer_open') answers,
@@ -187,6 +207,8 @@ async function stats(url, env) {
          SUM(type='reel_view') views, COUNT(DISTINCT CASE WHEN type='reel_view' THEN vid END) viewers,
          ROUND(SUM(CASE WHEN type='watch' THEN val ELSE 0 END)/60.0,1) watch_min,
          SUM(type='progress' AND val=25) p25, SUM(type='progress' AND val=50) p50, SUM(type='progress' AND val=75) p75, SUM(type='complete') completes,
+         COUNT(DISTINCT CASE WHEN type='progress' AND val=25 THEN vid END) u25, COUNT(DISTINCT CASE WHEN type='progress' AND val=50 THEN vid END) u50,
+         COUNT(DISTINCT CASE WHEN type='progress' AND val=75 THEN vid END) u75, COUNT(DISTINCT CASE WHEN type='complete' THEN vid END) ufin,
          SUM(type='like')-SUM(type='unlike') likes, SUM(type='save')-SUM(type='unsave') saves, SUM(type='share') shares,
          SUM(type='answer_open') answers, ROUND(AVG(CASE WHEN type='answer_close' THEN val END),1) answer_read_s,
          SUM(type='hint_shown') hints, SUM(type='hint_click') hint_clicks, SUM(type='scrub') scrubs,
@@ -209,8 +231,21 @@ async function stats(url, env) {
     q(`SELECT net k, COUNT(DISTINCT vid) n FROM events WHERE ts>=?1 AND net IS NOT NULL GROUP BY net ORDER BY n DESC LIMIT 10`),
     q(`SELECT c.id, c.ts, c.reel, c.subject, c.t, c.text, c.parent, c.hidden, u.name, u.author, c.device, c.os, c.browser, c.model, c.net, c.city, c.country
        FROM comments c LEFT JOIN users u ON u.vid=c.vid WHERE c.ts>=?1 ORDER BY c.ts DESC LIMIT 1000`),
+    // people who came back on a different day (IST) within the window
+    q(`SELECT COUNT(*) n FROM (SELECT vid FROM events WHERE ts>=?1 GROUP BY vid
+         HAVING COUNT(DISTINCT date(ts/1000,'unixepoch','+5 hours','+30 minutes'))>=2)`),
+    // the same length of time just before the window, for change arrows
+    env.DB.prepare(`SELECT COUNT(DISTINCT vid) visitors, ROUND(SUM(CASE WHEN type='watch' THEN val ELSE 0 END)/60.0,1) watch_min,
+         COUNT(DISTINCT CASE WHEN type='reel_view' THEN vid||'|'||reel END) started, COUNT(DISTINCT CASE WHEN type='complete' THEN vid||'|'||reel END) done
+       FROM events WHERE ts>=?1 AND ts<?2`).bind(since - days * 86400000, since).all().then(r => r.results),
+    // retention across all reels: one count per person per reel at each stage
+    q(`SELECT COUNT(DISTINCT CASE WHEN type='reel_view' THEN vid||'|'||reel END) started,
+         COUNT(DISTINCT CASE WHEN type='progress' AND val=25 THEN vid||'|'||reel END) p25, COUNT(DISTINCT CASE WHEN type='progress' AND val=50 THEN vid||'|'||reel END) p50,
+         COUNT(DISTINCT CASE WHEN type='progress' AND val=75 THEN vid||'|'||reel END) p75, COUNT(DISTINCT CASE WHEN type='complete' THEN vid||'|'||reel END) done
+       FROM events WHERE ts>=?1 AND reel IS NOT NULL`),
   ]);
-  return Response.json({ days, generated: Date.now(), totals: totals[0], reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments },
+  return Response.json({ days, generated: Date.now(), totals: { ...totals[0], returning: returning[0].n }, prev: prev[0], funnel: funnel[0],
+    reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments },
     { headers: { "Cache-Control": "no-store" } });
 }
 
@@ -225,7 +260,7 @@ export default {
       if (url.pathname === "/api/comment/delete") return uncomment(request, url, env);
     }
     if (url.pathname === "/api/comment-counts") return env.DB ? commentCounts(request, env) : Response.json({});
-    if (url.pathname === "/api/stats") return stats(url, env);
+    if (url.pathname === "/api/stats") return stats(request, url, env);
     if (url.pathname === "/api/likes") return env.DB ? likeCounts(request, env) : Response.json({});
     const res = await env.ASSETS.fetch(request);
     const range = request.headers.get("Range");

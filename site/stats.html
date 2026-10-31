@@ -5,136 +5,374 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Sloppy Studies · Insights</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#FFF3D1;--ink:#141414;--muted:#5b4b2a;--card:#fff;--se:#D9654F;--cd:#2BD97A;--oop:#FFD23F;--im:#E63B2E;--ai:#A78BFA;--pink:#FF4D8D;--blue:#2F6BFF}
+/* Owner dashboard. Scannable first: the hero answers "how many people, how much they watched, which reel" in three
+   seconds; everything else sits one step down in labelled sections. Data marks use one blue; subject colours only
+   appear as outlined dots next to written names (they are too pale to work as chart fills). */
+:root{--bg:#FFF3D1;--ink:#141414;--muted:#6b5a36;--soft:#8a7a58;--card:#fff;--line:#efe4c8;--track:#EEF2FF;--blue:#2F6BFF;--blue2:#9DB6FF;
+  --pink:#FF4D8D;--good:#14804A;--bad:#C8261B;--se:#D9654F;--cd:#2BD97A;--oop:#FFD23F;--im:#E63B2E;--ai:#A78BFA;--os:#22C3E6;--cg:#3D7BFF}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg) radial-gradient(#e7d6a8 1.2px,transparent 1.3px) 0 0/22px 22px;color:var(--ink);font:14px/1.4 "Bricolage Grotesque",system-ui,sans-serif;
-  padding:calc(env(safe-area-inset-top,0px) + 16px) 14px calc(env(safe-area-inset-bottom,0px) + 30px)}
-.wrap{max-width:1100px;margin:0 auto}
-h1{font-size:28px;letter-spacing:-.8px;margin:0}
-.sub{color:var(--muted);margin:2px 0 14px}
-.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
-.bar button{font:inherit;font-weight:700;border:2px solid var(--ink);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer}
-.bar button[aria-pressed=true]{background:var(--ink);color:#fff}
-.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
-.kpi{background:var(--card);border:2.5px solid var(--ink);border-radius:14px;padding:10px 12px;box-shadow:4px 4px 0 var(--ink)}
-.kpi b{display:block;font-size:24px;letter-spacing:-.5px}
-.kpi span{color:var(--muted);font-size:12.5px;font-weight:600}
+body{margin:0;background:var(--bg) radial-gradient(#e7d6a8 1.2px,transparent 1.3px) 0 0/22px 22px;color:var(--ink);
+  font:14px/1.4 "Bricolage Grotesque",system-ui,sans-serif;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 40px)}
+button,select{font:inherit;color:inherit}
+.wrap{max-width:1080px;margin:0 auto}
+.num{font-variant-numeric:tabular-nums}
+/* header */
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 16px;margin-bottom:12px}
+.head h1{font-size:30px;letter-spacing:-1px;margin:0;line-height:1}
+.head p{margin:4px 0 0;color:var(--muted);font-size:12.5px}
+.range{display:flex;gap:4px;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:3px}
+.range button{border:0;background:none;border-radius:999px;padding:5px 11px;font-weight:700;font-size:13px;cursor:pointer}
+.range button[aria-pressed=true]{background:var(--ink);color:#fff}
+.jump{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 14px;padding:8px 16px;
+  padding-top:calc(env(safe-area-inset-top,0px) + 8px);background:linear-gradient(var(--bg) 80%,transparent)}
+.jump::-webkit-scrollbar{display:none}
+.jump a{flex:none;font-weight:700;font-size:13px;color:var(--ink);text-decoration:none;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 11px}
+.jump a b{font-size:11px;background:var(--pink);border-radius:999px;padding:0 6px;margin-left:4px}
+section{margin:0 0 26px;scroll-margin-top:60px}
+section>h2{font-size:20px;letter-spacing:-.4px;margin:0 0 10px}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:14px 16px;box-shadow:3px 3px 0 var(--ink);min-width:0}
+.card h3{font-size:15px;margin:0}
+.card .hint{color:var(--soft);font-size:12px;margin:2px 0 10px}
 .grid{display:grid;grid-template-columns:1fr;gap:14px}
-.card{background:var(--card);border:2.5px solid var(--ink);border-radius:16px;padding:12px 14px;box-shadow:4px 4px 0 var(--ink);min-width:0}
-.card h2{font-size:16px;margin:0 0 8px}
-.card p.note{color:var(--muted);font-size:12px;margin:-4px 0 8px}
-.hb{display:grid;grid-template-columns:minmax(70px,auto) 1fr auto;gap:6px 8px;align-items:center;font-size:13px}
-.hb .t{height:12px;border-radius:6px;background:var(--blue);min-width:2px}
-.hb .n{font-weight:700;text-align:right}
-.tblwrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:12.5px;white-space:nowrap}
-th,td{padding:6px 8px;border-bottom:1px solid #eee;text-align:right}
-th:first-child,td:first-child{text-align:left}
-th{font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none;position:sticky;top:0;background:#fff}
-td .dot,.fb .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;border:1.5px solid var(--ink)}
-.spark{display:flex;align-items:flex-end;gap:3px;height:90px}
-.spark i{flex:1;background:var(--pink);border-radius:3px 3px 0 0;min-height:2px;position:relative}
-.empty{color:var(--muted);padding:6px 0}
-.fb{border-top:1px solid #eee;padding:10px 0 4px}.fb:first-of-type{border-top:0;padding-top:2px}
-.fb h3{font-size:14px;margin:0 0 6px;display:flex;gap:6px;align-items:center}
-.fb h3 em{font-style:normal;font-size:11.5px;font-weight:800;background:var(--ink);color:#fff;border-radius:999px;padding:1px 7px}
+.empty{color:var(--soft);padding:8px 0}
+/* hero: one lead number, two supporting answers */
+.hero{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px}
+.lead .lbl,.kpi .lbl{font-weight:700;font-size:13px;color:var(--muted)}
+.lead .big{display:block;font-size:64px;font-weight:800;letter-spacing:-2.5px;line-height:1;margin:6px 0 6px}
+.lead p{margin:8px 0 0;color:var(--muted)}
+.lead p b{color:var(--ink)}
+.dl{display:inline-flex;align-items:center;gap:3px;font-weight:800;font-size:12.5px;border-radius:999px;padding:2px 8px;background:#F1ECE0;color:var(--muted)}
+.dl.up{background:#E3F5EA;color:var(--good)}.dl.down{background:#FBE6E3;color:var(--bad)}
+.kpi .val{display:block;font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.05;margin:6px 0 4px}
+.kpi .val.sm{font-size:21px;letter-spacing:-.4px;line-height:1.15}
+.kpi p{margin:0;color:var(--muted);font-size:12.5px}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.mini{background:rgba(255,255,255,.65);border:1.5px solid #e2d5b4;border-radius:12px;padding:8px 10px}
+.mini b{display:block;font-size:18px;letter-spacing:-.3px}
+.mini span{font-size:12px;color:var(--muted);font-weight:600}
+/* charts */
+.seg{display:inline-flex;gap:2px;background:#F4EEDF;border-radius:999px;padding:3px;margin-bottom:12px}
+.seg button{border:0;background:none;border-radius:999px;padding:4px 10px;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.cols{display:flex;align-items:flex-end;gap:3px;height:150px;border-bottom:1.5px solid #d9cba6;position:relative}
+.cols .c{flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;min-width:0;cursor:default}
+.cols .c i{display:block;width:100%;max-width:46px;background:var(--blue);border-radius:4px 4px 0 0;min-height:2px}
+.cols .c.zero i{background:#E4DCC6;min-height:2px}
+.cols .c:hover i{background:#1748C7}
+.cols .c.hi i{background:var(--pink)}
+.cols .c em{position:absolute;font-style:normal;font-size:11.5px;font-weight:800;transform:translateY(-4px)}
+.xax{display:flex;justify-content:space-between;font-size:11.5px;color:var(--soft);margin-top:5px}
+.cols.short{height:110px}
+/* funnel */
+.fun{display:grid;grid-template-columns:96px 1fr 46px;gap:8px 10px;align-items:center}
+.fun span{font-size:13px;font-weight:600}
+.fun .tr{height:22px;border-radius:6px;background:var(--track);overflow:hidden}
+.fun .tr i{display:block;height:100%;background:var(--blue);border-radius:6px}
+.fun b{text-align:right;font-size:14px}
+.fun .drop{grid-column:2/4;font-size:11.5px;color:var(--bad);font-weight:700;margin:-6px 0 0}
+/* highlights */
+.hl{display:grid;grid-template-columns:1fr;gap:8px}
+.hli{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:12px;background:#FBF7EC}
+.hli .ic{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:15px;border:2px solid var(--ink);background:#fff}
+.hli small{display:block;font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.hli b{font-size:14px}
+.hli p{margin:1px 0 0;font-size:12.5px;color:var(--muted)}
+/* reel list */
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;max-width:100%}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;display:inline-flex;align-items:center;gap:6px;border:1.5px solid #d9cba6;background:#fff;border-radius:999px;padding:4px 10px;font-weight:700;font-size:12.5px;cursor:pointer}
+.chips button[aria-pressed=true]{border-color:var(--ink);background:var(--ink);color:#fff}
+.dot{display:inline-block;flex:none;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink)}
+.tools select{border:1.5px solid #d9cba6;background:#fff;border-radius:10px;padding:5px 8px;font-weight:700;font-size:12.5px}
+.rl{border-top:1.5px solid var(--line)}
+.rh,.rr>summary{display:grid;grid-template-columns:minmax(0,1fr) 48px 46px;gap:10px;align-items:center}
+.rh{font-size:11.5px;font-weight:700;color:var(--soft);padding:8px 2px;text-align:right}
+.rh span:first-child{text-align:left}
+.rr{border-bottom:1.5px solid var(--line)}
+.rr>summary{list-style:none;cursor:pointer;padding:10px 2px}
+.rr>summary::-webkit-details-marker{display:none}
+.rr>summary:hover{background:#FDFAF2}
+.rn{display:flex;gap:9px;align-items:center;min-width:0}
+.rn div{min-width:0}
+.rn b{display:block;font-size:14px;line-height:1.25}
+.rn small{display:block;font-size:12px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rr .n{text-align:right;font-weight:800;font-size:15px}
+.rn .tr{height:5px;border-radius:3px;background:var(--track);overflow:hidden;margin-top:5px;max-width:260px}
+.rn .tr i{display:block;height:100%;background:var(--blue);border-radius:3px}
+.rr .pc{text-align:right;font-size:15px}
+.rh .pl,.rr .pl{display:none}
+.rd{padding:2px 2px 14px 21px;display:grid;grid-template-columns:1fr;gap:12px}
+.rd .q{margin:0;color:var(--muted);font-size:12.5px}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.steps div{background:#FBF7EC;border-radius:10px;padding:6px 8px}
+.steps b{display:block;font-size:15px}.steps span{display:block;font-size:11px;color:var(--muted);font-weight:700}.steps small{display:block;font-size:11px;color:var(--soft)}
+.facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.facts b{color:var(--ink)}
+.more{margin-top:10px;font-weight:700;font-size:13px;border:1.5px solid #d9cba6;background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer}
+/* bar lists */
+.bl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;font-size:13px}
+.bl .lab{display:flex;flex-direction:column;gap:3px;min-width:0}
+.bl .lab span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bl .lab small{color:var(--soft);font-size:11px;margin-left:4px}
+.bl .tr{height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.bl .tr i{display:block;height:100%;background:var(--blue);border-radius:3px}
+.bl .v{text-align:right;font-weight:800;align-self:start}
+.bl .v small{display:block;font-weight:600;color:var(--soft);font-size:11px}
+details.all>summary{list-style:none;cursor:pointer;font-weight:700;font-size:12.5px;color:var(--blue);margin-top:10px}
+details.all>summary::-webkit-details-marker{display:none}
+details.all[open]>summary{display:none}
+details.all .bl{margin-top:6px}
+.split{display:flex;gap:2px;height:14px;border-radius:7px;overflow:hidden;margin:4px 0 8px}
+.split i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;margin-bottom:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.sub3{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin:14px 0 8px}
+.sub3:first-of-type{margin-top:4px}
+/* comments */
+.fb{border-top:1.5px solid var(--line);padding:12px 0 4px}.fb:first-child{border-top:0;padding-top:0}
+.fb h4{font-size:14px;margin:0 0 6px;display:flex;gap:8px;align-items:center}
+.fb h4 em{font-style:normal;font-size:11.5px;font-weight:800;background:var(--ink);color:#fff;border-radius:999px;padding:1px 7px}
 .cm{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:6px 0}
-.cm a{grid-row:span 2;align-self:start;font-weight:800;font-size:13px;color:var(--ink);background:var(--oop);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;text-decoration:none;font-variant-numeric:tabular-nums}
+.cm a{grid-row:span 2;align-self:start;font-weight:800;font-size:12.5px;color:var(--ink);background:var(--oop);border:2px solid var(--ink);border-radius:999px;padding:1px 8px;text-decoration:none}
 .cm p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
-.cm small{color:var(--muted);font-size:11.5px}
-.cm.rep{padding-left:24px}.cm i{grid-row:span 2;font-style:normal;color:var(--muted);font-weight:800}
-.cm .priv{font-style:normal;font-size:11px;font-weight:800;background:var(--ai);border-radius:999px;padding:1px 7px}.cm .priv.auth{background:var(--pink)}
-.cm .del{font:inherit;font-weight:700;color:#C8261B;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
-.gate{max-width:380px;margin:60px auto;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:18px;box-shadow:5px 5px 0 var(--ink)}
+.cm small{color:var(--soft);font-size:11.5px}
+.cm.rep{padding-left:24px}.cm i{grid-row:span 2;font-style:normal;color:var(--soft);font-weight:800}
+.cm .tag{font-style:normal;font-size:11px;font-weight:800;background:var(--ai);border-radius:999px;padding:1px 7px}.cm .tag.auth{background:var(--pink)}
+.cm .del{font:inherit;font-weight:700;color:var(--bad);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+/* tooltip + gate */
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--ink);color:#fff;font-size:12.5px;line-height:1.35;padding:7px 10px;border-radius:10px;max-width:240px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.tip b{font-size:14px}
+.gate{max-width:380px;margin:60px auto}
 .gate input{width:100%;font:inherit;padding:10px;border:2px solid var(--ink);border-radius:10px;margin:10px 0}
-.gate button{font:inherit;font-weight:800;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
-@media (min-width:760px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}
+.gate button{font-weight:800;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
+.authme{display:block;margin-top:2px}
+@media (min-width:640px){.minis{grid-template-columns:repeat(6,minmax(0,1fr))}.rd{grid-template-columns:1fr 1fr}}
+@media (min-width:860px){.hero{grid-template-columns:1.25fr 1fr 1fr}.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .wide{grid-column:1/-1}.rh,.rr>summary{grid-template-columns:minmax(0,1fr) 70px 70px 90px 50px}.rh .pl,.rr .pl{display:block}}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <script>
-const SUBJ={se:"Software Engg",cd:"Compiler Design",oop:"OOP · Java",im:"Industrial Mgmt",ai:"AI",all:"Mix",saved:"Saved list",liked:"Liked list"};
+// ---------- names ----------
+const SUBJ={se:"Software Engineering",cd:"Compiler Design",oop:"OOP · Java",im:"Industrial Management",ai:"Artificial Intelligence",
+  os:"Operating Systems",cg:"Computer Graphics",all:"Mix of everything",saved:"Saved list",liked:"Liked list"};
+// phone model codes (what Android Chrome reports) -> retail names; verified against public phone databases
+const PHONES={"SM-M366B":"Samsung Galaxy M36 5G","SM-M356B":"Samsung Galaxy M35 5G","SM-M346B":"Samsung Galaxy M34 5G","SM-A125F":"Samsung Galaxy A12",
+  "SM-A166P":"Samsung Galaxy A16 5G","SM-A356E":"Samsung Galaxy A35 5G","SM-A566E":"Samsung Galaxy A56 5G","SM-E076B":"Samsung Galaxy F70e 5G","SM-E546B":"Samsung Galaxy F54 5G",
+  "22127PC95I":"POCO C55","2406ERN9CI":"Redmi 13 5G","21091116AI":"Redmi Note 11T 5G","22087RA4DI":"Redmi Note 11 SE","22111317I":"Redmi Note 12 5G","22111317PI":"POCO X5 5G",
+  "23076PC4BI":"POCO M6 Pro 5G","23122PCD1I":"POCO X6 5G","25098RA98I":"Redmi Note 15 5G","A001":"CMF Phone 2 Pro","A001T":"Nothing Phone (3a) Lite","A059":"Nothing Phone (3a)",
+  "A142":"Nothing Phone (2a)","CPH2707":"OnePlus Nord 5","CPH2793":"OnePlus Nord 6","I2221":"iQOO Neo 10R 5G","I2304":"iQOO Neo 9 Pro","RMX2195":"realme C15",
+  "RMX3785":"realme 11x 5G","RMX3997":"realme C65 5G / Narzo N65","V2246":"vivo V27 5G","V2318":"vivo V30 5G","V2336":"vivo Y200e 5G","V2513":"vivo V60e 5G",
+  "Infinix X6711":"Infinix Note 30 5G","Infinix X6832":"Infinix Hot 30 5G"};
+// unknown codes still get their brand, from the manufacturer's code pattern
+function phone(code){ if(!code) return "Unknown"; if(PHONES[code]) return PHONES[code];
+  const brand=/^SM-/.test(code)?"Samsung":/^RMX/.test(code)?"Realme":/^CPH/.test(code)?"OPPO / OnePlus":/^V\d{4}$/.test(code)?"vivo":/^I\d{4}$/.test(code)?"iQOO"
+    :/^\d{5}[A-Z0-9]{3,6}$/.test(code)?"Xiaomi / Redmi / POCO":/^A\d{3}[A-Z]?$/.test(code)?"Nothing / CMF":null;
+  return brand?`${brand} · ${code}`:code; }
+const NET=n=>String(n||"").replace(/\b(Infocomm|Limited|Ltd\.?|Pvt\.?|Private|Services?|Broadband|Webnet|Networks?)\b/gi,"").replace(/(\s*\.)+(?=\s|$)/g,"").replace(/\s+/g," ").trim()||n;
+const REFS={"com.google.android.googlequicksearchbox":"Google app","com.whatsapp":"WhatsApp","com.instagram.android":"Instagram","t.co":"X (Twitter)","l.instagram.com":"Instagram","lm.facebook.com":"Facebook"};
+let REEL={};   // id -> {subject, qno, title, question} from shorts.json
+const reelName=id=>{ const r=REEL[id]; return r?`${SUBJ[r.subject]||r.subject} · Q${r.qno}`:id; };
+const reelSub=id=>REEL[id]?.subject||String(id).split("-")[0];
+
+// ---------- state ----------
 const app=document.getElementById("app");
-let KEY=new URLSearchParams(location.search).get("key")||localStorage.getItem("statsKey")||"", DAYS=30, DATA=null, SORT={k:"views",d:-1}, TITLES={};
+let KEY=new URLSearchParams(location.search).get("key")||localStorage.getItem("statsKey")||"", DAYS=30, DATA=null,
+  TREND="visitors", FILTER="all", SORT="people", SHOWN=12;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const fmt=n=>n==null?"–":(+n).toLocaleString("en-IN");
-fetch("shorts.json",{cache:"no-store"}).then(r=>r.json()).then(l=>{ l.forEach(x=>TITLES[x.id]=x.title); if(DATA) render(); }).catch(()=>{});
-function gate(msg){ app.innerHTML=`<div class="gate"><h1>Insights</h1><p class="sub">${msg||"Enter your stats key."}</p>
+const fmt=n=>n==null?"–":(+n).toLocaleString("en-IN",{maximumFractionDigits:1});
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const mins=m=>m>=90?fmt(Math.round(m/6)/10)+" h":fmt(Math.round(m))+" min";
+fetch("shorts.json",{cache:"no-store"}).then(r=>r.json()).then(l=>{ l.forEach(x=>REEL[x.id]=x); if(DATA) render(); }).catch(()=>{});
+
+// ---------- tooltip (hover on desktop, tap on phones) ----------
+const tip=document.createElement("div"); tip.className="tip"; tip.hidden=true; document.body.appendChild(tip);
+const place=e=>{ const w=tip.offsetWidth, h=tip.offsetHeight; tip.style.left=Math.min(innerWidth-w-8,Math.max(8,e.clientX-w/2))+"px"; tip.style.top=Math.max(8,e.clientY-h-14)+"px"; };
+addEventListener("pointerover",e=>{ const t=e.target.closest&&e.target.closest("[data-tip]"); if(!t){ tip.hidden=true; return; } tip.innerHTML=t.dataset.tip; tip.hidden=false; place(e); });
+addEventListener("pointermove",e=>{ if(!tip.hidden) place(e); });
+addEventListener("scroll",()=>{ tip.hidden=true; },{passive:true});
+
+// ---------- auth ----------
+function gate(msg){ app.innerHTML=`<div class="gate card"><h3 style="font-size:22px">Insights</h3><p class="hint">${msg||"Enter your stats key."}</p>
   <input id="k" type="password" autocomplete="current-password" placeholder="stats key"><button id="go">Open</button></div>`;
   const go=()=>{ KEY=document.getElementById("k").value.trim(); load(); }; document.getElementById("go").onclick=go; document.getElementById("k").onkeydown=e=>{ if(e.key==="Enter") go(); }; }
 async function load(){ if(!KEY) return gate();
   const r=await fetch(`/api/stats?key=${encodeURIComponent(KEY)}&days=${DAYS}`,{cache:"no-store"});
   if(r.status===403){ localStorage.removeItem("statsKey"); return gate("That key didn't work."); }
+  if(r.status===429){ localStorage.removeItem("statsKey"); return gate("Too many wrong keys. Try again in 15 minutes."); }
   localStorage.setItem("statsKey",KEY); if(new URLSearchParams(location.search).get("key")) history.replaceState(null,"",location.pathname);
   DATA=await r.json(); render(); claimAuthor(); }
 // this is the owner's browser: make its comment account (same visitor id as the reels site) the verified author.
 // The key goes in the POST body, never in a URL.
+let ME=null;
 async function claimAuthor(){ try{ let vid=JSON.parse(localStorage.getItem("vid"));
   if(!vid){ vid=crypto.randomUUID(); localStorage.setItem("vid",JSON.stringify(vid)); }
   const r=await fetch("/api/me",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({vid,key:KEY})});
-  if(r.ok){ const u=await r.json(); localStorage.setItem("me",JSON.stringify(u)); const s=document.querySelector(".sub");
-    if(s&&!s.querySelector(".authme")) s.insertAdjacentHTML("beforeend",` <span class="authme">On the reels, this browser comments as <b>${esc(u.name)}</b> with the Author badge.</span>`); } }catch{} }
-function hbars(rows,label,val,fmtv){ if(!rows||!rows.length) return `<div class="empty">No data yet.</div>`;
-  const max=Math.max(...rows.map(r=>+r[val]||0),1);
-  return `<div class="hb">${rows.map(r=>`<span>${esc(label(r))}</span><span class="t" style="width:${(+r[val]||0)/max*100}%"></span><span class="n">${fmtv?fmtv(r[val]):fmt(r[val])}</span>`).join("")}</div>`; }
-function reelTable(){ const rows=[...(DATA.reels||[])].sort((a,b)=>((+a[SORT.k]||0)-(+b[SORT.k]||0))*SORT.d||String(a.reel).localeCompare(b.reel));
-  if(!rows.length) return `<div class="empty">No reels watched yet.</div>`;
-  const cols=[["reel","Reel"],["views","Views"],["viewers","Viewers"],["watch_min","Watch min"],["p50","Reached 50%"],["completes","Finished"],["comp","Finish rate"],
-    ["avg_speed","Avg speed"],["likes","Likes"],["saves","Saves"],["shares","Shares"],["answers","Answer opens"],["answer_read_s","Answer read s"],["hint_clicks","Hint taps"],["scrubs","Scrubs"]];
-  rows.forEach(r=>r.comp=r.views?Math.round(r.completes/r.views*100):0);
-  return `<div class="tblwrap"><table><thead><tr>${cols.map(([k,n])=>`<th data-k="${k}">${n}${SORT.k===k?(SORT.d<0?" ▾":" ▴"):""}</th>`).join("")}</tr></thead><tbody>
-  ${rows.map(r=>`<tr><td><span class="dot" style="background:var(--${esc(r.subject)})"></span>${esc(r.reel)} · ${esc(TITLES[r.reel]||"")}</td>
-    <td>${fmt(r.views)}</td><td>${fmt(r.viewers)}</td><td>${fmt(r.watch_min)}</td><td>${fmt(r.p50)}</td><td>${fmt(r.completes)}</td><td>${r.comp}%</td>
-    <td>${r.avg_speed?r.avg_speed+"×":"–"}</td><td>${fmt(r.likes)}</td><td>${fmt(r.saves)}</td><td>${fmt(r.shares)}</td><td>${fmt(r.answers)}</td>
-    <td>${r.answer_read_s??"–"}</td><td>${fmt(r.hint_clicks)}</td><td>${fmt(r.scrubs)}</td></tr>`).join("")}</tbody></table></div>`; }
-// comments: grouped by reel (latest activity first), threads in video order with replies under them; the time opens
-// the reel there. "private" = feedback from the first version of the box, which promised only the owner would read it.
+  if(r.ok){ ME=await r.json(); localStorage.setItem("me",JSON.stringify(ME)); const s=document.getElementById("authme");
+    if(s) s.innerHTML=`On the reels you comment as <b>${esc(ME.name)}</b> with the Author badge.`; } }catch{} }
+
+// ---------- small builders ----------
+function delta(cur,prev,label){ if(!prev) return `<span class="dl">new · no earlier data</span>`;
+  const d=Math.round((cur-prev)/prev*100); if(!d) return `<span class="dl">same as ${label}</span>`;
+  return `<span class="dl ${d>0?"up":"down"}">${d>0?"▲":"▼"} ${Math.abs(d)}% vs ${label}</span>`; }
+function columns(rows,{val,tip:tipf,hi,cls=""}){ const max=Math.max(...rows.map(val),1);
+  return `<div class="cols ${cls}">${rows.map(r=>{ const v=val(r);
+    return `<div class="c${v?"":" zero"}${hi&&hi(r)?" hi":""}" data-tip="${esc(tipf(r))}"><i style="height:${v?Math.max(2,v/max*100):0}%"></i></div>`; }).join("")}</div>`; }
+// a ranked list with bars; the first 6 show, the rest fold under "Show all"
+function blist(rows,{label,val,sub,total,dot}){ if(!rows||!rows.length) return `<div class="empty">No data yet.</div>`;
+  const max=Math.max(...rows.map(r=>+val(r)||0),1), sum=total||rows.reduce((a,r)=>a+(+val(r)||0),0);
+  const row=r=>{ const v=+val(r)||0; return `<div class="lab"><span>${dot?`<span class="dot" style="background:var(--${esc(dot(r))});margin-right:6px;vertical-align:-1px"></span>`:""}${esc(label(r))}${sub?`<small>${esc(sub(r)||"")}</small>`:""}</span><div class="tr"><i style="width:${v/max*100}%"></i></div></div>
+    <div class="v num">${fmt(v)}<small>${pct(v,sum)}%</small></div>`; };
+  const head=rows.slice(0,6), rest=rows.slice(6);
+  return `<div class="bl">${head.map(row).join("")}</div>${rest.length?`<details class="all"><summary>Show all ${rows.length}</summary><div class="bl">${rest.map(row).join("")}</div></details>`:""}`; }
+
+// ---------- sections ----------
+function hero(){ const t=DATA.totals||{}, p=DATA.prev||{}, f=DATA.funnel||{}, lbl=DAYS===1?"previous 24 h":`previous ${DAYS} days`;
+  const top=[...(DATA.reels||[])].sort((a,b)=>b.viewers-a.viewers||b.views-a.views)[0];
+  return `<div class="hero">
+    <div class="card lead"><span class="lbl">Unique visitors</span><b class="big num">${fmt(t.visitors)}</b>${delta(t.visitors,p.visitors,lbl)}
+      <p><b class="num">${fmt(t.sessions)}</b> visits · <b class="num">${fmt(t.returning)}</b> came back on another day</p></div>
+    <div class="card kpi"><span class="lbl">Minutes watched</span><b class="val num">${fmt(Math.round(t.watch_min||0))}</b>
+      <p>${t.visitors?`<b>${fmt(Math.round((t.watch_min||0)/t.visitors*10)/10)} min</b> per visitor · `:""}${delta(t.watch_min,p.watch_min,lbl)}</p></div>
+    <div class="card kpi"><span class="lbl">Most watched reel</span>${top?`<b class="val sm">${esc(reelName(top.reel))}</b>
+      <p>${esc(REEL[top.reel]?.title||"")}<br><b class="num">${fmt(top.viewers)}</b> people · <b class="num">${fmt(top.views)}</b> plays</p>`:`<b class="val sm">–</b>`}</div>
+  </div>
+  <div class="minis">${[["Reel plays",t.reel_views,"every time a reel came on screen"],["Watched to the end",f.done,"one per person per reel"],["Likes",t.likes],
+    ["Comments",(DATA.comments||[]).filter(c=>!c.hidden).length],["Answer opens",t.answers],["Shares",t.shares]]
+    .map(([n,v,h])=>`<div class="mini"${h?` data-tip="${esc(n+": "+h)}"`:""}><b class="num">${fmt(v)}</b><span>${n}</span></div>`).join("")}</div>`; }
+
+function trend(){ const d=DATA.daily||[]; if(!d.length) return `<div class="card"><h3>Day by day</h3><div class="empty">No data yet.</div></div>`;
+  // fill missing days so gaps show as gaps
+  const by=Object.fromEntries(d.map(x=>[x.d,x])), out=[]; for(let t=new Date(d[0].d+"T00:00:00Z"), end=new Date(d[d.length-1].d+"T00:00:00Z"); t<=end; t.setUTCDate(t.getUTCDate()+1)){
+    const k=t.toISOString().slice(0,10); out.push(by[k]||{d:k,visitors:0,views:0,watch_min:0}); }
+  const M={visitors:["Visitors","visitors"],views:["Reel plays","plays"],watch_min:["Minutes","minutes"]}, [nm,unit]=M[TREND];
+  const day=k=>new Date(k+"T00:00:00Z").toLocaleDateString("en-IN",{day:"numeric",month:"short",timeZone:"UTC"});
+  const best=out.reduce((a,b)=>(+b[TREND]>+a[TREND]?b:a),out[0]);
+  return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap"><div><h3>Day by day</h3>
+      <p class="hint">Best day: <b>${day(best.d)}</b> · ${fmt(Math.round(best[TREND]))} ${unit}</p></div>
+    <div class="seg">${Object.entries(M).map(([k,[n]])=>`<button data-trend="${k}" aria-pressed="${k===TREND}">${n}</button>`).join("")}</div></div>
+    ${columns(out,{val:r=>+r[TREND]||0,hi:r=>r===best,tip:r=>`${day(r.d)}<br><b>${fmt(Math.round(r[TREND]))}</b> ${unit} · ${fmt(r.visitors)} visitors · ${fmt(r.views)} plays`})}
+    <div class="xax"><span>${day(out[0].d)}</span><span>${day(out[out.length-1].d)}</span></div></div>`; }
+
+function funnel(){ const f=DATA.funnel||{}; if(!f.started) return `<div class="card"><h3>Where people stop watching</h3><div class="empty">No reels watched yet.</div></div>`;
+  const st=[["Started",f.started],["A quarter in",f.p25],["Halfway",f.p50],["Three quarters",f.p75],["The end",f.done]];
+  let worst=1; for(let i=1;i<st.length;i++) if(st[i-1][1]-st[i][1]>st[worst-1][1]-st[worst][1]) worst=i;
+  return `<div class="card"><h3>Where people stop watching</h3><p class="hint">Each person counted once per reel they started.</p>
+    <div class="fun">${st.map(([n,v],i)=>`<span>${n}</span><div class="tr" data-tip="${esc(`<b>${fmt(v)}</b> of ${fmt(f.started)} reel starts reached ${n.toLowerCase()}`)}"><i style="width:${pct(v,f.started)}%"></i></div><b class="num">${pct(v,f.started)}%</b>
+      ${i===worst?`<div class="drop">Biggest drop: ${pct(st[i-1][1]-v,f.started)}% leave before ${n.toLowerCase()}</div>`:""}`).join("")}</div></div>`; }
+
+function enriched(){ const cc={}; (DATA.comments||[]).forEach(c=>{ if(!c.hidden) cc[c.reel]=(cc[c.reel]||0)+1; });
+  return (DATA.reels||[]).map(r=>({...r, subject:reelSub(r.reel), fin:pct(r.ufin,r.viewers), half:pct(r.u50,r.viewers), cmts:cc[r.reel]||0})); }
+function highlights(){ const rs=enriched(), solid=rs.filter(r=>r.viewers>=5), pool=solid.length?solid:rs;
+  if(!pool.length) return "";
+  const pick=(arr,f)=>arr.reduce((a,b)=>f(b)>f(a)?b:a,arr[0]);
+  const best=pick(pool,r=>r.fin), weak=pick(pool,r=>-r.half), liked=pick(rs,r=>r.likes||0), talk=pick(rs,r=>r.cmts);
+  const item=(ic,t,r,why)=>`<div class="hli"><span class="ic">${ic}</span><div><small>${t}</small><b>${esc(reelName(r.reel))}</b><p>${why}</p></div></div>`;
+  return `<div class="card"><h3>Stand-outs</h3><p class="hint">${solid.length?"From reels at least 5 people started.":"Too few viewers yet; treat these as early signals."}</p><div class="hl">
+    ${item("🏆","Holds attention best",best,`${best.fin}% of ${fmt(best.viewers)} people watched to the end`)}
+    ${item("⚠️","Loses people early",weak,`only ${weak.half}% of ${fmt(weak.viewers)} people got halfway`)}
+    ${liked.likes>0?item("❤️","Most liked",liked,`${fmt(liked.likes)} likes`):""}
+    ${talk.cmts>0?item("💬","Most discussed",talk,`${fmt(talk.cmts)} comments`):""}</div></div>`; }
+
+function reelList(){ const all=enriched(); if(!all.length) return `<div class="card"><div class="empty">No reels watched yet.</div></div>`;
+  const subs=[...new Set(all.map(r=>r.subject))].sort((a,b)=>Object.keys(SUBJ).indexOf(a)-Object.keys(SUBJ).indexOf(b));
+  const S={people:["Most people",r=>r.viewers],plays:["Most plays",r=>r.views],fin:["Best finish rate",r=>r.viewers>=3?r.fin:-1],low:["Lowest finish rate",r=>r.viewers>=3?-r.fin:-999],
+    likes:["Most liked",r=>r.likes||0],cmts:["Most comments",r=>r.cmts],q:["Question order",r=>-(Object.keys(SUBJ).indexOf(r.subject)*100+(REEL[r.reel]?.qno||0))]};
+  const rows=all.filter(r=>FILTER==="all"||r.subject===FILTER).sort((a,b)=>S[SORT][1](b)-S[SORT][1](a)||b.viewers-a.viewers);
+  const row=r=>{ const R=REEL[r.reel]||{};
+    return `<details class="rr"><summary>
+      <div class="rn"><span class="dot" style="background:var(--${esc(r.subject)})"></span><div><b>${esc(reelName(r.reel))}</b><small>${esc(R.title||r.reel)}</small>
+        <div class="tr" data-tip="${esc(`<b>${fmt(r.ufin)}</b> of ${fmt(r.viewers)} people watched to the end`)}"><i style="width:${r.fin}%"></i></div></div></div>
+      <span class="n num">${fmt(r.viewers)}</span><span class="n num pl">${fmt(r.views)}</span>
+      <b class="pc num">${r.fin}%</b><span class="n num pl" style="font-size:13px">${r.likes>0?fmt(r.likes):"–"}</span></summary>
+      <div class="rd">
+        <div>${R.question?`<p class="q">${esc(R.question)}</p>`:""}
+          <div class="sub3">How far people got</div>
+          <div class="steps">${[["Started",r.viewers],["¼",r.u25],["½",r.u50],["¾",r.u75],["End",r.ufin]].map(([n,v])=>`<div><b class="num">${pct(v,r.viewers)}%</b><span>${n}</span><small class="num">${fmt(v)}</small></div>`).join("")}</div></div>
+        <div><div class="sub3">Details</div><div class="facts">
+          <span><b>${fmt(r.views)}</b> plays</span><span><b>${fmt(r.likes)}</b> likes</span><span><b>${fmt(r.watch_min)}</b> min watched</span><span><b>${r.avg_speed?r.avg_speed+"×":"1×"}</b> avg speed</span>
+          <span><b>${fmt(r.answers)}</b> answer opens${r.answer_read_s?` (read ${r.answer_read_s}s)`:""}</span><span><b>${fmt(r.cmts)}</b> comments</span>
+          <span><b>${fmt(r.scrubs)}</b> seeks</span><span><b>${fmt(r.shares)}</b> shares</span><span><b>${fmt(r.hint_clicks)}</b> next-question taps</span></div>
+          <p style="margin:10px 0 0"><a href="/?s=${esc(r.subject)}#${esc(r.reel)}" target="_blank" rel="noopener" style="font-weight:700;color:var(--blue)">Open this reel ↗</a></p></div>
+      </div></details>`; };
+  return `<div class="card"><div class="tools">
+      <div class="chips"><button data-f="all" aria-pressed="${FILTER==="all"}">All ${all.length}</button>${subs.map(s=>`<button data-f="${s}" aria-pressed="${FILTER===s}"><span class="dot" style="background:var(--${s})"></span>${esc(SUBJ[s]||s)}</button>`).join("")}</div>
+      <select id="sort" aria-label="Sort reels">${Object.entries(S).map(([k,[n]])=>`<option value="${k}"${k===SORT?" selected":""}>${n}</option>`).join("")}</select></div>
+    <div class="rh"><span>Reel · tap for details</span><span>People</span><span class="pl">Plays</span><span>Finished</span><span class="pl">♥</span></div>
+    <div class="rl">${rows.slice(0,SHOWN).map(row).join("")}</div>
+    ${rows.length>SHOWN?`<button class="more" id="more">Show ${Math.min(24,rows.length-SHOWN)} more of ${rows.length-SHOWN}</button>`:""}</div>`; }
+
+function audience(){ const t=DATA.totals||{}, V=t.visitors||0;
+  const hours=Array.from({length:24},(_,h)=>({h,n:(DATA.hours||[]).find(x=>x.h===h)?.n||0})), peak=hours.reduce((a,b)=>b.n>a.n?b:a,hours[0]);
+  const hl=h=>`${(h%12)||12} ${h<12?"am":"pm"}`;
+  const subj={}; (DATA.reels||[]).forEach(r=>{ const s=reelSub(r.reel); subj[s]=(subj[s]||0)+(+r.views||0); });
+  const dev=DATA.devices||[], dsum=dev.reduce((a,r)=>a+r.n,0), DC={mobile:"#2F6BFF",desktop:"#141414",tablet:"#9DB6FF"};
+  const depth=DATA.depth||[], one=depth.find(x=>x.reels===1)?.sessions||0, dsess=depth.reduce((a,x)=>a+x.sessions,0);
+  const sp=DATA.speeds||[], spm=sp.reduce((a,r)=>a+(+r.watch_min||0),0), fast=sp.filter(r=>r.speed>1).reduce((a,r)=>a+(+r.watch_min||0),0);
+  return `<div class="grid two">
+    <div class="card wide"><h3>When they watch</h3><p class="hint">Reel plays by hour of day, IST. Busiest: <b>${hl(peak.h)}–${hl((peak.h+1)%24)}</b>.</p>
+      ${columns(hours,{val:r=>r.n,hi:r=>r===peak,cls:"short",tip:r=>`${hl(r.h)}–${hl((r.h+1)%24)}<br><b>${fmt(r.n)}</b> plays`})}
+      <div class="xax"><span>12 am</span><span>6 am</span><span>12 pm</span><span>6 pm</span><span>11 pm</span></div></div>
+    <div class="card"><h3>What they watch</h3><p class="hint">Reel plays by subject.</p>
+      ${blist(Object.entries(subj).sort((a,b)=>b[1]-a[1]),{label:([s])=>SUBJ[s]||s,val:([,n])=>n,dot:([s])=>s})}</div>
+    <div class="card"><h3>Their phones</h3>
+      <div class="split">${dev.map(r=>`<i style="width:${pct(r.n,dsum)}%;background:${DC[r.k]||"#bbb"}" data-tip="${esc(`<b>${pct(r.n,dsum)}%</b> ${r.k} · ${fmt(r.n)} people`)}"></i>`).join("")}</div>
+      <div class="legend">${dev.map(r=>`<span><i style="background:${DC[r.k]||"#bbb"}"></i>${pct(r.n,dsum)}% ${esc(r.k)}</span>`).join("")}</div>
+      <div class="sub3">Phone models</div>${blist(DATA.models,{label:r=>phone(r.k),val:r=>r.n,total:V})}
+      <p class="hint" style="margin-top:8px">Android Chrome shares the model; iPhones never do.</p>
+      <div class="sub3">Operating system</div>${blist(DATA.oss,{label:r=>r.k,val:r=>r.n,total:V})}
+      <div class="sub3">Browser</div>${blist(DATA.browsers,{label:r=>r.k,val:r=>r.n,total:V})}</div>
+    <div class="card"><h3>Where they are</h3>
+      <div class="sub3">City</div>${blist(DATA.cities,{label:r=>r.k,val:r=>r.n,total:V})}
+      <div class="sub3">Mobile network / internet</div>${blist(DATA.nets,{label:r=>NET(r.k),val:r=>r.n,total:V})}
+      <div class="sub3">Came from</div>${blist(DATA.refs,{label:r=>r.k==="direct"?"Direct / shared link":(REFS[r.k]||r.k),val:r=>r.n,total:V})}
+      <div class="sub3">Country</div>${blist(DATA.countries,{label:r=>r.k||"unknown",val:r=>r.n,total:V})}</div>
+    <div class="card"><h3>How they watch</h3>
+      <div class="sub3">Reels per visit</div><p class="hint" style="margin-top:-4px"><b>${pct(one,dsess)}%</b> of visits watched just one reel.</p>
+      ${blist(depth.map(x=>({k:x.reels>=10?"10+":x.reels,n:x.sessions})).reduce((a,x)=>{ const e=a.find(y=>y.k===x.k); e?e.n+=x.n:a.push(x); return a; },[]),{label:r=>r.k+(r.k===1?" reel":" reels"),val:r=>r.n})}
+      <div class="sub3">Playback speed</div><p class="hint" style="margin-top:-4px"><b>${pct(fast,spm)}%</b> of watch time was sped up.</p>
+      ${blist(sp,{label:r=>(r.speed||1)+"×",val:r=>Math.round(+r.watch_min||0)})}
+      <div class="sub3">Sound</div><div class="facts">${(DATA.sliders||[]).map(r=>`<span>${r.k==="music"?"Music":"Sound effects"} set to <b>${Math.round(r.avg_level*100)}%</b> by ${fmt(r.n)}</span>`).join("")||"Nobody changed the sound levels."}
+        <span><b>${fmt(t.sound_on)}</b> sound-on taps</span></div></div>
+  </div>`; }
+
+// comments: grouped by reel, threads in video order with replies under them; the time opens the reel there.
+// "private" = feedback from the first version of the box, which promised only the owner would read it.
 function comments(){ const cs=DATA.comments||[]; if(!cs.length) return `<div class="empty">No comments yet.</div>`;
   const by={}; cs.forEach(c=>(by[c.reel]=by[c.reel]||[]).push(c));
   const mmss=t=>Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
   const row=c=>`<div class="cm${c.parent?" rep":""}">${c.parent?`<i>↳</i>`:`<a href="/?s=${encodeURIComponent(c.subject||"all")}&t=${Math.floor(c.t||0)}#${encodeURIComponent(c.reel)}" target="_blank" rel="noopener" title="Open the reel at this moment">${mmss(c.t||0)}</a>`}
-    <p><b>${esc(c.name||"Anonymous")}</b>${c.author?` <em class="priv auth">Author</em>`:""}${c.hidden?` <em class="priv">private</em>`:""} ${esc(c.text)}</p>
-    <small>${new Date(c.ts).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})} · ${esc([c.model||c.device,c.os,c.browser,c.city,c.net].filter(Boolean).join(" · "))}
+    <p><b>${esc(c.name||"Anonymous")}</b>${c.author?` <em class="tag auth">Author</em>`:""}${c.hidden?` <em class="tag">private</em>`:""} ${esc(c.text)}</p>
+    <small>${new Date(c.ts).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})} · ${esc([c.model?phone(c.model):c.device,c.city,c.net&&NET(c.net)].filter(Boolean).join(" · "))}
       · <button class="del" data-del="${c.id}">Delete</button></small></div>`;
   return Object.values(by).map(g=>{ const r=g[0], tops=g.filter(c=>!c.parent).sort((a,b)=>a.t-b.t||a.id-b.id), orphans=g.filter(c=>c.parent&&!g.some(t=>t.id===c.parent));
-    return `<div class="fb"><h3><span class="dot" style="background:var(--${esc(r.subject)})"></span>
-      ${esc(r.reel)} · ${esc(TITLES[r.reel]||"")} <em>${g.length}</em></h3>
+    return `<div class="fb"><h4><span class="dot" style="background:var(--${esc(reelSub(r.reel))})"></span>${esc(reelName(r.reel))} <em>${g.length}</em></h4>
       ${[...tops.flatMap(t=>[t,...g.filter(c=>c.parent===t.id).sort((a,b)=>a.id-b.id)]),...orphans].map(row).join("")}</div>`; }).join(""); }
-function render(){ const t=DATA.totals||{};
-  const k=[["visitors","Visitors"],["sessions","Visits"],["reel_views","Reels viewed"],["completes","Reels finished"],["watch_min","Minutes watched"],["likes","Likes"],["answers","Answer opens"],["shares","Shares"]];
-  const daily=DATA.daily||[], dmax=Math.max(...daily.map(d=>+d.views||0),1);
-  app.innerHTML=`<h1>Sloppy Studies · Insights</h1><p class="sub">Anonymous, first-party. Times in IST. Updated ${new Date(DATA.generated).toLocaleString("en-IN")}.</p>
-  <div class="bar">${[1,7,30,90].map(d=>`<button data-d="${d}" aria-pressed="${d===DAYS}">${d===1?"24 h":d+" days"}</button>`).join("")}<button id="rf">Refresh</button></div>
-  <div class="kpis">${k.map(([key,n])=>`<div class="kpi"><b>${fmt(t[key])}</b><span>${n}</span></div>`).join("")}</div>
-  <div class="grid">
-    <div class="card wide"><h2>Comments (${(DATA.comments||[]).length})</h2><p class="note">Public comment threads, each pinned to a moment in the reel. Tap a time to open the reel there; Delete removes a comment and its replies for everyone.</p>${comments()}</div>
-    <div class="card wide"><h2>Every reel</h2><p class="note">Tap a column to sort. Finish rate = finished ÷ views.</p>${reelTable()}</div>
-    <div class="card wide"><h2>Reels viewed per day</h2>${daily.length?`<div class="spark">${daily.map(d=>`<i title="${esc(d.d)}: ${d.views} views, ${d.visitors} visitors" style="height:${(+d.views||0)/dmax*100}%"></i>`).join("")}</div>
-      <p class="note" style="margin-top:6px">${esc(daily[0].d)} → ${esc(daily[daily.length-1].d)}</p>`:`<div class="empty">No data yet.</div>`}</div>
-    <div class="card"><h2>Playback speed</h2><p class="note">Minutes of video watched at each speed.</p>${hbars(DATA.speeds,r=>(r.speed||1)+"×","watch_min")}</div>
-    <div class="card"><h2>Subjects opened</h2>${hbars(DATA.subjects,r=>SUBJ[r.k]||r.k,"n")}</div>
-    <div class="card"><h2>How many reels per visit</h2>${hbars(DATA.depth,r=>r.reels+" reel"+(r.reels==1?"":"s"),"sessions")}</div>
-    <div class="card"><h2>When they watch (IST)</h2>${hbars((DATA.hours||[]).map(h=>({...h,lab:String(h.h).padStart(2,"0")+":00"})),r=>r.lab,"n")}</div>
-    <div class="card"><h2>Devices</h2>${hbars(DATA.devices,r=>r.k,"n")}</div>
-    <div class="card"><h2>Operating system</h2>${hbars(DATA.oss,r=>r.k,"n")}</div>
-    <div class="card"><h2>Phone models</h2><p class="note">Android Chrome only; iPhones never share their model.</p>${hbars(DATA.models,r=>r.k,"n")}</div>
-    <div class="card"><h2>Network</h2>${hbars(DATA.nets,r=>r.k,"n")}</div>
-    <div class="card"><h2>Browser</h2>${hbars(DATA.browsers,r=>r.k,"n")}</div>
-    <div class="card"><h2>Where from (link source)</h2>${hbars(DATA.refs,r=>r.k,"n")}</div>
-    <div class="card"><h2>Countries</h2>${hbars(DATA.countries,r=>r.k||"unknown","n")}</div>
-    <div class="card"><h2>Cities</h2>${hbars(DATA.cities,r=>r.k,"n")}</div>
-    <div class="card"><h2>Sound settings</h2><p class="note">Average slider level chosen (default 50%), and how many people changed it.</p>
-      ${hbars(DATA.sliders,r=>(r.k==="music"?"Music":"Sound effects")+" · "+Math.round(r.avg_level*100)+"%","n")}</div>
-  </div>`;
+
+function render(){ const nc=(DATA.comments||[]).length, y=scrollY;
+  app.innerHTML=`<header class="head"><div><h1>Insights</h1><p>Sloppy Studies · anonymous, first-party · IST · updated ${new Date(DATA.generated).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit"})}
+      <span class="authme" id="authme">${ME?`On the reels you comment as <b>${esc(ME.name)}</b> with the Author badge.`:""}</span></p></div>
+    <div class="range">${[[1,"24 h"],[7,"7 d"],[30,"30 d"],[90,"90 d"]].map(([d,n])=>`<button data-d="${d}" aria-pressed="${d===DAYS}">${n}</button>`).join("")}<button id="rf" aria-label="Refresh" title="Refresh">↻</button></div></header>
+  <nav class="jump"><a href="#ov">Overview</a><a href="#reels">Reels</a><a href="#aud">Audience</a><a href="#cm">Comments${nc?`<b>${nc}</b>`:""}</a></nav>
+  <section id="ov">${hero()}${trend()}</section>
+  <section id="reels"><h2>Reels</h2><div class="grid two" style="margin-bottom:14px">${funnel()}${highlights()}</div>${reelList()}</section>
+  <section id="aud"><h2>Audience</h2>${audience()}</section>
+  <section id="cm"><h2>Comments</h2><div class="card"><p class="hint" style="margin-top:0">Public threads, each pinned to a moment in a reel. Tap a time to open the reel there; Delete removes a comment and its replies for everyone.</p>${comments()}</div></section>`;
+  scrollTo(0,y);
   app.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{ DAYS=+b.dataset.d; load(); });
   document.getElementById("rf").onclick=load;
+  app.querySelectorAll("[data-trend]").forEach(b=>b.onclick=()=>{ TREND=b.dataset.trend; render(); });
+  app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ FILTER=b.dataset.f; SHOWN=12; render(); });
+  const so=document.getElementById("sort"); if(so) so.onchange=()=>{ SORT=so.value; render(); };
+  const mo=document.getElementById("more"); if(mo) mo.onclick=()=>{ SHOWN+=24; render(); };
   app.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{ if(!confirm("Delete this comment (and its replies) for everyone?")) return;
     const r=await fetch(`/api/comment/delete?key=${encodeURIComponent(KEY)}`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({vid:"owner",id:+b.dataset.del})});
-    if(r.ok) load(); else alert("Couldn't delete ("+r.status+")"); });
-  app.querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{ const k=th.dataset.k; SORT={k,d:SORT.k===k?-SORT.d:-1}; render(); }); }
+    if(r.ok) load(); else alert("Couldn't delete ("+r.status+")"); }); }
 load();
 </script>
 </body>
