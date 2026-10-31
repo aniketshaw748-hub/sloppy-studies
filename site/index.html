@@ -93,6 +93,7 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 .sheet .sq{color:var(--dim);margin:0 0 14px}
 .sheet ol{margin:0;padding-left:20px}
 .sheet li{margin:0 0 10px;line-height:1.45}
+.sh-bom{display:block;margin-top:18px;text-align:center;font-size:11.5px;color:rgba(255,255,255,.4);text-decoration:underline;text-decoration-color:rgba(255,255,255,.18);text-underline-offset:3px}
 /* comments: one public thread per reel, each comment pinned to a moment in the video (tap the time to jump there) */
 .csheet{display:flex;flex-direction:column;height:74dvh;max-height:none;overflow:hidden;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
 .csheet h3{display:flex;align-items:baseline;gap:8px;margin:0 0 4px}
@@ -257,7 +258,7 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 <div id="app"><div id="feed" aria-label="Exam reels feed"></div></div>
 <nav class="top" id="tabs" aria-label="Subjects"></nav>
 <div class="scrim" id="scrim"></div>
-<section class="sheet" id="sheet" aria-label="Exam answer notes"><div class="grab"></div><h3 id="sh-t"></h3><p class="sq" id="sh-q"></p><ol id="sh-a"></ol></section>
+<section class="sheet" id="sheet" aria-label="Exam answer notes"><div class="grab"></div><h3 id="sh-t"></h3><p class="sq" id="sh-q"></p><ol id="sh-a"></ol><a class="sh-bom" href="https://bunkometer.pages.dev/?src=sloppy-answer" target="_blank" rel="noopener">Try Bunk-o-Meter ↗</a></section>
 <section class="sheet csheet" id="csheet" role="dialog" aria-label="Comments"><div class="grab"></div><h3>Comments <span id="c-n"></span></h3>
   <div class="clist" id="c-list"></div>
   <div class="ccomp"><div class="crep" id="c-rep" hidden><span>Replying to <b id="c-rto"></b></span><button id="c-rx" aria-label="Cancel reply">✕</button></div>
@@ -380,7 +381,15 @@ function showHome(){ flushWatch(); AN.t("home"); io&&io.disconnect(); bedPause()
   tabs.hidden=true; document.getElementById("app").hidden=true; home.hidden=false; feed.innerHTML=""; renderHome(); }
 function openSubject(s){ history.pushState({view:"feed"},"","?s="+s); route(); AN.t("subject",{s}); }
 function goHome(){ AN.t("back_home"); if(history.state&&history.state.view==="feed") history.back(); else { history.replaceState({view:"home"},"",location.pathname); route(); } }
-addEventListener("popstate",route);
+// sheets (answer, comments, account card) each add a history entry while open, so the phone's Back closes the top
+// sheet and leaves the reel exactly as it was, instead of leaving the feed (which restarted the reel)
+let sheetDepth=0, popSelf=0;
+const sheetPushed=()=>{ history.pushState(history.state,"",location.href); sheetDepth++; };
+const sheetClosed=()=>{ if(sheetDepth>0){ sheetDepth--; popSelf++; history.back(); } };
+addEventListener("popstate",()=>{ if(popSelf){ popSelf--; return; }
+  if(sheetDepth>0){ sheetDepth--; if(!document.getElementById("prof").hidden) closeProfile(true); else if(cmt) closeComment(true); else closeAnswer(true);
+    if(activeS) history.replaceState(history.state,"","#"+activeS.id); return; }
+  route(); });
 function renderHome(){ const g=document.getElementById("hgrid"); g.innerHTML="";
   const nLiked=all.filter(x=>likes[x.id]).length;
   if(nLiked){ const sv=document.createElement("button"); sv.className="card wide sv";
@@ -495,7 +504,10 @@ function like(s,el,on,e){const was=!!likes[s.id];likes[s.id]=on;store.set("likes
 let sheetOpen=null;
 function openSheet(s){ sheetOpen={r:s.id,s:s.subject,at:Date.now()};document.getElementById("sh-t").textContent=s.title;document.getElementById("sh-q").textContent="Q"+s.qno+". "+s.question;
   const ol=document.getElementById("sh-a");ol.innerHTML="";s.answer.forEach(a=>{const li=document.createElement("li");li.textContent=a;ol.appendChild(li)});
-  document.getElementById("sheet").classList.add("open");document.getElementById("scrim").classList.add("open");AN.t("answer_open",{r:s.id,s:s.subject});}
+  document.getElementById("sheet").classList.add("open");document.getElementById("scrim").classList.add("open");AN.t("answer_open",{r:s.id,s:s.subject}); sheetPushed();}
+function closeAnswer(fromBack){ if(!document.getElementById("sheet").classList.contains("open")) return;
+  if(sheetOpen){ AN.t("answer_close",{r:sheetOpen.r,s:sheetOpen.s,v:+((Date.now()-sheetOpen.at)/1000).toFixed(1)}); sheetOpen=null; }
+  document.getElementById("sheet").classList.remove("open"); document.getElementById("scrim").classList.remove("open"); if(!fromBack) sheetClosed(); }
 function togglePop(){ let pop=document.getElementById("mixpop");
   if(pop){ pop.remove(); return; }
   pop=document.createElement("div"); pop.id="mixpop"; pop.className="mixpop";
@@ -520,10 +532,10 @@ let cmt=null, CM=[], replyTo=null; const fmtT=t=>Math.floor(t/60)+":"+String(Mat
 const ago=ts=>{ const m=(Date.now()-ts)/60000; return m<1?"now":m<60?Math.floor(m)+"m":m<1440?Math.floor(m/60)+"h":m<10080?Math.floor(m/1440)+"d":new Date(ts).toLocaleDateString("en-IN",{day:"numeric",month:"short"}); };
 function openComment(s,el,v){ cmt={s,el,v,t:v.currentTime,play:!v.paused}; v.pause(); el.querySelector(".paused").classList.add("show");
   setReply(null); CM=[]; document.getElementById("c-list").innerHTML=`<div class="cempty">Loading comments...</div>`; document.getElementById("c-n").textContent="";
-  document.getElementById("csheet").classList.add("open"); document.getElementById("scrim").classList.add("open");
+  document.getElementById("csheet").classList.add("open"); document.getElementById("scrim").classList.add("open"); sheetPushed();
   api("/api/comments",{r:s.id}).then(r=>r.ok?r.json():Promise.reject()).then(list=>{ if(cmt&&cmt.s===s){ CM=list; drawComments(); } })
     .catch(()=>{ if(cmt&&cmt.s===s) document.getElementById("c-list").innerHTML=`<div class="cempty">Couldn't load comments. Check your connection.</div>`; }); }
-function closeComment(){ if(!cmt) return; const {el,v,play}=cmt; cmt=null; document.getElementById("c-tx").blur();
+function closeComment(fromBack){ if(!cmt) return; const {el,v,play}=cmt; cmt=null; document.getElementById("c-tx").blur(); if(!fromBack) sheetClosed();
   document.getElementById("csheet").classList.remove("open"); document.getElementById("scrim").classList.remove("open");
   if(play){ v.play().catch(()=>{}); el.querySelector(".paused").classList.remove("show"); } }
 function setReply(c){ replyTo=c; document.getElementById("c-rep").hidden=!c; document.getElementById("c-at").hidden=!!c;
@@ -562,8 +574,9 @@ document.getElementById("c-go").onclick=async()=>{ const b=document.getElementBy
 // account card: opened from the home chip or "Change" under the comment box
 function openProfile(){ if(!ME) return toast("Connecting, try again in a moment"); const i=document.getElementById("p-nm"), av=document.getElementById("p-av");
   i.value=ME.name; av.textContent=ME.name[0].toUpperCase(); av.style.background=hue(ME.num); document.getElementById("p-err").hidden=true; document.getElementById("p-auth").hidden=!ME.author;
-  document.getElementById("prof").hidden=false; document.getElementById("pscrim").hidden=false; i.focus(); i.select(); }
-function closeProfile(){ document.getElementById("prof").hidden=true; document.getElementById("pscrim").hidden=true; }
+  document.getElementById("prof").hidden=false; document.getElementById("pscrim").hidden=false; i.focus(); i.select(); sheetPushed(); }
+function closeProfile(fromBack){ if(document.getElementById("prof").hidden) return;
+  document.getElementById("prof").hidden=true; document.getElementById("pscrim").hidden=true; if(!fromBack) sheetClosed(); }
 async function saveProfile(){ const i=document.getElementById("p-nm"), name=i.value.replace(/\s+/g," ").trim();
   if(name===ME.name) return closeProfile();
   const r=await api("/api/me",{name}).catch(()=>null);
@@ -572,13 +585,13 @@ async function saveProfile(){ const i=document.getElementById("p-nm"), name=i.va
   ME=await r.json(); store.set("me",ME); paintMe(); CM.forEach(c=>{ if(c.mine) c.name=ME.name; }); if(cmt) drawComments();
   closeProfile(); toast("Name saved"); }
 document.getElementById("meChip").onclick=openProfile; document.getElementById("c-chg").onclick=openProfile;
-document.getElementById("p-x").onclick=closeProfile; document.getElementById("pscrim").onclick=closeProfile; document.getElementById("p-ok").onclick=saveProfile;
+document.getElementById("p-x").onclick=()=>closeProfile(); document.getElementById("pscrim").onclick=()=>closeProfile(); document.getElementById("p-ok").onclick=saveProfile;
 document.getElementById("p-nm").onkeydown=e=>{ if(e.key==="Enter") saveProfile(); if(e.key==="Escape") closeProfile(); };
 // keep the comments sheet above the on-screen keyboard (phones shrink only the visual viewport)
 const VV=window.visualViewport; if(VV){ const lift=()=>{ const cs=document.getElementById("csheet"); cs.style.bottom=Math.max(0,innerHeight-VV.height-VV.offsetTop)+"px";
     cs.style.height=Math.min(innerHeight*.74,VV.height-12)+"px"; };
   VV.addEventListener("resize",lift); VV.addEventListener("scroll",lift); }
-document.getElementById("scrim").onclick=()=>{ closeComment(); if(sheetOpen){ AN.t("answer_close",{r:sheetOpen.r,s:sheetOpen.s,v:+((Date.now()-sheetOpen.at)/1000).toFixed(1)}); sheetOpen=null; }document.getElementById("sheet").classList.remove("open");document.getElementById("scrim").classList.remove("open")};
+document.getElementById("scrim").onclick=()=>{ closeComment(); closeAnswer(); };
 let io;function observe(){io&&io.disconnect();io=new IntersectionObserver(es=>es.forEach(en=>{const v=en.target.querySelector("video");
   if(en.isIntersecting&&en.intersectionRatio>.6){v.currentTime=startAt(en.target.id.slice(2));v.muted=muted;v.play().catch(e=>{ if(e.name!=="NotAllowedError") return; v.muted=true; v.play().catch(()=>{}); });en.target.querySelector(".paused").classList.remove("show"); const sid=en.target.id.slice(2); const S=all.find(x=>x.id===sid); if(S){ bedFor(S,v); AN.t("reel_view",{r:S.id,s:S.subject,v2:SPEED}); }history.replaceState({view:"feed"},"","#"+en.target.id.slice(2));
     const nx=en.target.nextElementSibling;nx&&nx.querySelector("video")&&(nx.querySelector("video").preload="auto");}
