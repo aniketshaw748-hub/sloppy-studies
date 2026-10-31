@@ -13,3 +13,5 @@ sfx_cache/
 site/v/
 urls_bundle.json
 work/
+# Bunk-o-Meter trailer for the in-feed promo: its music is licensed, so it is deployed but never committed
+site/promo/

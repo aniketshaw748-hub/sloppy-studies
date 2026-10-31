@@ -93,6 +93,9 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 .sheet .sq{color:var(--dim);margin:0 0 14px}
 .sheet ol{margin:0;padding-left:20px}
 .sheet li{margin:0 0 10px;line-height:1.45}
+/* in-feed promo reel: the Bunk-o-Meter trailer kept at its own 16:9 inside the normal reel frame */
+.promo .av{background:#f6e04a url(promo/bunkometer-icon.png) center/cover;border:1.5px solid #1a1414}
+.bomgo{flex:none;align-self:center;background:#f6e04a;color:#1a1414;font-weight:800;font-size:14px;padding:10px 16px;border-radius:999px;border:2px solid #1a1414;text-decoration:none;box-shadow:2px 2px 0 #c8322b;white-space:nowrap}
 .sh-bom{display:block;margin-top:18px;text-align:center;font-size:11.5px;color:rgba(255,255,255,.4);text-decoration:underline;text-decoration-color:rgba(255,255,255,.18);text-underline-offset:3px}
 /* comments: one public thread per reel, each comment pinned to a moment in the video (tap the time to jump there) */
 .csheet{display:flex;flex-direction:column;height:74dvh;max-height:none;overflow:hidden;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
@@ -302,7 +305,7 @@ let likes=store.get("likes",{}),muted=true,all=[],cur="all";
 // (iOS ignores media.volume; a GainNode works everywhere).
 const LV={music:store.get("musicLevel",0.5), sfx:store.get("sfxLevel",0.5)};
 let SPEED=Math.min(4,Math.max(1,+store.get("speed",1)||1));            // 1x..4x in 0.25 steps
-function applySpeed(){ document.querySelectorAll(".reel video").forEach(v=>{ v.preservesPitch=true; v.playbackRate=SPEED; });
+function applySpeed(){ document.querySelectorAll(".reel:not(.promo) video").forEach(v=>{ v.preservesPitch=true; v.playbackRate=SPEED; });
   Object.values(TR).forEach(a=>{ a.preservesPitch=true; a.playbackRate=SPEED; });
   const b=document.querySelector(".mix .spd"); if(b){ b.textContent=SPEED===1?"":(SPEED%1?SPEED:SPEED.toFixed(0))+"×"; b.hidden=SPEED===1; } }
 let actx=null, activeV=null, activeS=null; const TR={music:new Audio(), sfx:new Audio()}, GN={};
@@ -439,7 +442,21 @@ function order(){ if(cur==="liked") return all.filter(s=>likes[s.id]);
   while(out.length<all.length){ks.forEach(k=>{if(by[k][i])out.push(by[k][i])});i++;} return out;}
 function render(){feed.innerHTML="";const list=order();
   if(!list.length){feed.innerHTML=`<div class="empty">${cur==="liked"?"No liked videos yet. Tap the heart on a reel to keep it here.":"No reels yet."}</div>`;return;}
-  list.forEach(s=>feed.appendChild(reel(s)));observe();}
+  list.forEach((s,i)=>{ feed.appendChild(reel(s)); if(i===2&&list.length>3&&!promoSeen) feed.appendChild(promoReel()); });observe();}
+// one in-feed promo per visit: the Bunk-o-Meter trailer after the 3rd reel, shown until it has been seen once
+let promoSeen=false;
+function promoReel(){ const el=document.createElement("article"); el.className="reel promo"; el.id="r-promo";
+  el.innerHTML=`<div class="stage"><video playsinline loop preload="metadata" poster="promo/bunkometer-trailer.jpg" src="promo/bunkometer-trailer.mp4"></video>
+   <div class="paused">${ICON.play}</div></div>
+   <div class="dock"><div class="info"><div class="who"><span class="av" aria-hidden="true"></span>Also by Aniket</div>
+     <div class="title">Bunk-o-Meter</div><div class="q">The most effortless attendance app</div></div>
+    <a class="bomgo" href="https://bunkometer.pages.dev/?src=sloppy-feed" target="_blank" rel="noopener">Try it ↗</a></div>`;
+  const v=el.querySelector("video"); v.muted=muted;
+  if(muted){ const pill=document.createElement("button"); pill.className="soundpill"; pill.innerHTML=ICON.off+"<span>Tap for sound</span>";
+    pill.onclick=ev=>{ ev.stopPropagation(); unmuteAll(); v.play(); }; el.querySelector(".stage").appendChild(pill); }
+  v.addEventListener("click",()=>{ if(muted){ unmuteAll(); v.play(); return; }
+    if(v.paused){ v.play(); el.querySelector(".paused").classList.remove("show"); } else { v.pause(); el.querySelector(".paused").classList.add("show"); } });
+  return el; }
 function reel(s){const el=document.createElement("article");el.className="reel";el.id="r-"+s.id;
   const col=getComputedStyle(document.documentElement).getPropertyValue("--"+s.subject)||"#fff";
   el.innerHTML=`<div class="stage"><video playsinline loop preload="metadata" poster="${s.poster}" src="${s.video}"></video>
@@ -593,7 +610,7 @@ const VV=window.visualViewport; if(VV){ const lift=()=>{ const cs=document.getEl
   VV.addEventListener("resize",lift); VV.addEventListener("scroll",lift); }
 document.getElementById("scrim").onclick=()=>{ closeComment(); closeAnswer(); };
 let io;function observe(){io&&io.disconnect();io=new IntersectionObserver(es=>es.forEach(en=>{const v=en.target.querySelector("video");
-  if(en.isIntersecting&&en.intersectionRatio>.6){v.currentTime=startAt(en.target.id.slice(2));v.muted=muted;v.play().catch(e=>{ if(e.name!=="NotAllowedError") return; v.muted=true; v.play().catch(()=>{}); });en.target.querySelector(".paused").classList.remove("show"); const sid=en.target.id.slice(2); const S=all.find(x=>x.id===sid); if(S){ bedFor(S,v); AN.t("reel_view",{r:S.id,s:S.subject,v2:SPEED}); }history.replaceState({view:"feed"},"","#"+en.target.id.slice(2));
+  if(en.isIntersecting&&en.intersectionRatio>.6){v.currentTime=startAt(en.target.id.slice(2));v.muted=muted;v.play().catch(e=>{ if(e.name!=="NotAllowedError") return; v.muted=true; v.play().catch(()=>{}); });en.target.querySelector(".paused").classList.remove("show"); const sid=en.target.id.slice(2); const S=all.find(x=>x.id===sid); if(S){ bedFor(S,v); AN.t("reel_view",{r:S.id,s:S.subject,v2:SPEED}); history.replaceState({view:"feed"},"","#"+sid); } else promoSeen=true;
     const nx=en.target.nextElementSibling;nx&&nx.querySelector("video")&&(nx.querySelector("video").preload="auto");}
   else { v.pause(); const h=en.target.querySelector(".hint"); h&&h.classList.remove("show"); if(v===activeV) bedPause(); } }),{root:feed,threshold:[0,.6,1]});document.querySelectorAll(".reel").forEach(r=>io.observe(r));}
 addEventListener("keydown",e=>{ if(!home.hidden) return; if(/^(TEXTAREA|INPUT)$/.test(e.target.tagName)){ if(e.key==="Escape"&&e.target.tagName==="TEXTAREA") closeComment(); return; } if(e.key==="Escape"){ goHome(); return; } if(e.key==="ArrowDown"||e.key==="j"){feed.scrollBy({top:feed.clientHeight,behavior:"smooth"})}if(e.key==="ArrowUp"||e.key==="k"){feed.scrollBy({top:-feed.clientHeight,behavior:"smooth"})}
