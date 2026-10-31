@@ -6,7 +6,7 @@
 //  - GET  /api/stats : aggregated insights for the private dashboard (stats.html), needs ?key=<STATS_KEY secret>.
 const TYPES = new Set(["visit", "home", "subject", "reel_view", "watch", "progress", "complete", "speed", "music", "sfx", "sound_on",
   "sound_off", "like", "unlike", "save", "unsave", "share", "answer_open", "answer_close", "scrub", "hint_shown", "hint_click",
-  "pause", "resume", "next", "back_home", "tab", "github"]);
+  "pause", "resume", "next", "back_home", "tab", "github", "promo_click"]);
 
 function uaInfo(ua) {
   ua = ua || "";
@@ -197,10 +197,11 @@ async function stats(request, url, env) {
   const q = (sql, ...a) => env.DB.prepare(sql).bind(since, ...a).all().then(r => r.results);
   await ensureComments(env);
   const [totals, reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments,
-    returning, prev, funnel] = await Promise.all([
+    returning, prev, funnel, promos] = await Promise.all([
     q(`SELECT COUNT(DISTINCT vid) visitors, COUNT(DISTINCT sid) sessions,
          SUM(type='reel_view') reel_views, SUM(type='complete') completes, ROUND(SUM(CASE WHEN type='watch' THEN val ELSE 0 END)/60.0,1) watch_min,
          SUM(type='like') likes, SUM(type='save') saves, SUM(type='share') shares, SUM(type='answer_open') answers,
+         SUM(type='promo_click') promo_clicks, COUNT(DISTINCT CASE WHEN type='promo_click' THEN vid END) promo_people,
          SUM(type='hint_click') hint_clicks, SUM(type='scrub') scrubs, SUM(type='sound_on') sound_on
        FROM events WHERE ts>=?1`),
     q(`SELECT reel, MAX(subject) subject,
@@ -243,8 +244,10 @@ async function stats(request, url, env) {
          COUNT(DISTINCT CASE WHEN type='progress' AND val=25 THEN vid||'|'||reel END) p25, COUNT(DISTINCT CASE WHEN type='progress' AND val=50 THEN vid||'|'||reel END) p50,
          COUNT(DISTINCT CASE WHEN type='progress' AND val=75 THEN vid||'|'||reel END) p75, COUNT(DISTINCT CASE WHEN type='complete' THEN vid||'|'||reel END) done
        FROM events WHERE ts>=?1 AND reel IS NOT NULL`),
+    // Bunk-o-Meter promo clicks by placement (the link's ?src tag)
+    q(`SELECT extra k, COUNT(*) n FROM events WHERE ts>=?1 AND type='promo_click' GROUP BY extra`),
   ]);
-  return Response.json({ days, generated: Date.now(), totals: { ...totals[0], returning: returning[0].n }, prev: prev[0], funnel: funnel[0],
+  return Response.json({ days, generated: Date.now(), totals: { ...totals[0], returning: returning[0].n }, prev: prev[0], funnel: funnel[0], promos,
     reels, speeds, devices, oss, browsers, countries, cities, subjects, daily, refs, hours, depth, sliders, models, nets, comments },
     { headers: { "Cache-Control": "no-store" } });
 }

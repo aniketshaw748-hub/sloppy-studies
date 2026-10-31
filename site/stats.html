@@ -52,6 +52,7 @@ section>h2{font-size:20px;letter-spacing:-.4px;margin:0 0 10px}
 .mini{background:rgba(255,255,255,.65);border:1.5px solid #e2d5b4;border-radius:12px;padding:8px 10px}
 .mini b{display:block;font-size:18px;letter-spacing:-.3px}
 .mini span{font-size:12px;color:var(--muted);font-weight:600}
+.promo-n{display:flex;align-items:baseline;gap:10px;margin:2px 0 12px}.promo-n b{font-size:40px;font-weight:800;letter-spacing:-1.2px;line-height:1}.promo-n span{color:var(--muted)}
 /* charts */
 .seg{display:inline-flex;gap:2px;background:#F4EEDF;border-radius:999px;padding:3px;margin-bottom:12px}
 .seg button{border:0;background:none;border-radius:999px;padding:4px 10px;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--muted)}
@@ -259,6 +260,11 @@ function trend(){ const d=DATA.daily||[]; if(!d.length) return `<div class="card
     ${columns(out,{val:r=>+r[TREND]||0,hi:r=>r===best,tip:r=>`${day(r.d)}<br><b>${fmt(Math.round(r[TREND]))}</b> ${unit} · ${fmt(r.visitors)} visitors · ${fmt(r.views)} plays`})}
     <div class="xax"><span>${day(out[0].d)}</span><span>${day(out[out.length-1].d)}</span></div></div>`; }
 
+// Bunk-o-Meter promos: every click from all three placements combined, then the split
+function promo(){ const t=DATA.totals||{}, P={"sloppy-studies":"Home page card","sloppy-answer":"Link under answers","sloppy-feed":"Promo reel in the feed"};
+  return `<div class="card" style="margin-top:14px"><h3>Bunk-o-Meter promo clicks</h3><p class="hint">All promos combined: home card, link under answers, promo reel.</p>
+    <div class="promo-n"><b class="num">${fmt(t.promo_clicks||0)}</b><span>clicks · <b class="num" style="font-size:14px;letter-spacing:0">${fmt(t.promo_people||0)}</b> people</span></div>
+    ${blist(Object.keys(P).map(k=>({k,n:(DATA.promos||[]).find(x=>x.k===k)?.n||0})),{label:r=>P[r.k],val:r=>r.n})}</div>`; }
 function funnel(){ const f=DATA.funnel||{}; if(!f.started) return `<div class="card"><h3>Where people stop watching</h3><div class="empty">No reels watched yet.</div></div>`;
   const st=[["Started",f.started],["A quarter in",f.p25],["Halfway",f.p50],["Three quarters",f.p75],["The end",f.done]];
   let worst=1; for(let i=1;i<st.length;i++) if(st[i-1][1]-st[i][1]>st[worst-1][1]-st[worst][1]) worst=i;
@@ -359,7 +365,7 @@ function render(){ const nc=(DATA.comments||[]).length, y=scrollY;
       <span class="authme" id="authme">${ME?`On the reels you comment as <b>${esc(ME.name)}</b> with the Author badge.`:""}</span></p></div>
     <div class="range">${[[1,"24 h"],[7,"7 d"],[30,"30 d"],[90,"90 d"]].map(([d,n])=>`<button data-d="${d}" aria-pressed="${d===DAYS}">${n}</button>`).join("")}<button id="rf" aria-label="Refresh" title="Refresh">↻</button></div></header>
   <nav class="jump"><a href="#ov">Overview</a><a href="#reels">Reels</a><a href="#aud">Audience</a><a href="#cm">Comments${nc?`<b>${nc}</b>`:""}</a></nav>
-  <section id="ov">${hero()}${trend()}</section>
+  <section id="ov">${hero()}${trend()}${promo()}</section>
   <section id="reels"><h2>Reels</h2><div class="grid two" style="margin-bottom:14px">${funnel()}${highlights()}</div>${reelList()}</section>
   <section id="aud"><h2>Audience</h2>${audience()}</section>
   <section id="cm"><h2>Comments</h2><div class="card"><p class="hint" style="margin-top:0">Public threads, each pinned to a moment in a reel. Tap a time to open the reel there; Delete removes a comment and its replies for everyone.</p>${comments()}</div></section>`;

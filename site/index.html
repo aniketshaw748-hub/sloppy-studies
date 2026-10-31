@@ -345,6 +345,10 @@ setInterval(()=>{ flushWatch(); AN.send(); },10000);
 addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"){ flushWatch(); AN.send(); } });
 addEventListener("pagehide",()=>{ flushWatch(); AN.send(); });
 AN.t("visit");
+// one counter for every Bunk-o-Meter promo (home card, link under answers, feed reel), split by the link's ?src tag;
+// sent at once because the link opens a new tab
+addEventListener("click",e=>{ const a=e.target.closest&&e.target.closest('a[href*="bunkometer.pages.dev"]'); if(!a) return;
+  AN.t("promo_click",{x:new URL(a.href).searchParams.get("src")}); AN.send(); });
 function track(n,d){ const o={}; if(d&&d.id){ o.r=d.id; const S=all.find(x=>x.id===d.id); if(S) o.s=S.subject; } if(d&&d.s) o.s=d.s; AN.t(n,o); }
 // Routing: "/" = home, "?s=<subject>[#reel]" = feed. Opening a subject pushes a history entry, so the
 // phone/browser Back button (and the in-app back arrow) always return to the home page.
